@@ -1,0 +1,4 @@
+name: GenPvP
+version: '1.0'
+main: me.revqz.genPvP.GenPvP
+api-version: '1.21'
