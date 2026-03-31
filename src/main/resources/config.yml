@@ -1,0 +1,8 @@
+# MongoDB connection URI for region persistence
+mongodb-uri: "mongodb://localhost:27017"
+
+# Seconds before a survival-placed block decays to air (default: 600 = 10 minutes)
+block-timer-seconds: 600
+
+# Bukkit Sound played when a block decays (must be a valid Sound enum value)
+block-decay-sound: "BLOCK_SAND_BREAK"
