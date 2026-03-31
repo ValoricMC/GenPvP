@@ -1,4 +1,13 @@
 name: GenPvP
 version: '1.0'
 main: me.revqz.genPvP.GenPvP
+author: revqz
+website: https://revqz.me
 api-version: '1.21'
+softdepend:
+  - FastAsyncWorldEdit
+  - PlaceholderAPI
+commands:
+  region:
+    description: Region management
+    usage: /region <pos1|pos2|define <name> <type>|bypass>
