@@ -38,10 +38,12 @@ class RegionTypeTest {
     }
 
     @Test
-    void kothAllowsPlaceNotBreak() {
+    void kothAllowsNeitherPlaceNorBreak() {
         var rules = RegionType.KOTH.getAllowedRules();
-        assertTrue(rules.contains(RegionRule.ALLOW_PLACE));
+        assertFalse(rules.contains(RegionRule.ALLOW_PLACE));
         assertFalse(rules.contains(RegionRule.ALLOW_BREAK));
+        assertTrue(rules.contains(RegionRule.ALLOW_DAMAGE));
+        assertTrue(rules.contains(RegionRule.ALLOW_KNOCKBACK));
     }
 
     @Test
@@ -65,7 +67,21 @@ class RegionTypeTest {
     }
 
     @Test
+    void shulkerroomsAllowsOnlyInteract() {
+        var rules = RegionType.SHULKERROOMS.getAllowedRules();
+        assertTrue(rules.contains(RegionRule.ALLOW_INTERACT));
+        assertFalse(rules.contains(RegionRule.ALLOW_DAMAGE));
+        assertFalse(rules.contains(RegionRule.ALLOW_BREAK));
+        assertFalse(rules.contains(RegionRule.ALLOW_PLACE));
+        assertFalse(rules.contains(RegionRule.ALLOW_PEARL));
+        assertFalse(rules.contains(RegionRule.ALLOW_WIND_CHARGE));
+        assertFalse(rules.contains(RegionRule.ALLOW_MOB_SPAWN));
+        assertFalse(rules.contains(RegionRule.ALLOW_KNOCKBACK));
+        assertFalse(rules.contains(RegionRule.ALLOW_FLINT_STEEL));
+    }
+
+    @Test
     void allTypesAreDefined() {
-        assertEquals(11, RegionType.values().length);
+        assertEquals(13, RegionType.values().length);
     }
 }

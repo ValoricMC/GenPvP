@@ -31,18 +31,26 @@ public class BlockTimerManager {
         this.decaySound = parsed;
     }
 
-    public void trackBlock(Location loc) {
-        Location key = loc.getBlock().getLocation();
+    /**
+     * Starts (or restarts) the decay timer for {@code blockLoc}.
+     * Callers must pass a block-aligned Location (from {@code Block.getLocation()}).
+     */
+    public void trackBlock(Location blockLoc) {
+        // Cancel any existing timer for this location before creating a new one
+        BukkitTask existing = activeTimers.remove(blockLoc);
+        if (existing != null) existing.cancel();
+
         BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            key.getBlock().setType(Material.AIR);
-            key.getWorld().playSound(key, decaySound, 1.0f, 1.0f);
-            activeTimers.remove(key);
+            blockLoc.getBlock().setType(Material.AIR);
+            blockLoc.getWorld().playSound(blockLoc, decaySound, 1.0f, 1.0f);
+            activeTimers.remove(blockLoc);
         }, timerTicks);
-        activeTimers.put(key, task);
+        activeTimers.put(blockLoc, task);
     }
 
-    public void cancelTimer(Location loc) {
-        BukkitTask task = activeTimers.remove(loc.getBlock().getLocation());
+    /** Callers must pass a block-aligned Location (from {@code Block.getLocation()}). */
+    public void cancelTimer(Location blockLoc) {
+        BukkitTask task = activeTimers.remove(blockLoc);
         if (task != null) task.cancel();
     }
 

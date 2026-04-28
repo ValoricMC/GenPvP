@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = 'me.revqz'
@@ -20,13 +21,20 @@ repositories {
         name = "enginehub"
         url = "https://maven.enginehub.org/repo/"
     }
+    maven {
+        name = "luckperms"
+        url = "https://repo.luckperms.net/repository/maven-public/"
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.11.2")
-    implementation("org.mongodb:mongodb-driver-sync:5.1.1")
+    compileOnly("net.luckperms:api:5.4")
+    implementation("org.mongodb:mongodb-driver-sync:5.1.0")
+    implementation("com.mysql:mysql-connector-j:8.3.0")
+    implementation("redis.clients:jedis:5.1.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -43,6 +51,12 @@ tasks {
 tasks.named('test', Test) {
     useJUnitPlatform()
 }
+
+shadowJar {
+    archiveClassifier.set('')
+}
+
+build.dependsOn shadowJar
 
 def targetJavaVersion = 21
 java {

@@ -7,5 +7,7 @@ public enum RegionRule {
     ALLOW_MOB_SPAWN,
     ALLOW_KNOCKBACK,
     ALLOW_FLINT_STEEL,
-    ALLOW_INTERACT  // anvils, enchant tables, grindstones, crafting tables
+    ALLOW_INTERACT,  // anvils, enchant tables, grindstones, crafting tables
+    ALLOW_WIND_CHARGE,
+    ALLOW_PEARL
 }

@@ -1,8 +1,698 @@
-# MongoDB connection URI for region persistence
-mongodb-uri: "mongodb://localhost:27017"
+anti-dupe:
+  enabled: true
+  # Check unstackable items (swords, armor, tools) by PDC UUID
+  check-unstackables: true
+  # How often to scan all player inventories for duplicate items (ticks, 20 = 1 second)
+  scan-interval-ticks: 40
+  # Delete the duplicated item from the cheater's inventory
+  delete-item: false
+  # Send a single chat alert to all online operators
+  notify-ops: true
+  # Print detection details to the server console / logs
+  log-console: true
+  # Example: "ban %player% Duping"
+  punish-command: ""
+  # Minimum seconds between chat alerts for the same player.
+  # Detection + logging still happen — only the chat ping is rate-limited.
+  alert-cooldown-seconds: 30
 
+money-shard:
+  name: "&#70adadShard"
+  lore:
+    - "&7Used to purchase items"
+    - "&7on the server."
+  value: 1.0
+
+withdraw:
+  messages:
+    players-only:        "&cOnly players can use this command."
+    usage:               "&cType /withdraw (amount) to withdraw funds."
+    invalid-amount:      "&cPlease enter a valid number."
+    loading:             "&#A7A7A7Your data is still loading, please wait..."
+    insufficient-funds:  "&cYou do not have enough funds."
+    no-space:            "&cYou do not have enough inventory space."
+    success:             "&#A7A7A7You successfully withdrew &7%amount%"
+
+deposit:
+  messages:
+    players-only:        "&cOnly players can use this command."
+    usage:               "&cType /deposit (amount) to deposit funds."
+    invalid-amount:      "&cPlease enter a valid number."
+    loading:             "&#A7A7A7Your data is still loading, please wait..."
+    not-enough-shards:   "&cNot enough Money Shards. &#A7A7A7Have &7%have% &#A7A7A7| Need &7%need%"
+    success:             "&#A7A7A7You successfully deposited &7%amount%"
+
+
+# Legacy MySQL connection (used only by /mysql convert mongo)
+mysql:
+  host: "ash-hz-1-db.folium.host"
+  port: 3306
+  database: "s7751_GenPvP"
+  username: "u7751_CtC1S6yaid"
+  password: "8==91fKtHLhZV.JuyDIJqMG+"
+
+# MongoDB database connection
+mongodb:
+  uri: "mongodb+srv://revqzdev_db_user:Soza1978@main.brmlp7j.mongodb.net/?appName=Main"
+  database: "genpvp"
+
+# ── Player Options Menu (/options) ───────────────────────────────────────────
+options:
+  title: "Settings"
+  filler-material: GRAY_STAINED_GLASS_PANE
+
+  global-chat:
+    slot: 11
+    enabled-material: LIME_DYE
+    enabled-name: "&aGlobal Chat"
+    enabled-lore:
+      - "&7You are receiving chat messages"
+      - "&7from other players."
+      - ""
+      - "&fꐙ&8 » &7Click to disable."
+    disabled-material: RED_DYE
+    disabled-name: "&cGlobal Chat"
+    disabled-lore:
+      - "&7You are not receiving chat messages"
+      - "&7from other players."
+      - ""
+      - "&fꐗ&8 » &7Click to enable."
+
+  scoreboard:
+    slot: 13
+    enabled-material: MAP
+    enabled-name: "&aScoreboard"
+    enabled-lore:
+      - "&7Your sidebar scoreboard is visible."
+      - ""
+      - "&fꐙ&8 » &7Click to disable."
+    disabled-material: PAPER
+    disabled-name: "&cScoreboard"
+    disabled-lore:
+      - "&7Your sidebar scoreboard is hidden."
+      - ""
+      - "&fꐗ&8 » &7Click to enable."
+
+  kit-on-death:
+    slot: 15
+    enabled-material: IRON_CHESTPLATE
+    enabled-name: "&aKit on Death"
+    enabled-lore:
+      - "&7You automatically receive the"
+      - "&7starter kit when you respawn."
+      - ""
+      - "&fꐙ&8 » &7Click to disable."
+    disabled-material: CHAINMAIL_CHESTPLATE
+    disabled-name: "&cKit on Death"
+    disabled-lore:
+      - "&7You do not receive the starter"
+      - "&7kit when you respawn."
+      - ""
+      - "&fꐗ&8 » &7Click to enable."
+
+  sounds:
+    slot: 20
+    enabled-material: NOTE_BLOCK
+    enabled-name: "&aSounds"
+    enabled-lore:
+      - "&7Plugin sounds are enabled."
+      - ""
+      - "&fꐙ&8 » &7Click to disable."
+    disabled-material: NOTE_BLOCK
+    disabled-name: "&cSounds"
+    disabled-lore:
+      - "&7Plugin sounds are muted."
+      - ""
+      - "&fꐗ&8 » &7Click to enable."
+
+  receive-payments:
+    slot: 22
+    enabled-material: GOLD_NUGGET
+    enabled-name: "&aReceive Payments"
+    enabled-lore:
+      - "&7You are accepting payments"
+      - "&7from other players."
+      - ""
+      - "&fꐙ&8 » &7Click to disable."
+    disabled-material: IRON_NUGGET
+    disabled-name: "&cReceive Payments"
+    disabled-lore:
+      - "&7You are not accepting payments"
+      - "&7from other players."
+      - ""
+      - "&fꐗ&8 » &7Click to enable."
+
+# Redis Server Connection for fast logging
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: "" # Leave empty if no password
+
+# KOTH Config
+koth:
+  interval: 1800      # Seconds between automatic KOTH events  (default: 30 min)
+  capture_time: 120   # Seconds a player must hold the zone to win (default: 2 min)
+  reward_command: "excellentcrates key give %player% legendary 1"  # %player% = winner IGN
+
+  messages:
+    # Sent to all players when the KOTH event starts
+    start:
+      - ""
+      - "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL"
+      - "&8» &fHead to the capture zone and hold your ground!"
+      - ""
+
+    # Sent to all players when an admin force-stops the event
+    stop:
+      - "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fThe King of the Hill event has been forcefully stopped."
+
+    # Sent to all players when someone wins
+    # Placeholders: %player% = winner's IGN
+    win:
+      - ""
+      - "  &#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &f%player% &fhas captured the King of the Hill!"
+      - "  &8» &fCongratulations %player%&f!"
+      - ""
+
+    # Sent to all players when someone enters the capture zone
+    # Placeholders: %player% = capturer's IGN, %time% = capture seconds remaining
+    new_capturer:
+      - "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &f%player% &fis now capturing! &7(%time%s remaining)"
+
+    # Sent to all players when a capture is interrupted (player left the zone)
+    capture_interrupted:
+      - "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fThe capture was interrupted - the timer has reset."
+
+    # Placeholders: %time% = seconds remaining
+    actionbar: "&#FCD05CCapturing &8» &7%time%s remaining"
+
+    already_active: "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fThe event is already running!"
+    not_active:     "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fThere is no active KOTH event right now."
+    force_started:  "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fEvent forcefully started."
+    force_stopped:  "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fEvent forcefully stopped."
+    timeout: "&cKOTH has ended! Nobody captured the hill in time."
+
+# ── Sell Menu ─────────────────────────────────────────────────────────────────
+sell:
+
+  # Items that can be sold with /sell all
+  # amount: how many of this item are needed to earn the price
+  # price:  money earned per complete group of "amount" items
+  # Leftover items that don't complete a group stay in the player's inventory.
+  items:
+    - material: NETHERITE_INGOT
+      amount: 1
+      price: 128
+    - material: EMERALD_BLOCK
+      amount: 6
+      price: 1
+    - material: DIAMOND_BLOCK
+      amount: 6
+      price: 1
+    - material: GOLD_BLOCK
+      amount: 8
+      price: 1
+    - material: IRON_BLOCK
+      amount: 8
+      price: 1
+    - material: LAPIS_BLOCK
+      amount: 24
+      price: 1
+    - material: REDSTONE_BLOCK
+      amount: 32
+      price: 1
+
+  # Messages — supports & and &#RRGGBB colour codes
+  # %total%    — total money earned this sell
+  # %amount%   — items removed (in sold-line)
+  # %material% — item name (in sold-line)
+  # %earned%   — money earned for that item (in sold-line)
+  messages:
+    sold:      "&#5FE2C5&lS&#84EBD4&lE&#A9F3E3&lL&#5FE2C5&lL &fYou sold items for &#5FE2C5$%total%&f!"
+    sold-line: "&8  » &7%amount%x %material% &8(&#5FE2C5$%earned%&8)"
+    nothing:   "&#5FE2C5&lS&#84EBD4&lE&#A9F3E3&lL&#5FE2C5&lL &8» &cYou don't have any sellable items."
+
+  # Cauldron (slot 0) — decorative icon
+  cauldron:
+    name: "&#C6DEF1&lSELL SHOP &8[&7ᴄʟɪᴄᴋ&8]"
+    lore:
+      - "&8sᴇʟʟ sʜᴏᴘ"
+      - ""
+      - "&7● &fRecive points which can"
+      - "&f  be used to purchase upgrades."
+      - ""
+      - "&8» &cComing soon"
+
+  # Bell (slot 2) — click runs /sell all
+  bell:
+    name: "&#C6DEF1&lSELL &fAll &8[&7ᴄʟɪᴄᴋ&8]"
+    lore:
+      - "&8sᴇʟʟ ᴀʟʟ"
+      - ""
+      - "&fSell Details:"
+      - "&71x &#C6DEF1Netherite ingot &8» &#C6DEF1$64"
+      - "&76x &#C6DEF1Diamond Block &8» &#C6DEF1$1"
+      - "&76x &#C6DEF1Emerald Block &8» &#C6DEF1$1"
+      - "&78x &#C6DEF1Gold Block &8» &#C6DEF1$1"
+      - "&78x &#C6DEF1Iron Block &8» &#C6DEF1$1"
+      - "&724x &#C6DEF1Lapis Block &8» &#C6DEF1$1"
+      - "&732x &#C6DEF1Redstone Block &8» &#C6DEF1$1"
+      - "&7&m                       "
+      - "&c&lWARNING: &fᴀʟʟ ᴏʀᴇs ɪɴ ʏᴏᴜʀ ɪɴᴠᴇɴᴛᴏʀʏ ᴡɪʟʟ ʙᴇ sᴏʟᴅ."
+      - ""
+      - "&8» &7Left click to sell all"
+
+  # Clock (slot 4) — click runs /prestige
+  clock:
+    name: "&#FFB685&lPRESTIGE &8[&7ᴄʟɪᴄᴋ&8]"
+    lore:
+      - "&8ᴘʀᴇsᴛɪɢᴇ"
+      - ""
+      - "&7● &fPrestige to unlock"
+      - "&f  new items from the shop."
+      - ""
+      - "&8» &7Left click to prestige"
+
+#   1. Set enabled: true on every server that should participate.
+#   2. Give each server a unique server-id (used to skip self-published events).
+#   3. All servers must point at the same Redis instance (redis.host above).
+#
+cross-server:
+  enabled: false          # Flip to true once all servers are configured
+  server-id: "server-1"  # Unique name for THIS server (e.g. "lobby", "pvp-1", "pvp-2")
+  channel: "genpvp:cross:events"  # Redis pub/sub channel (same on all servers)
+
+# Spawn
+spawn:
+  world: "world"
+  x: 135.5
+  y: 80.0
+  z: -126.5
+  yaw: 180.0
+  pitch: 0.0
+  on-first-join: true   # teleport when a brand-new player joins for the first time
+  on-join:       true   # teleport every time a player connects
+  on-respawn:    true   # set respawn location after death
+  warp-countdown: 5.0   # seconds of countdown before /spawn teleports
+  move-threshold: 0.15  # blocks of XZ movement that cancels the warp
+  messages:
+    countdown: "&#4CC2FA&lS&#80D0FD&lP&#B4DEFF&lA&#80D0FD&lW&#4CC2FA&lN &8» &7 %time%s"
+    cancelled:  "&cOops you moved, Warp cancelled!"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Welcome Message  (sent privately to each player on join)
+# Left side: 8×8 player head rendered as coloured █ characters
+# Right side: the 8 lines below — supports & and &#RRGGBB colour codes
+# delay-ticks: how long to wait after join before sending (lets skin load async)
+# ──────────────────────────────────────────────────────────────────────────────
+welcome-message:
+  enabled: true
+  delay-ticks: 40
+  lines:
+    - "<head> &a&lWELCOME&r &fto &a&n&lVALORIC!&r"
+    - "<head> &f» &7(ɢᴇɴᴘᴠᴘ)&r"
+    - "<head>"
+    - "<head> &8■ &fThis is &a&nsᴇᴀsᴏɴ 1&r"
+    - "<head> &8■ &fᴛʏᴘᴇ &e/ᴛᴜᴛᴏʀɪᴀʟ&r &fғᴏʀ ʜᴇʟᴘ!&r"
+    - "<head>"
+    - "<head> &7&nᴠᴀʟᴏʀɪᴄ.ᴍɪɴᴇʜᴜᴛ.ɢɢ&r"
+    - "<head>"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Chat Messages
+# ──────────────────────────────────────────────────────────────────────────────
+# Placeholders: %player%  %killer%  %victim%
+# Set any message to "" to suppress it entirely (e.g. leave: "" hides the quit line).
+chat:
+  join:       "&#A7A7A7[&#7AFB00+&#A7A7A7] &7%player% &#A7A7A7has joined!"
+  join-first: "&#A7A7A7[&#7AFB00+&#A7A7A7] &7%player% &#A7A7A7has joined for the first time! Welcome them!"
+  leave:      "" # If you ever enable this, use: "&#A7A7A7[&#FC0000-&#A7A7A7] &7%player% &#A7A7A7left the server."
+  kill:       "&#A7A7A7[&#FC0000\u2620&#A7A7A7] &7%killer% &#A7A7A7has slain &7%victim%&#A7A7A7!"
+  death:      "&#A7A7A7[&#FC0000\u2620&#A7A7A7] &7%player% &#A7A7A7has died!"
+
+# Combat
+combat:
+  duration: 15           # seconds a player stays tagged after the last hit
+  pearl-cooldown: 2.5     # seconds between ender-pearl throws while in combat
+  messages:
+    # %time% = remaining seconds with 1 decimal place (e.g. "4.8")
+    tagged:          "&#FC0000&lCOMBAT &8» &7%time%s"
+    untagged:        "&#7AFB00You are no longer in combat."
+    command-blocked: "&cYou cannot use commands while in combat."
+  spawn-border:
+    distance: 5    # blocks from the SPAWN region wall before ghost blocks appear
+    message: "&cYou cannot enter the safe zone while in combat."
+  # Commands players are allowed to run while in combat (no leading slash, lowercase)
+  allowed-commands:
+    - helpop
+    - msg
+    - r
+
+# Pay
+# Placeholders: %player% %amount% %balance% %input%
+pay:
+  messages:
+    usage:             "&cType /pay (player) (amount) to send money."
+    offline:           "&cThe user &7%player% &cis not online."
+    self:              "&cYou cannot pay yourself."
+    invalid-amount:    "&cPlease enter a valid amount."
+    loading:           "&#A7A7A7Your bank data is still loading, please wait..."
+    account-disabled:  "&cYour bank account is disabled."
+    target-disabled:   "&cThat user's bank account is disabled."
+    payments-disabled: "&cUser &7%player% &cis not accepting payments."
+    insufficient:      "&cYou do not have enough funds. &#A7A7A7Balance: &7$%balance%"
+    sent:              "&#A7A7A7You paid &7$%amount% &#A7A7A7to &7%player%"
+    received:          "&7%player% &#A7A7A7paid you &7$%amount%"
+
+# Command Spy
+# Placeholders: %player% = player who ran the command, %command% = full command with args
+commandspy:
+  format: "&#A7A7A7[&#FC0000SPY&#A7A7A7] &7%player% &8» &#A7A7A7%command%"
+  messages:
+    enabled:       "&#7AFB00Command spy enabled."
+    disabled:      "&#FC0000Command spy disabled."
+    no-permission: "&cYou do not have permission to use this command."
+
+# Settings
+settings:
+  messages:
+    usage:             "&cType /settings (receive_payment) to change this setting."
+    unknown:           "&cUnknown setting. Available: receive_payment"
+    payments-disabled: "&#FC0000You will no longer receive payments from other players."
+    payments-enabled:  "&#7AFB00You will now receive payments from other players."
+
+# Feedback
+feedback:
+  webhook-url: "https://discord.com/api/webhooks/1488952728347607303/ekbgsTqP2I3CTet8bBmLLqqXbPUy4zMOPqR2XHT7E96fmJ80q2jXTuQf5CTN8_WjXFn9"
+  cooldown-seconds: 3600   # 1 hour
+  messages:
+    sent:      "&#7AFB00Your feedback has been sent. Thank you!"
+    cooldown:  "&cYou can only submit feedback once per hour. Try again in &7%time%"
+    too-short: "&cPlease provide feedback with at least 3 characters."
+
+# Protect Respawn Timer
 # Seconds before a survival-placed block decays to air (default: 600 = 10 minutes)
 block-timer-seconds: 600
 
 # Bukkit Sound played when a block decays (must be a valid Sound enum value)
 block-decay-sound: "BLOCK_SAND_BREAK"
+
+# autosmelt
+autosmelt:
+  messages:
+    enabled:       "&#5FE27D&lA&#A0F6B4&lU&#5FE27D&lT&#A0F6B4&lO&#5FE27D&lS&#A0F6B4&lM&#5FE27D&lE&#A0F6B4&lL&#5FE27D&lT &8» &fAuto-smelt is now &a&nenabled&f."
+    disabled:      "&#5FE27D&lA&#A0F6B4&lU&#5FE27D&lT&#A0F6B4&lO&#5FE27D&lS&#A0F6B4&lM&#5FE27D&lE&#A0F6B4&lL&#5FE27D&lT &8» &fAuto-smelt is now &c&ndisabled&f."
+    no_permission: "&#5FE27D&lA&#A0F6B4&lU&#5FE27D&lT&#A0F6B4&lO&#5FE27D&lS&#A0F6B4&lM&#5FE27D&lE&#A0F6B4&lL&#5FE27D&lT &8» &fNo permisson."
+
+# Auto Broadcast
+autobroadcast:
+  interval: 300   # Seconds between each broadcast message
+
+  # Each entry supports:
+  #   text — the chat message (hex &#RRGGBB + standard & codes supported)
+  #   url  — clicking the message opens this URL in the browser (leave blank for no link)
+  messages:
+    - text:
+        - ""
+        - " &#4498DB&lD&#83C2F5&lI&#4498DB&lS&#83C2F5&lC&#4498DB&lO&#83C2F5&lR&#4498DB&lD &8[&7ᴄʟɪᴄᴋ ʜᴇʀᴇ&8]"
+        - " &fJoin our discord community!"
+        - ""
+        - "&8» &#4498DB&nᴅɪsᴄᴏʀᴅ.ɢɢ/ᴠᴀʟᴏʀɪᴄ"
+        - ""
+      url: "https://discord.gg/valoric"
+    - text:
+        - ""
+        - " &#FCD05C&lS&#FFEBB6&lT&#FCD05C&lO&#FFEBB6&lR&#FCD05C&lE &8[&7ᴄʟɪᴄᴋ ʜᴇʀᴇ&8]"
+        - " &fSupport us by visiting our store!"
+        - ""
+        - "&8» &#FCD05C&nsᴛᴏʀᴇ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+        - ""
+      url: "https://store.valoricmc.net"
+
+# Bank GUI
+bank:
+  gui:
+    title: "Bank"
+    # Gold
+    gold-name: "&#FCD05C&lGold"
+    gold-lore:
+      - "&7You have &6%amount% &7gold"
+    gold-click: "&#FCD05C&lGOLD &8» &7You have &6%amount% &7gold"
+
+    # Money
+    money-name: "&#2DFF7F&lMoney"
+    money-lore:
+      - "&7You have &a$%amount% &7money"
+    money-click: "&#2DFF7F&lMONEY &8» &7You have &a$%amount% &7money"
+
+    # shards
+    shards-name: "&#C678FF&lShards"
+    shards-lore:
+      - "&7You have &d%amount% &7shards"
+    shards-click: "&#C678FF&lSHARDS &8» &7You have &d%amount% &7shards"
+
+scoreboard:
+  enabled: true
+  update-ticks: 10          # ticks between refreshes (10 = 0.5s)
+  title: "&#4CC2FA&lV&#6FCBFC&lA&#91D5FD&lL&#B4DEFF&lO&#91D5FD&lR&#6FCBFC&lI&#4CC2FA&lC"
+
+  # AWT panel settings (used when rendering to BufferedImage for maps)
+  width: 200
+  height: 320
+  font-size: 14
+  line-height: 20
+  padding-x: 6
+  padding-y: 20
+  background: "NONE" # RGB Also
+
+  lines:
+    - text: "         &7⌚ %server_time_MMM d, yyyy%      "
+    - text: ""
+    - text: " &#B4DEFF@%player_name%"
+    - text: " &#F54E69🗡&f Kills: &#F54E69%statistic_player_kills%"
+    - text: " &#FCB05C☠&f Deaths: &#FCB05C%statistic_deaths%"
+    - text: " &#FDEF76☀&f Online: &#FDEF76%server_online%"
+    - text: " &#5FE2C5$&f Balance: &#5FE2C5%genpvp_bank_money_total%"
+    - text: " &#AC95FF✉&f Team: &#AC95FF%genpvp_team_name%"
+    - text: " &7&m                       "
+    - text: "  &#E3E0E0ʟᴠʟ: &a%genpvp_level% &#E3E0E0→ &a[&l%genpvp_level_next%&r&a]"
+    - text: "  %genpvp_level_bar_lines% &7(%genpvp_level_bar_percentage%)"
+    - text: " &7&m                       "
+    - text: " &#B4DEFF● &fᴘɪɴɢ&7: (%player_ping%ms)"
+    - text: " &#B4DEFFᴘʟᴀʏ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+
+  koth:
+    title: "&#4CC2FA&lV&#6FCBFC&lA&#91D5FD&lL&#B4DEFF&lO&#91D5FD&lR&#6FCBFC&lI&#4CC2FA&lC"
+    lines:
+      - text: "         &7⌚ %server_time_MMM d, yyyy%      "
+      - text: ""
+      - text: " &#B4DEFF@%player_name%"
+      - text: " &#F54E69🗡&f Kills: &#F54E69%statistic_player_kills%"
+      - text: " &#FCB05C☠&f Deaths: &#FCB05C%statistic_deaths%"
+      - text: " &#FDEF76☀&f Online: &#FDEF76%server_online%"
+      - text: " &#5FE2C5$&f Balance: &#5FE2C5%genpvp_bank_money_total%"
+      - text: " &#AC95FF✉&f Team: &#AC95FF%genpvp_team_name%"
+      - text: " &7&m                       "
+      - text: "  &#E3E0E0ᴋᴏᴛʜ: &aCapturer &#E3E0E0→ &a[%genpvp_capturer_koth%&r&a]"
+      - text: "  %genpvp_koth_claim_bar% &7(%genpvp_time_till_koth_capture%)"
+      - text: " &7&m                       "
+      - text: " &#B4DEFF● &fᴘɪɴɢ&7: (%player_ping%ms)"
+      - text: " &#B4DEFFᴘʟᴀʏ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+
+# gens regen
+gens-regen-ticks: 1
+
+shop:
+  messages:
+    purchase:           "&#DBCDF0&lSHOP &8» &#7AFB00Purchase successful."
+    insufficient-funds: "&#DBCDF0&lSHOP &8» &cNot enough &7%currency%&c."
+    bank-disabled:      "&#DBCDF0&lSHOP &8» &cYour bank account is disabled."
+    bank-loading:       "&#DBCDF0&lSHOP &8» &#A7A7A7Your account data is loading..."
+    no-menus:           "&cThere are no menus available."
+    unknown-shop:       "&cThis shop does not exist."
+    slow-down:          "&cPlease slow down."
+    prestige-required:  "&cYou need Prestige level &7%level% &cto buy this item."
+
+
+prestige:
+  xp-per-level: 100
+  levels-per-prestige: 10
+
+  # kill-xp       — XP awarded to the killer per player kill
+  # blocks-per-xp — Number of blocks a player must break to earn 1 XP
+  xp-sources:
+    kill-xp: 5
+    blocks-per-xp: 10
+
+  messages:
+    ready: "&#7AFB00&lYou are ready to prestige! &7&l[CLICK TO PRESTIGE] &#A7A7A7to reach &7Prestige %prestige%"
+    # Admin feedback (actionbar)
+    # Placeholders: %player%, %amount%, %total%
+    prestige-added:          "&#A7A7A7Added &7%amount% &#A7A7A7prestige level(s) to &7%player%&#A7A7A7. Now: &7%total%"
+    prestige-removed:        "&#A7A7A7Removed &7%amount% &#A7A7A7prestige level(s) from &7%player%&#A7A7A7. Now: &7%total%"
+    prestige-reset:          "&#A7A7A7Reset &7%player%&#A7A7A7's prestige to &70"
+    prestige-blacklisted:    "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from prestiging."
+    prestige-unblacklisted:  "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from prestiging."
+    level-added:             "&#A7A7A7Added &7%amount% &#A7A7A7level(s) to &7%player%&#A7A7A7. Now: &7%total%"
+    level-removed:           "&#A7A7A7Removed &7%amount% &#A7A7A7level(s) from &7%player%&#A7A7A7. Now: &7%total%"
+    level-reset:             "&#A7A7A7Reset &7%player%&#A7A7A7's level to &70"
+    level-blacklisted:       "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from leveling."
+    level-unblacklisted:     "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from leveling."
+    xp-added:                "&#A7A7A7Added &7%amount% &#A7A7A7XP to &7%player%&#A7A7A7. Now: &7%total%"
+    xp-removed:              "&#A7A7A7Removed &7%amount% &#A7A7A7XP from &7%player%&#A7A7A7. Now: &7%total%"
+    xp-reset:                "&#A7A7A7Reset &7%player%&#A7A7A7's XP to &70"
+    xp-blacklisted:          "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from gaining XP."
+    xp-unblacklisted:        "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from gaining XP."
+    # Shown to the player themselves when blacklisted
+    blacklisted-from-prestige: "&cYou are blacklisted from prestiging."
+    blacklisted-from-leveling: "&cYou are blacklisted from leveling."
+    blacklisted-from-xp:       "&cYou are blacklisted from gaining XP."
+
+
+# Teams
+teams:
+  max-size: 6  # Maximum members per team
+
+  messages:
+    no-team: "&cYou don't have a team. Type /team create (name) to create a team."
+    team-created: "&#7AFB00Team created."
+    already-in-team: "&cYou are already in a team."
+    name-taken: "&cYou cannot create a team with this name, it is already taken."
+    left-team: "&#A7A7A7You left the team"
+    player-left: "&#A7A7A7The user &7%player% &#A7A7A7left the team"
+    cannot-leave-owner: "&cYou cannot leave the team, you can only disband it."
+    not-in-team: "&cYou do not have a team."
+    invited: "&#A7A7A7You invited &7%player% &#A7A7A7to the team"
+    invite-received: "&7%player% &#A7A7A7invited you to the team &7%team%"
+    invite-click: "&7[CLICK TO ACCEPT] &r&#A7A7A7or type &7/team join %team%"
+    not-invited: "&cYou are not invited to this team."
+    team-full: "&cYou have max players in your team."
+    user-offline: "&cThis user is offline."
+    already-has-team: "&cThis user already has a team."
+    team-not-found: "&cUser/team does not exist."
+    player-joined: "&#A7A7A7User &7%player% &#A7A7A7joined the team."
+    you-joined: "&#7AFB00You joined the team."
+    joined-team-name: "&#A7A7A7You joined the team &7%team%"
+    disbanded: "&#A8A8A8You disbanded your team"
+    kicked: "&#FC0000%player% got kicked from your team."
+    you-kicked: "&#FC0000You got kicked from your team."
+    cannot-kick-self: "&cYou cannot kick yourself."
+    cannot-kick-owner: "&cYou cannot kick your team owner."
+    not-in-your-team: "&cUser does not seem to be in your team."
+    pending-disband: "&cYou already have a pending request."
+    team-chat-enabled: "&#A8A8A8You enabled team chat."
+    team-chat-disabled: "&#A8A8A8You disabled team chat."
+    invite-type: "&#A7A7A7Type /team invite (name) to invite a player"
+    feature-unavailable: "&cThis feature is currently unavailable and will be added at the next update."
+    pvp-enabled: "&#7AFB00Team PvP enabled."
+    pvp-disabled: "&#FC0000Team PvP disabled."
+    pvp-owner-only: "&cOnly the team owner can toggle PvP."
+    search-prompt: "&7✎ &#A7A7A7Type a player name in chat to search:"
+    search-found: "&7%player% &#A7A7A7is in team &7%team%"
+    search-not-found: "&#FC0000%player% &#A7A7A7was not found in team &7%team%"
+    top-header: "&8&m                    &r &#FCD05C&lTOP TEAMS &8&m                    "
+    top-entry: " &f#%rank% &7- &#AC95FF%team% &8(&7%points% points&8)"
+    top-footer: "&8&m                                                              "
+    top-empty: "&cNo teams found."
+
+
+
+# Devil Fruit ability tuning has been moved to FruitGUI/Balance.yml
+# Devil Fruit Shard — PvP kill-drop economy
+# When a player kills another, there is a configurable chance to receive
+# a physical Amethyst Shard item. The shard is PDC-stamped and can be
+# spent in the Devil Fruit shop (currency-type: devil-shards).
+devil-fruit-shard:
+  drop-chance: 0.10            # 10% chance per kill
+  cooldown-hours: 3            # hours before you can receive a shard from the same victim again
+  item:
+    name: "&#FACBE6&lDEVIL FRUIT &r&fShard"
+    lore:
+      - "&7Used to purchase devilfruit rolls"
+      - "&7on the server."
+      - ""
+      - "&fꐗ &8» &7Click to open shop"
+
+# one piece
+onepiece:
+  messages:
+    # Sent when a player tries to use an ability inside SPAWN / GENS
+    restricted-zone:     "&cAbilities cannot be used in this area."
+
+    # Sent when an ability is still on cooldown. %seconds% = seconds remaining
+    cooldown:            "&cOn cooldown! %seconds%s remaining."
+
+    # Luffy Armor — Haki
+    haki-block:          "&#FFAF89&lHAKI &8» &7Attack blocked by spirit armor."
+
+    # Luffy Sword — Swipe. %hits% = number of targets hit
+    swipe-hit:           "&#FFAA89&lLUFFY &8» &7Swipe struck &f%hits% &7target(s)!"
+    swipe-miss:          "&#FFAA89&lLUFFY &8» &7Swipe missed..."
+
+    # Pirate Axe — Throw & Return
+    axe-in-flight:       "&#C9E4DE&lPIRATE &8» &7Your axe is still in flight"
+    axe-thrown:          "&#C9E4DE&lPIRATE &8» &7Axe thrown"
+    axe-returned:        "&#C9E4DE&lPIRATE &8» &7Axe returned"
+
+    # Pirate Sword — Ghost Crew. %seconds% = duration in seconds
+    ghost-crew-summoned: "&#C9E4DE&lPIRATE &8» &7Ghost crew summoned for &f %seconds%s&f!"
+
+  box-sphere:
+    cooldown-seconds: 120
+    messages:
+      activated:       "&#73D7F7&lBOX SPHERE &8» &7Sphere deployed!"
+      restricted-zone: "&cBox Sphere cannot be used in this area."
+      cooldown:        "&cBox Sphere is on cooldown! &7%seconds%s remaining."
+
+  ghost-crew:
+    # Lines displayed above each skeleton (supports color codes, multiple lines)
+    name-lines:
+      - "&7☠ &r&#C9E4DE&lGHOST CREW&r &f☠"
+    # Number of segments in the HP bar (each segment = one space character)
+    hp-bar-segments: 80
+
+# head abilities
+heads:
+  messages:
+    # Sent when an ability is used inside SPAWN / GENS
+    restricted-zone:   "&cAbilities cannot be used here."
+    # %seconds% = remaining cooldown with 1 decimal place
+    cooldown:          "&cOn cooldown! %seconds%s remaining."
+    # Luffy Head — Gear 3 bomb punch. %count% = entities hit, %unit% = "entity"/"entities"
+    luffy-gear3:       "&#FAEDCB&lGEAR 3 &8» &7Bombed &f%count% %unit% &7back!"
+    # Zoro Head — Purgatory Onigiri dash
+    zoro-onigiri:      "&#FAEDCB&lPURGATORY ONIGIRI &8» &fDashing."
+    # Nami Head — Mirage Tempo smoke deployment
+    nami-mirage-tempo: "&#FAEDCB&lMIRAGE TEMPO &8» &7Smoke deployed."
+    # Sanji Head — Ifrit Jambe activation. %seconds% = duration
+    sanji-ifrit-start: "&#FAEDCB&lIFRIT JAMBE &8» &7Fire legs active for &f%seconds% &7seconds"
+    # Sanji Head — Ifrit Jambe expiry
+    sanji-ifrit-end:   "&#FAEDCB&lIFRIT JAMBE &8» &7Fire faded."
+
+# genpvp admin commands
+genpvp:
+  messages:
+    no-permission:        "&cYou do not have permission to execute this command."
+    usage:                "&cTry using: /genpvp <reload | item_give | onepiece | head>"
+    reload-success:       "&#DBCDF0&lGENPVP &8» &7Configuration and shops reloaded successfully."
+    item-give-usage:      "&cTry using: /genpvp item_give <item> [player]"
+    # %items% = comma-separated list of known items
+    item-give-available:  "&#DBCDF0&lGENPVP &8» &f%items%"
+    # %item% = the name the sender typed
+    item-give-unknown:    "&#DBCDF0&lGENPVP &8» &7Unknown Item &f%item%"
+    # %item% = item name — sent to the recipient
+    item-give-received:   "&#DBCDF0&lGENPVP &8» &7You recived &f%item%!"
+    # %item% = item name, %player% = recipient name — sent to the admin
+    item-gave-to:         "&#DBCDF0&lGENPVP &8» &f%item% &7to &f%player%."
+    # %player% = name that was not found online
+    player-not-found:     "&#DBCDF0&lGENPVP &8» &7Player not found &f%player%"
+    player-required:      "&cTry using: /genpvp item_give <item> <player>"
+    # %subcmd% = "onepiece" or "head"
+    register-usage:       "&cTry using: /genpvp %subcmd% set from_hand <name>"
+    # %names% = comma-separated suggested names
+    register-names:       "&#DBCDF0&lGENPVP &8» &7Names &f%names%"
+    register-hand-only:   "&cTry using: 'from_hand' only."
+    register-player-only: "&#DBCDF0&lGENPVP &8» &7Error: player not found"
+    register-hold-item:   "&cTry using: Holding_item."
+    # %name% = the key it was registered under
+    register-success:     "&#DBCDF0&lGENPVP &8» &7Registered held item as &f%name%&f."

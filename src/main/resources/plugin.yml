@@ -7,7 +7,140 @@ api-version: '1.21'
 softdepend:
   - FastAsyncWorldEdit
   - PlaceholderAPI
+  - LuckPerms
+
 commands:
+  antidupe:
+    description: Manage anti-dupe flags
+    usage: /antidupe [reload|status|toggle <flag>|set punish-command <cmd>]
+    permission: genpvp.admin
   region:
     description: Region management
-    usage: /region <pos1|pos2|define <name> <type>|bypass>
+    usage: /region <pos1|pos2|define <name> <type>|remove <name>|priority <name> <value>|bypass>
+  koth:
+    description: KOTH management
+    usage: /koth <start|stop>
+  autosmelt:
+    description: Toggle auto-smelting of mined ores
+    usage: /autosmelt
+    permission: genpvp.autosmelt
+  bank:
+    description: Check your bank balance
+    usage: /bank
+  shop:
+    description: Open the shop
+    usage: /shop [menu]
+  spawn:
+    description: Teleport to spawn with a countdown
+    usage: /spawn
+  genpvp:
+    description: Core GenPvP administration command
+    usage: /genpvp <reload | item_give <item> [player] | onepiece set from_hand <name> | head set from_hand <name>>
+    permission: genpvp.admin
+  prestige:
+    description: Prestige and level administration
+    usage: /prestige <subcommand> <player> [amount]
+    permission: genpvp.admin
+  level:
+    description: Level administration shorthand
+    usage: /level <add_level|remove_level|reset_level|blacklist_level> <player> [amount]
+    permission: genpvp.admin
+  xp:
+    description: XP administration
+    usage: /xp <add_xp|remove_xp|reset_xp> <player> [amount]
+    permission: genpvp.admin
+  withdraw:
+    description: Withdraw money from your bank as physical Money Shards
+    usage: /withdraw <amount>
+  deposit:
+    description: Deposit Money Shards from your inventory into your bank
+    usage: /deposit <amount>
+  pay:
+    description: Send money to another player
+    usage: /pay <player> <amount>
+  options:
+    description: Open the player options / settings menu
+    usage: /options
+  settings:
+    description: Toggle personal settings
+    usage: /settings <receive_payment>
+  commandspy:
+    description: Toggle seeing all player commands in real time
+    usage: /commandspy
+    permission: genpvp.commandspy
+  kit:
+    description: Open the kit menu or register a kit
+    usage: /kit [register <name> <from_inventory|from_file>]
+  feedback:
+    description: Submit feedback to the server admins
+    usage: /feedback <reason>
+  itemshop:
+    description: Open an item shop
+    usage: /itemshop [shop]
+  sell:
+    description: Open the sell menu
+    usage: /sell
+  combat:
+    description: Combat management (ops only)
+    usage: /combat tag <player> <seconds>
+  fruit:
+    description: Devil Fruit management
+    usage: /fruit [logia|paramecia|zoan|give|remove|equip]
+    aliases: [df, devilfruit]
+  roll:
+    description: Roll for a Devil Fruit
+    usage: /roll <paramecia|logia|zoan>
+  logia:
+    description: Open the Logia devil fruit GUI
+    usage: /logia
+  paramecia:
+    description: Open the Paramecia devil fruit GUI
+    usage: /paramecia
+  zoan:
+    description: Open the Zoan devil fruit GUI
+    usage: /zoan
+  team:
+    description: Team management
+    usage: /team <create|join|leave|invite|disband|chat|info|kick>
+    aliases: [teams]
+  mysql:
+    description: Migrate data from legacy MySQL to MongoDB
+    usage: /mysql convert mongo
+    permission: genpvp.admin
+  database:
+    description: Database management, backup, and optimization
+    usage: /database <optimize mongo | fruit_sync | backup [id] | restore <id> confirm | wipe_release confirm>
+  guide:
+    description: Open the server guide
+    usage: /guide
+permissions:
+  genpvp.admin:
+    description: Allows administration commands for GenPvP
+    default: op
+  genpvp.autosmelt:
+    description: Allows the player to toggle auto-smelt
+    default: op
+  genpvp.commandspy:
+    description: Allows the player to use /commandspy
+    default: op
+  genpvp.starter:
+    description: Access to the Starter kit
+    default: op
+  genpvp.sailor:
+    description: Access to the Sailor kit
+    default: op
+  genpvp.pirate:
+    description: Access to the Pirate kit
+    default: op
+  genpvp.gunner:
+    description: Access to the Gunner kit
+    default: op
+  genpvp.admiral:
+    description: Access to the Admiral kit
+    default: op
+  genpvp.captain:
+    description: Access to the Captain kit
+    default: op
+  genpvp.doublejump:
+    description: Allows double-jumping in SPAWN regions
+    default: false
