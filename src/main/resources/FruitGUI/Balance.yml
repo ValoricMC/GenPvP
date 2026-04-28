@@ -1,0 +1,45 @@
+devil-fruits:
+  abilities:
+    sube_sube:
+      mana-cost: 1
+      duration-seconds: 5
+      speed-amplifier: 2
+      ice-friction: 0.93
+    suke_suke:
+      mana-cost: 2
+      duration-seconds: 8
+      speed-amplifier: 0
+    bane_bane:
+      mana-cost: 2
+      window-seconds: 30
+      leap-multiplier: 1.8
+      leap-y-velocity: 0.9
+      bounce-y-velocity: 0.5
+    supa_supa:
+      mana-cost: 3
+      duration-seconds: 10
+      bonus-damage: 2.5
+    doku_doku:
+      mana-cost: 3
+      effect-duration-seconds: 8
+      slowness-amplifier: 1
+      poison-amplifier: 0
+    bomu_bomu:
+      mana-cost: 2
+      window-seconds: 5
+      explosion-yield: 1.2
+    bari_bari:
+      mana-cost: 3
+      duration-seconds: 6
+    fuwa_fuwa:
+      mana-cost: 3
+      levitation-seconds: 5
+      levitation-amplifier: 6
+      slow-falling-seconds: 1
+    gura_gura:
+      mana-cost: 4
+      radius: 5.0
+      damage: 6.0
+      knockback-multiplier: 2.2
+      knockback-y: 0.5
+      shockwave-speed-ticks: 1

@@ -1,0 +1,49 @@
+title: "Devil Fruit Menu: Logia"
+
+fruits:
+  mera_mera:
+    slot: 12
+    material: FIRE_CHARGE
+    name: "&#FF4500&lMera Mera no Mi"
+    lore:
+      - "&7The Flame Fruit"
+      - ""
+      - ""
+    devil-equipped-name: "&#FF4500&lMera Mera no Mi"
+    devil-equipped-lore:
+      - "&8ʟᴏɢɪᴀ"
+      - ""
+      - "&7The Flame-Flame Fruit"
+      - ""
+      - "&#FFDE87▶ Right-click to activate"
+
+  magu_magu:
+    slot: 13
+    material: MAGMA_CREAM
+    name: "&#EE5A24&lMagu Magu no Mi"
+    lore:
+      - "&7The Magma Fruit"
+      - ""
+      - ""
+    devil-equipped-name: "&#EE5A24&lMagu Magu no Mi"
+    devil-equipped-lore:
+      - "&8ʟᴏɢɪᴀ"
+      - ""
+      - "&7The Magma-Magma Fruit"
+      - ""
+      - "&#FFDE87▶ Right-click to activate"
+  yami_yami:
+    slot: 14
+    material: BLACK_DYE
+    name: "&#2C003E&lYami Yami no Mi"
+    lore:
+      - "&7The Darkness Fruit"
+      - ""
+      - ""
+    devil-equipped-name: "&#2C003E&lYami Yami no Mi"
+    devil-equipped-lore:
+      - "&8ʟᴏɢɪᴀ"
+      - ""
+      - "&7The Dark-Dark Fruit"
+      - ""
+      - "&#FFDE87▶ Right-click to activate"

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:ibb.co)",
+      "Bash(curl -L \"https://i.ibb.co/jqMKJ7b/image.png\" -o /tmp/scoreboard_ref.png)",
+      "Bash(curl -L \"https://i.ibb.co/jqMKJ7b/image.png\" -o C:/Users/danie/AppData/Local/Temp/scoreboard_ref.png)",
+      "Bash(./gradlew shadowJar --no-daemon)",
+      "Bash(./gradlew shadowJar)",
+      "Bash(./gradlew compileJava -Xlint:deprecation)",
+      "Bash(./gradlew compileJava --rerun-tasks)",
+      "Bash(./gradlew dependencies:*)",
+      "Bash(xargs -I{} jar tf {})",
+      "Bash(./gradlew.bat compileJava)",
+      "Bash(./gradlew.bat build *)",
+      "Bash(./gradlew.bat compileJava --info)"
+    ]
+  }
+}

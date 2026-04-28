@@ -1,0 +1,96 @@
+title: "Server Guide"
+slots:
+  3:
+    material: OAK_SIGN
+    name: "&a&lWELCOME &8[&7ᴄʟɪᴄᴋ&8]" # Welcome
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fWelcome to Valoric!"
+      - "&fThis is a GenPvP server."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: ""
+  4:
+    material: NETHERITE_PICKAXE
+    name: "&r&#FDBEC8&lGENERATORS &8[&7ᴄʟɪᴄᴋ&8]" # Gens
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fMine to earn money"
+      - "&fand upgrade your equipment."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: ""
+  5:
+    material: EMERALD
+    name: "&#C9FDBE&lECCONOMY &8[&7ᴄʟɪᴄᴋ&8]" # Economy
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fEarn money by"
+      - "&fmining gens and fighting."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: ""
+  12:
+    material: ENCHANTED_BOOK
+    name: "&#BEE9FD&lROLLING &8[&7ᴄʟɪᴄᴋ&8]" # Rolling
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fRoll your own"
+      - "&famazing devil fruits."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: ""
+  13:
+    material: MELON_SLICE
+    name: "&#FACBE6&lDEVIL FRUIT &8[&7ᴄʟɪᴄᴋ&8]" # Devil Fruits
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fDevil Fruits!"
+      - "&fgive special powers from OnePiece."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: "shop devilfruit"
+  14:
+    material: IRON_CHESTPLATE
+    name: "&#FAEDCB&lKITS &8[&7ᴄʟɪᴄᴋ&8]" # Kits
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fWelcome to Valoric!"
+      - "&fThis is a GenPvP server."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: "kit"
+  21:
+    material: CLOCK
+    name: "&r&#FFB685&lPRESTIGE &8[&7ᴄʟɪᴄᴋ&8]" # Presitge
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fIncrease your prestige"
+      - "&flevel to unlock new equipment."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: "prestige"
+  22:
+    material: COMPASS
+    name: "&#DBCDF0&lSHOP &8[&7ᴄʟɪᴄᴋ&8]" # Shop
+    lore:
+      - "&8ɢᴜɪᴅᴇ"
+      - ""
+      - "&7● &fBuy new stronger"
+      - "&fequipment to become the strongest."
+      - ""
+      - "&fꐗ &8» &7Click to visit"
+    command: "shop"
+  23:
+    material: STONE_BUTTON
+    name: ""
+    lore:
+      - "&r"
+    command: ""

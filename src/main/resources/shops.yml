@@ -1,0 +1,1656 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# GenPvP Shop Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+#
+# GUI Layout (6-row chest = 54 slots):
+#
+#   Row 0  (slots  0- 8)  ← shared-nav category buttons
+#   Rows 1-4 (slots 9-44) ← shop items (4 × 9 = 36 item slots)
+#   Row 5  (slots 45-53)  ← [-] decrease (52), [+] increase (53)
+#
+# default-menu — The menu that opens when a player runs /shop with no args.
+#
+# shared-nav — Navigation buttons injected into EVERY menu.
+#
+# Per-menu sections:
+#   items:        — Buyable/sellable items.
+#   buttons:      — Navigation buttons that open another menu.
+#   slot-buttons: — Decorative items (e.g. STONE_BUTTONs) with custom lore; no buy/sell action.
+#
+# requires-prestige — Prestige level required to buy the item.
+#   0 = no prestige required (anyone can buy)
+#   N = requires prestige level N (e.g. 2 means the player needs Prestige 2)
+#   If the player doesn't meet the requirement, the last lore line changes to
+#   "&cRequires Prestige level N." and a configurable actionbar message is sent.
+#
+# ──────────────────────────────────────────────────────────────────────────────
+
+default-menu: building
+
+# ── Shared navigation bar (row 0: slots 0-8) ─────────────────────────────────
+shared-nav:
+  - slot: 0
+    material: GRAY_STAINED_GLASS_PANE
+    name: "&r"
+    active-name: "&r"
+    lore:
+      - "&r"
+    active-lore:
+      - "&r"
+    menu: ""
+
+  - slot: 1
+    material: COBBLESTONE
+    name: "&#AAAAAABuild Shop"
+    active-name: "&#AAAAAABuild Shop"
+    lore:
+      - "&8» &fClick to visit the Build Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "building"
+
+  - slot: 2
+    material: IRON_PICKAXE
+    name: "&#7EBAEAPickaxe Shop"
+    active-name: "&#7EBAEAPickaxe Shop"
+    lore:
+      - "&8» &fClick to visit the Pickaxe Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "pickaxe"
+
+  - slot: 3
+    material: COOKED_BEEF
+    name: "&#7C5828Food Shop"
+    active-name: "&#7C5828Food Shop"
+    lore:
+      - "&8» &fClick to visit the Food Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "food"
+
+  - slot: 4
+    material: IRON_CHESTPLATE
+    name: "&#FAEDCBEquipment Shop"
+    active-name: "&#FAEDCBEquipment Shop"
+    lore:
+      - "&8» &fClick to visit the Equipment Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "equipment"
+
+  - slot: 5
+    material: BREWING_STAND
+    name: "&#B583FFPotions"
+    active-name: "&#B583FFPotions"
+    lore:
+      - "&8» &fClick to visit the Potions Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "potions"
+
+  - slot: 6
+    material: GLOW_ITEM_FRAME
+    name: "&#83FFD2Utilities Shop"
+    active-name: "&#83FFD2Utilities Shop"
+    lore:
+      - "&8» &fClick to visit the Utilities Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "utilities"
+
+  - slot: 7
+    material: BELL
+    name: "&#E76DAFFruit Shop"
+    active-name: "&#E76DAFDevil Fruit Shop"
+    lore:
+      - "&8» &fClick to visit the Devil Fruit Shop."
+    active-lore:
+      - "&8» &fYou are currently here."
+    menu: "devilfruit"
+
+  - slot: 8
+    material: GRAY_STAINED_GLASS_PANE
+    name: "&r"
+    active-name: "&r"
+    lore:
+      - "&r"
+    active-lore:
+      - "&r"
+    menu: ""
+
+shops:
+  building:
+    name: "Building"
+    items:
+      - slot: 19
+        material: COBBLESTONE
+        name: "&fCobblestone &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 1
+        amount: 16
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 1.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 20
+        material: COBBLESTONE_STAIRS
+        name: "&fCobblestone Stairs &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 1
+        amount: 16
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 1.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 21
+        material: COBBLESTONE_SLAB
+        name: "&fCobblestone Slab &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 1
+        amount: 16
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 1.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 22
+        material: CHEST
+        name: "&fChest &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 5
+        amount: 4
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 5.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 23
+        material: HOPPER
+        name: "&fHopper &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 5
+        amount: 4
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 5.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 24
+        material: LADDER
+        name: "&fLadder &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 2
+        amount: 16
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 2.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 25
+        material: SCAFFOLDING
+        name: "&fScaffolding &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 2
+        amount: 16
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 2.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 28
+        material: OAK_SIGN
+        name: "&fOak Sign &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 2
+        amount: 8
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 2.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 29
+        material: OAK_HANGING_SIGN
+        name: "&fOak Hanging Sign &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 2
+        amount: 8
+        sell-menu: building
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 2.0 &#5FE2C5Money"
+        enchants: []
+
+    buttons: []
+
+    slot-buttons:
+      - slot: 30
+        name: "&r"
+        lore: []
+      - slot: 31
+        name: "&r"
+        lore: []
+      - slot: 32
+        name: "&r"
+        lore: []
+      - slot: 33
+        name: "&r"
+        lore: []
+      - slot: 34
+        name: "&r"
+        lore: []
+
+  food:
+    name: "Food"
+    items:
+      - slot: 19
+        material: GOLDEN_APPLE
+        name: "&fGolden Apples &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 4
+        sell-menu: food
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 20
+        material: GOLDEN_CARROT
+        name: "&fGolden Carrot &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 6
+        amount: 8
+        sell-menu: food
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 21
+        material: COOKED_BEEF
+        name: "&fCooked Beef &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 4
+        amount: 16
+        sell-menu: food
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants: []
+
+  utilities:
+    name: "Utilities"
+    items:
+      - slot: 19
+        material: ENDER_PEARL
+        name: "&fEnder Pearl &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 4
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 20
+        material: EXPERIENCE_BOTTLE
+        name: "&fBottle O' Enchanting &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 4
+        amount: 16
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 4.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 21
+        material: WIND_CHARGE
+        name: "&fWind Charge &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 16
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 22
+        material: COBWEB
+        name: "&fCobwebs &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        amount: 16
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 23
+        material: TOTEM_OF_UNDYING
+        name: "&fTotem Of Undying &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 256
+        amount: 1
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 256.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 24
+        material: WATER_BUCKET
+        name: "&fWater Bucket &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 6
+        amount: 1
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 6.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 25
+        material: BUCKET
+        name: "&fBuckets &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 6
+        amount: 4
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 6.0 &#5FE2C5Money"
+        enchants: []
+
+      - slot: 28
+        material: ARROW
+        name: "&fArrows &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 6
+        amount: 32
+        sell-menu: utilities
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&7Cost:"
+          - "&7 - 6.0 &#5FE2C5Money"
+        enchants: []
+
+    slot-buttons:
+      - slot: 29
+        name: "&r"
+      - slot: 30
+        name: "&r"
+        lore: []
+      - slot: 31
+        name: "&r"
+        lore: []
+      - slot: 32
+        name: "&r"
+        lore: []
+      - slot: 33
+        name: "&r"
+        lore: []
+      - slot: 34
+        name: "&r"
+        lore: []
+
+  equipment:
+    name: "Equipment"
+    items:
+      # Premium (no prestige required)
+      - slot: 19
+        material: DIAMOND_SWORD
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fSword &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Fire Aspect: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "sharpness:3"
+          - "unbreaking:2"
+          - "fire_aspect:1"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fSword"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Fire Aspect: &71"
+          - ""
+
+      - slot: 28
+        material: DIAMOND_AXE
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fAxe &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Efficiency: &73"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "sharpness:3"
+          - "unbreaking:2"
+          - "efficiency:3"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fAxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Efficiency: &73"
+          - ""
+
+      - slot: 20
+        material: DIAMOND_BOOTS
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fBoots &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Feather Falling: &73"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "protection:3"
+          - "unbreaking:2"
+          - "feather_falling:3"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fBoots"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Feather Falling: &73"
+          - ""
+
+      - slot: 21
+        material: DIAMOND_LEGGINGS
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fLeggings &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "protection:3"
+          - "unbreaking:2"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fLeggings"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - ""
+
+      - slot: 29
+        material: DIAMOND_CHESTPLATE
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fChestplate &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "protection:3"
+          - "unbreaking:2"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fChestplate"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - ""
+
+      - slot: 30
+        material: DIAMOND_HELMET
+        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fHelmet &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Respiration: &73"
+          - "&#91CAF8Aqua Affinity: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "protection:3"
+          - "unbreaking:2"
+          - "respiration:3"
+          - "aqua_affinity:1"
+        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fHelmet"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &73"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Respiration: &73"
+          - "&#91CAF8Aqua Affinity: &71"
+          - ""
+
+
+      # Legendary (requires prestige 1)
+      - slot: 23
+        material: DIAMOND_SWORD
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fSword &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Fire Aspect: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "sharpness:4"
+          - "unbreaking:2"
+          - "fire_aspect:2"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fSword"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Fire Aspect: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+      - slot: 32
+        material: DIAMOND_AXE
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fAxe &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Efficiency: &74"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "sharpness:4"
+          - "unbreaking:2"
+          - "efficiency:4"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fAxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Sharpness: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Efficiency: &74"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+      - slot: 24
+        material: DIAMOND_BOOTS
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fBoots &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Feather Falling: &74"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "protection:4"
+          - "unbreaking:2"
+          - "feather_falling:4"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fBoots"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Feather Falling: &74"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+      - slot: 25
+        material: DIAMOND_LEGGINGS
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fLeggings &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "protection:4"
+          - "unbreaking:2"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fLeggings"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+      - slot: 33
+        material: DIAMOND_CHESTPLATE
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fChestplate &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "protection:4"
+          - "unbreaking:2"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fChestplate"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+      - slot: 34
+        material: DIAMOND_HELMET
+        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fHelmet &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Respiration: &73"
+          - "&#91CAF8Aqua Affinity: &71"
+          - "&#91CAF8Mending: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "protection:4"
+          - "unbreaking:2"
+          - "respiration:3"
+          - "aqua_affinity:1"
+          - "mending:1"
+        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fHelmet"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Protection: &74"
+          - "&#91CAF8Unbreaking: &72"
+          - "&#91CAF8Respiration: &73"
+          - "&#91CAF8Aqua Affinity: &71"
+          - "&#91CAF8Mending: &71"
+          - ""
+
+    buttons: []
+
+    slot-buttons:
+      - slot: 22
+        name: "&r"
+        lore: []
+      - slot: 31
+        name: "&r"
+        lore: []
+
+  pickaxe:
+    name: "Pickaxe"
+    items:
+      - slot: 19
+        material: DIAMOND_PICKAXE
+        name: "&#A0D0F6&lTIER 1 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_1"
+        price: 2
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &72"
+          - ""
+          - "&7Cost:"
+          - "&7 - 2.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:2"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 1 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &72"
+          - ""
+
+      - slot: 20
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 2 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_2"
+        price: 8
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        requires-item:
+          material: DIAMOND_PICKAXE
+          item-id: "tier_1"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &73"
+          - "&#91CAF8Fortune: &71"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 1 &#5FE2C5Pickaxe"
+          - "&7 - 8.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:3"
+          - "fortune:1"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 2 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &73"
+          - "&#91CAF8Fortune: &71"
+          - ""
+
+      - slot: 21
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 3 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_3"
+        price: 16
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_2"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &75"
+          - "&#91CAF8Fortune: &72"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 2 &#5FE2C5Pickaxe"
+          - "&7 - 16.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:5"
+          - "fortune:2"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 3 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &75"
+          - "&#91CAF8Fortune: &72"
+          - ""
+
+      - slot: 22
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 4 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_4"
+        price: 24
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 0
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_3"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &77"
+          - "&#91CAF8Fortune: &73"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 3 &#5FE2C5Pickaxe"
+          - "&7 - 24.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:7"
+          - "fortune:3"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 4 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &77"
+          - "&#91CAF8Fortune: &73"
+          - ""
+
+      - slot: 23
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 5 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_5"
+        price: 32
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 1
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_4"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &78"
+          - "&#91CAF8Fortune: &73"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 4 &#5FE2C5Pickaxe"
+          - "&7 - 32.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:8"
+          - "fortune:3"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 5 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &78"
+          - "&#91CAF8Fortune: &73"
+          - ""
+
+      - slot: 24
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 6 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_6"
+        price: 64
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 2
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_5"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &79"
+          - "&#91CAF8Fortune: &74"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 5 &#5FE2C5Pickaxe"
+          - "&7 - 64.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:9"
+          - "fortune:4"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 6 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &79"
+          - "&#91CAF8Fortune: &74"
+          - ""
+
+      - slot: 25
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 7 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_7"
+        price: 128
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 2
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_6"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &711"
+          - "&#91CAF8Fortune: &74"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 6 &#5FE2C5Pickaxe"
+          - "&7 - 128.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:11"
+          - "fortune:4"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 7 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &711"
+          - "&#91CAF8Fortune: &74"
+          - ""
+
+      - slot: 28
+        material: NETHERITE_PICKAXE
+        name: "&#A0D0F6&lTIER 8 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        item-id: "tier_8"
+        price: 256
+        currency-type: money
+        allow-multiple: false
+        requires-prestige: 3
+        requires-item:
+          material: NETHERITE_PICKAXE
+          item-id: "tier_7"
+          consume: true
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficency: &713"
+          - "&#91CAF8Fortune: &75"
+          - ""
+          - "&7Cost:"
+          - "&7 - Tier 7 &#5FE2C5Pickaxe"
+          - "&7 - 256.0 &#5FE2C5Money"
+        enchants:
+          - "efficiency:13"
+          - "fortune:5"
+        unbreakable: true
+        after-store-bought-title: "&#A0D0F6&lTIER 8 &fPickaxe"
+        after-store-bought-lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fEnchants:"
+          - "&#91CAF8Efficiency: &713"
+          - "&#91CAF8Fortune: &75"
+          - ""
+
+    buttons: []
+    slot-buttons:
+      - slot: 29
+        name: "&r"
+        lore: []
+      - slot: 30
+        name: "&r"
+        lore: []
+      - slot: 31
+        name: "&r"
+        lore: []
+      - slot: 32
+        name: "&r"
+        lore: []
+      - slot: 33
+        name: "&r"
+        lore: []
+      - slot: 34
+        name: "&r"
+        lore: []
+
+
+  # Set 1: 19, 20, 21, 28, 29, 30
+  # Set 2: 23, 24, 25, 32, 33, 34
+  # 22, 26
+
+  #    - slot: 15
+  #      material: SPLASH_POTION
+  #      name: "&cCombat Potion"
+  #      price: 300
+  #      amount: 1
+  #      allow-multiple: true
+  #      potions:
+  #        - "strength:2:120"   # Strength II for 120 seconds
+  #        - "speed:2:120"      # Speed II for 120 seconds
+  #      lore:
+  #        - "&7Strength II + Speed II"
+  #        - "&7Duration: &f2 minutes"
+  ##        - "&ePrice: &f$%price%"
+
+  # SLOT 49
+
+  # command: ""
+  # amount: "1-64" (display using %amount%)
+  # fire_resistance:1
+  potions:
+    name: "Potions"
+    items:
+      - slot: 19
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lSPEED &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        potions:
+          - "speed:2:120"
+        after-store-bought-title: "&#C9E4DE&lSPEED &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - ""
+
+      - slot: 20
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lSTRENGTH &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        potions:
+          - "strength:2:120"
+        after-store-bought-title: "&#C9E4DE&lSTRENGTH &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - ""
+
+      - slot: 21
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lFIRE RESISTANCE &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 8
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 8.0 &#5FE2C5Money"
+        potions:
+          - "fire_resistance:1:480"
+        after-store-bought-title: "&#C9E4DE&lFIRE RESISTANCE &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+
+      - slot: 23
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lALL IN ONE &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 16.0 &#5FE2C5Money"
+        potions:
+          - "strength:2:120"
+          - "fire_resistance:1:480"
+          - "speed:2:120"
+        after-store-bought-title: "&#C9E4DE&lALL IN ONE &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+
+      - slot: 24
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lHALF IN ONE &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 12
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 12.0 &#5FE2C5Money"
+        potions:
+          - "strength:2:120"
+          - "speed:2:120"
+        after-store-bought-title: "&#C9E4DE&lHALF IN ONE &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DESpeed: &72 - 120s"
+          - ""
+
+      - slot: 25
+        material: SPLASH_POTION
+        name: "&#C9E4DE&lTWO IN ONE &fPotion &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 12
+        amount: 1
+        currency-type: money
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+          - "&7Cost:"
+          - "&7 - 12.0 &#5FE2C5Money"
+        potions:
+          - "strength:2:120"
+          - "fire_resistance:1:480"
+        after-store-bought-title: "&#C9E4DE&lTWO IN ONE &fPotion"
+        after-store-bought-lore:
+          - "&8ᴘᴏᴛɪᴏɴ"
+          - ""
+          - "&#C9E4DE&lUNCOMMON"
+          - ""
+          - "&fEffects:"
+          - "&#C9E4DEStrength: &72 - 120s"
+          - "&#C9E4DEFire Resistance: &71 - 480s"
+          - ""
+
+    buttons: []
+
+    slot-buttons:
+      - slot: 22
+        name: "&r"
+        lore: []
+
+  # ── Devil Fruit Shop ──────────────────────────────────────────────────────
+  # Uses currency-type: devil-shards (physical PDC-stamped Amethyst Shards
+  # obtained from PvP kills).  Items here typically use the "command" field
+  # to give rewards via console commands instead of material items.
+  devilfruit:
+    name: "Devil Fruit"
+    items:
+      - slot: 21
+        material: AMETHYST_SHARD
+        name: "&#FCD05C&lPARMECIA&f Fruits Rolls &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 16
+        amount: 1
+        currency-type: devil-shards
+        allow-multiple: false
+        requires-prestige: 0
+        command: "fruit roll_give %player_name% paramecia 1"
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#81C7FF&lRARE"
+          - ""
+          - "&fGives you 1 Paramecia fruit roll."
+          - ""
+          - "&7Cost:"
+          - "&7 - 16 &#FACBE6Devil Fruit Shards"
+        enchants: []
+
+      - slot: 22
+        material: AMETHYST_SHARD
+        name: "&#FCD05C&lZOAN&f Fruits Rolls &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 48
+        amount: 1
+        currency-type: devil-shards
+        allow-multiple: false
+        requires-prestige: 0
+        command: "fruit roll_give %player_name% zoan 1"
+        lore:
+          - "&8Amount: 1"
+          - ""
+          - "&#E8BEFD&lEPIC"
+          - ""
+          - "&fGives you 1 Zoan fruit roll."
+          - ""
+          - "&7Cost:"
+          - "&7 - 48 &#FACBE6Devil Fruit Shards"
+        enchants: []
+
+      - slot: 23
+        material: AMETHYST_SHARD
+        name: "&#FCD05C&lLOGIA&f Fruits Rolls &8[&7ᴄʟɪᴄᴋ&8]"
+        price: 96
+        amount: 1
+        currency-type: devil-shards
+        allow-multiple: true
+        requires-prestige: 0
+        lore:
+          - "&8Amount: %amount%"
+          - ""
+          - "&#FDD0BE&lLEGENDARY"
+          - ""
+          - "&fGives you 1 Logia fruit roll."
+          - ""
+          - "&7Cost:"
+          - "&7 - 96 &#FACBE6Devil Fruit Shards"
+        enchants: []
+
+    buttons: []
+
+    slot-buttons:
+      - slot: 30
+        name: "&r"
+        lore: []
+      - slot: 31
+        name: "&r"
+        lore: []
+      - slot: 32
+        name: "&r"
+        lore: []
+
+
+# slot:                GUI slot (9-44 = item area in a 6-row chest)
+# material:            Bukkit Material name (e.g. DIAMOND_SWORD)
+# name:                Display name (supports & and &#RRGGBB colour codes)
+# price:               Base cost per purchase (multiplied by quantity)
+# amount:              How many items the player receives per purchase
+# currency-type:       "money" (default) | "shards" | "gold" | "devil-shards"
+#                      - money/shards/gold use the virtual BankManager balance
+#                      - devil-shards uses physical PDC-stamped Amethyst Shards
+#                        in the player's inventory
+# allow-multiple:      true = player can increase quantity with +/- buttons
+# requires-prestige:   Minimum prestige level (0 = none)
+# command:             Console command to run instead of giving items.
+#                      Placeholders: %player_name%, %amount%
+#                      Example: "fruit roll_give %player_name% paramecia 1"
+# lore:                List of lore lines. Placeholder: %amount%
+# enchants:            List of "enchantment_key:level" strings
+# potions:             List of "effect_key:amplifier:duration_seconds" strings
+# item-id:             PDC tag value for item tier progression
+# after-store-bought-title: Custom name applied to the given item
+# after-store-bought-lore:  Custom lore applied to the given item
+# unbreakable:         true = item cannot lose durability
+# requires-item:       Gate purchase behind having another item in inventory
+#
+# ── CURRENCY TYPES ─────────────────────────────────────────────────────────────
+# money          Virtual balance (BankManager) — earned from mining/selling
+# shards         Virtual balance (BankManager) — deposited Money Shards
+# gold           Virtual balance (BankManager) — earned from events
+# devil-shards   Physical AMETHYST_SHARD items with PDC tag genpvp:devil_fruit_shard
+#                obtained from PvP kills (10% chance, 3h per-victim cooldown)
+#
+
+#      - slot: 22
+#        material: AMETHYST_SHARD
+#        name: "&d&lParamecia Roll"
+#        price: 50
+#        amount: 1
+#        currency-type: devil-shards
+#        allow-multiple: false
+#        requires-prestige: 0
+#        command: "fruit roll_give %player_name% paramecia 1"
+#        lore:
+#          - "&7Cost: 50 Devil Fruit Shards"
+#        enchants: []
+#

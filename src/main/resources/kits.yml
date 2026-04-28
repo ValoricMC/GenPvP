@@ -1,0 +1,470 @@
+gui:
+  title: Kits
+  rows: 3
+  filler-material: GRAY_STAINED_GLASS_PANE
+  # Title prefix for the kit preview inventory (%kit% = kit display name)
+  preview-title: 'Kits Menu Preview: '
+
+messages:
+  no-permission: '&#FAEDCB&lKITS &8» &cYou dont have permission for this kit.'
+  on-cooldown: '&#FAEDCB&lKITS &8» &cThis kit is on cooldown for &e%cooldown%&c.'
+  no-space: '&#FAEDCB&lKITS &8» &cYou dont have enough inventory space to claim this
+    kit.'
+  claimed: '&7You claimed the &f%kit% &7kit!'
+  register-done: '&#FAEDCB&lKITS &8» &f&b%kit% &7registered successfully.'
+  not-op: '&#FAEDCB&lKITS &8» &cYou dont have permission for this kit.'
+
+kits:
+  starter:
+    display-name: '&#FAEDCB&lSTARTER &fKit'
+    cooldown: 300
+    gui-slot: 4
+    unlocked-material: WHITE_CANDLE
+    unlocked-name: '&#FAEDCB&lSTARTER &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lSTARTER &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/03NsQoCQQwE0NFFkLUSxY+x9htsJe5Fb5FNjiSHP+lH6VZnMdWbYTKQsLtQ0JXNqwqw/2yxrgOOrQoXo0ecq6nc/K02JGyKzhIAVhm5aJtUWMIzTkufpYwk0TokHBbwkWwSdu/79H8xy92YXlWenX75AjBa+kaaAAAA
+      '1': H4sIAAAAAAAA/1XMQQrCMBCF4adBkLgSRPAqrj2D2zKdTHQomZQ0Bb2jh2qzKi7e6uN/HnA4PajSU8qk2YDz74i9BtySmnChWO9BKWUL3ag80EccDpxnqwB2Hp5zGrOJ1cnjukVi/CarqYHDZYPZ+iI0qL3awR9JjMq6lt9G6xbfifTPoAAAAA==
+      '2': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCUm5mXmlyUmFZilVmUnxefWJHKzMCanF+aV8LAwMDIAABkNUzaOwAAAA==
+      '3': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZyflJSTWlySn5fKzMCanF+aV8LAwODAAABTAVlFPgAAAA==
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZyfn52aEp+UmprGzMCanF+aV8LAwODAAACR4RmFPgAAAA==
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMDAwQAATN76xT8AAAA=
+    armor:
+      '0': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCSm5mXmlyUmFZilVmUnxeflJ9fUszMwJqcX5pXwsDAwMgAAHfh/bk9AAAA
+      '1': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCem5mXmlyUmFZilVmUnxefk5qenpmXXszMwJqcX5pXwsDAwMgAADEMwB1AAAAA
+      '2': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCZm5mXmlyUmFZilVmUnxefnJFaXFKQk1iSyszAmpxfmlfCwMDAyAAAwt3sIUIAAAA=
+      '3': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilVmUnxefkZqTm1rCzMCanF+aV8LAwMDIAACkk+fpPgAAAA==
+
+  booster:
+    display-name: '&#FAEDCB&lBOOSTER &fKit'
+    cooldown: 86400
+    gui-slot: 10
+    unlocked-material: PINK_CANDLE
+    unlocked-name: '&#FAEDCB&lBOOSTER &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lBOOSTER &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBdiscord.gg/valoric'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/03PPU4DMRCG4SEWUmQa/rkA7UqEZLMkJeIAqdKuJuNxYm08XvkHLsmhMDRL/eid0acBFFx9YMY9x+SCANx8z2HmDDx5J0wRbd4ahz6I6dNXiEbBJYUiGQAuNGgKfgzCkpOGxylhoRNK9r+g4G6CdMI4CqdUe6XgYRLrIveYRqa/2wruJytyiIyDk2OlGej/HZWUg+9NHaHhdlcOZ0fvZRhc3uO5cJrD9ZFl/By3LrPvS6njngnbrrVvttksqG1Wy27dbF4WtiF67Va8ZkRe1lfwA52YMAMhAQAA
+      '1': H4sIAAAAAAAA/03PsU7DMBSF4UOjoshIiCJAYmfN0KQtpCPiAZi6Rq59DVep7Si5RvCOPBRmSudfn3SOAgpcvWnRBxonjgFY/ZZYsMWj50Bm1E72lrWPwXYDm15/U4GliSkIgAsFZaIfYqAgk8LDjCiYTx3E/4cCqzm4OEoKlPWiwN0ZcI4NZ/aT0xIK93MzaZLoO5uHKty+p+OJzWvqe5aDPiWaStx8UBi+hj0L+S6lfOCJXnZ166yrtpt6V23q2lWte3ZVs163jT2a1rTbEtfnMLNLYRq7Jm/AH8Web2MeAQAA
+      '2': H4sIAAAAAAAA/1WPS07DMBCGp7WQKrPhUTgB20iQQut2iTgAq26jiT1pR6nHUWwjuGMPhbsKrD99/0MDKLj+wIR7GiMHAbg9L2DODh48C9kRu7RzjD6Ia/CbFFzZkCUBwEyDtsEPQUhS1PA4CST2iJL8BSi4n0A84jgIxVh8pWA5kSztSNizHAqa/0PUdWy5ZP5cLNB/p9kcU/CNKw803H3m9sT2Pfc9pz2eMsUF3BxIhq9hx4l8k3N59rRd05sxL23VrV1dvTraVNjauqprY83K0PMWV6UKfgGL8UaTHgEAAA==
+      '3': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMAgwAAANwy4vjkAAAA=
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwKDAAADyxQepPgAAAA==
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMAgwAAAFUbhRz8AAAA=
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwKDAAACcnsDNOAAAAA==
+      '11': H4sIAAAAAAAA/02OsW7CMBiEr0WtkLu0laqqO2skqAMFRtQH6MRq2Y4TLJLfVvybp+ShMGKg6313p08AE7z8atZ7NyYfCHg7T/HoG3wOnpwddcvbFHudDioGLo0JnmzIxAAeBIQNQwzkiJPA131y6yobiK9siudb8v+2D9SpxKOjjg8Q+LgjmxOHQTVFTOD9L5ve210+Hj3vdZ9d+XvtHMVT3Hp2g8q5CM+s/F4u2mZd/Rg5r+p1aypTa1lJJ02zWNV6udoUa1wAY/ov9vUAAAA=
+      '12': H4sIAAAAAAAA/22Q3UrDQBCFJ/3RGKFoQS+8CuhtxJ+EJr2r5AEEsbdhs5k0S7K7YXdS7Dv6UG4RWrDeHBg435mZEwCM4TJnxNZorNAK4Prbh5Go4E4Khdywmpa9EVYy4+bCNsxUY5hyPSgCgKsAAq5lrxUqshcwO1KdNhg4y8iDM0GsExx8mBB+Edx+WqxC0mE/GN4wi6EglNbf5zoMJhvDdnDKzbQKqcHQotmiefzjD+DmuJ0PlrQsFJN4mjP92L9xwM/vF0+rfJX/m1C5cgKYvw+lS3gb2lbQmnUDumvnG1T9tl9aYrwtnMoeHrI0znCBafSavmRRnGAdlUnspHyO64phzKvEO6DSFbf7bdVzXcEPJ3hCe5EBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/1XPu07EMBAF0GEtpJVpAPEQPW0kS4A3bIn4AKptIz/Gu1bicWSP+Uo+igBFRH00c++VAAIu3g2bA5YaMwFcfW1hEz3cp0joigm899GkTH6wOXMVcO5yIwaAMwnS5TRnQuIq4W49QXInQ5x+QMDDCgENn7AMwUxTpOPyRQi4Wb2RLWjGP9r8o7lkRse/LZfaEm5Xc61yToNflki4/mh2iu6tjWPkg5ka1i1cHpHmz3kfGdPQ2rLwcae0et31Tx2GoLpnHXzXa+075V+0VWhV6O0SBd8S/hUPJgEAAA==
+      '1': H4sIAAAAAAAA/1WPsU7EMBBEh4uQTqY5EFBQXxuJIwGiKxEfQHVt5Kz3gpV4HSVrvpKPwtBE1E8z88YABa7erdoTz4uPAlx/b7HxDg/BC9Nsz3p03oYorh257730S4FLikkUwIWBoRimKCy6GNyvKRb6tKLhFxS4XUGSbmY75KZcsPmHpjkqk/6JZDODu5VRWjSG1mVZg5uP1I2e3tIweD3ZMfGyxa5nmb6mo1cObUr5xP5ATd1Q/Vg6brqy5vq1tM9UlVVFTMTu0Lw85Sn8APuGOh4JAQAA
+      '2': H4sIAAAAAAAA/1WPsU4DMRBEl5yQItMAAirKtCehEKK7lIgPoEp7Wq83iXXntXVe85V8FIbmRP00M28MQAM3H6h45Dn7KAB332tYeQfPwQvTjCc9OI8hihvowlnThMoNXFMsogBwZcBQDCkKi2YDT0uOhS4oGn5BAw8LKGJnxtHLuRas/qE0R2XSP5XqZuBxYVSyxjC4qmvg/rPYydN7GUevR5wK5zXcnlnSVzp45TCUUm9syHbIe7dtT7Tftbve9i3aN2y3hLZzL/1r5/o6BT9UO3mcCwEAAA==
+      '3': H4sIAAAAAAAA/03PTU7DMBAF4KEWUmU2gPjpAdhGIkpEoUvEAVh1G03sSTtKPA7OGIk7cihSNun603tPzwIYuPpAxT2liaMA3PyuYcUeNoGFXMJOd54xRPHNkYZAauDSxSwKABcWrIthjEKik4WHJUPijigaTmDgfoFE08gJ9X8MjIHHxfArY4Ndx8L6c+o3cLfomKKSW4JnlKVNhD3LYaYV2PNBlyeNofHzSQu3n7kd2L3nvmfd45BpWsP1gWT8HnesFJqc5/NPJW1LR64u0FeuqH2NxeszvhTbEmfpWl+9VfMU/AFEMGYzQQEAAA==
+
+  sailor:
+    display-name: '&#FAEDCB&lSAILOR &fKit'
+    cooldown: 86400
+    gui-slot: 11
+    unlocked-material: LIGHT_BLUE_CANDLE
+    unlocked-name: '&#FAEDCB&lSAILOR &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lSAILOR &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/03PPU4DMRCG4SEWUmQa/rkA7UqEZLMkJeIAqdKuJuNxYm08XvkHLsmhMDRL/eid0acBFFx9YMY9x+SCANx8z2HmDDx5J0wRbd4ahz6I6dNXiEbBJYUiGQAuNGgKfgzCkpOGxylhoRNK9r+g4G6CdMI4CqdUe6XgYRLrIveYRqa/2wruJytyiIyDk2OlGej/HZWUg+9NHaHhdlcOZ0fvZRhc3uO5cJrD9ZFl/By3LrPvS6njngnbrrVvttksqG1Wy27dbF4WtiF67Va8ZkRe1lfwA52YMAMhAQAA
+      '1': H4sIAAAAAAAA/03PsU7DMBSF4UOjoshIiCJAYmfN0KQtpCPiAZi6Rq59DVep7Si5RvCOPBRmSudfn3SOAgpcvWnRBxonjgFY/ZZYsMWj50Bm1E72lrWPwXYDm15/U4GliSkIgAsFZaIfYqAgk8LDjCiYTx3E/4cCqzm4OEoKlPWiwN0ZcI4NZ/aT0xIK93MzaZLoO5uHKty+p+OJzWvqe5aDPiWaStx8UBi+hj0L+S6lfOCJXnZ166yrtpt6V23q2lWte3ZVs163jT2a1rTbEtfnMLNLYRq7Jm/AH8Web2MeAQAA
+      '2': H4sIAAAAAAAA/1WPS07DMBCGp7WQKrPhUTgB20iQQut2iTgAq26jiT1pR6nHUWwjuGMPhbsKrD99/0MDKLj+wIR7GiMHAbg9L2DODh48C9kRu7RzjD6Ia/CbFFzZkCUBwEyDtsEPQUhS1PA4CST2iJL8BSi4n0A84jgIxVh8pWA5kSztSNizHAqa/0PUdWy5ZP5cLNB/p9kcU/CNKw803H3m9sT2Pfc9pz2eMsUF3BxIhq9hx4l8k3N59rRd05sxL23VrV1dvTraVNjauqprY83K0PMWV6UKfgGL8UaTHgEAAA==
+      '3': H4sIAAAAAAAA/0WOSwrCMBiExxZBIuID9ARuC9KHtC7FA7jqVpL0rwabpLSJvaSHsq66nW+GbxgQYnnjjpfU9coaYPtdIFAVVloZkh2v3UXYIcRcWm8cgBkDk1a31pBxPcNhKpKRL26c/oMQ6wm0dqBu3AZg2E+x9L2z+lGNfobd3YtGyat/v5UreeOpX2DzJNN+2otypB/ej7+OdSxEkp5ElCVxFaU1zyJxjnlUFKdcUpHEeS5GFX57hGzD3AAAAA==
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMAgwAAANwy4vjkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwCDAAAAB80F2PgAAAA==
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMAgwAAAFUbhRz8AAAA=
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwKDAAACcnsDNOAAAAA==
+      '12': H4sIAAAAAAAA/02OsW7CMBiEr0WtkLu0laqqO2skqAMFRtQH6MRq2Y4TLJLfVvybp+ShMGKg6313p08AE7z8atZ7NyYfCHg7T/HoG3wOnpwddcvbFHudDioGLo0JnmzIxAAeBIQNQwzkiJPA131y6yobiK9siudb8v+2D9SpxKOjjg8Q+LgjmxOHQTVFTOD9L5ve210+Hj3vdZ9d+XvtHMVT3Hp2g8q5CM+s/F4u2mZd/Rg5r+p1aypTa1lJJ02zWNV6udoUa1wAY/ov9vUAAAA=
+      '13': H4sIAAAAAAAA/22Q3UrDQBCFJ/3RGKFoQS+8CuhtxJ+EJr2r5AEEsbdhs5k0S7K7YXdS7Dv6UG4RWrDeHBg435mZEwCM4TJnxNZorNAK4Prbh5Go4E4Khdywmpa9EVYy4+bCNsxUY5hyPSgCgKsAAq5lrxUqshcwO1KdNhg4y8iDM0GsExx8mBB+Edx+WqxC0mE/GN4wi6EglNbf5zoMJhvDdnDKzbQKqcHQotmiefzjD+DmuJ0PlrQsFJN4mjP92L9xwM/vF0+rfJX/m1C5cgKYvw+lS3gb2lbQmnUDumvnG1T9tl9aYrwtnMoeHrI0znCBafSavmRRnGAdlUnspHyO64phzKvEO6DSFbf7bdVzXcEPJ3hCe5EBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/1XPu07EMBAF0GEtpJVpAPEQPW0kS4A3bIn4AKptIz/Gu1bicWSP+Uo+igBFRH00c++VAAIu3g2bA5YaMwFcfW1hEz3cp0joigm899GkTH6wOXMVcO5yIwaAMwnS5TRnQuIq4W49QXInQ5x+QMDDCgENn7AMwUxTpOPyRQi4Wb2RLWjGP9r8o7lkRse/LZfaEm5Xc61yToNflki4/mh2iu6tjWPkg5ka1i1cHpHmz3kfGdPQ2rLwcae0et31Tx2GoLpnHXzXa+075V+0VWhV6O0SBd8S/hUPJgEAAA==
+      '1': H4sIAAAAAAAA/1WPsU7EMBBEh4uQTqY5EFBQXxuJIwGiKxEfQHVt5Kz3gpV4HSVrvpKPwtBE1E8z88YABa7erdoTz4uPAlx/b7HxDg/BC9Nsz3p03oYorh257730S4FLikkUwIWBoRimKCy6GNyvKRb6tKLhFxS4XUGSbmY75KZcsPmHpjkqk/6JZDODu5VRWjSG1mVZg5uP1I2e3tIweD3ZMfGyxa5nmb6mo1cObUr5xP5ATd1Q/Vg6brqy5vq1tM9UlVVFTMTu0Lw85Sn8APuGOh4JAQAA
+      '2': H4sIAAAAAAAA/1WPsU4DMRBEl5yQItMAAirKtCehEKK7lIgPoEp7Wq83iXXntXVe85V8FIbmRP00M28MQAM3H6h45Dn7KAB332tYeQfPwQvTjCc9OI8hihvowlnThMoNXFMsogBwZcBQDCkKi2YDT0uOhS4oGn5BAw8LKGJnxtHLuRas/qE0R2XSP5XqZuBxYVSyxjC4qmvg/rPYydN7GUevR5wK5zXcnlnSVzp45TCUUm9syHbIe7dtT7Tftbve9i3aN2y3hLZzL/1r5/o6BT9UO3mcCwEAAA==
+      '3': H4sIAAAAAAAA/03PTU7DMBAF4KEWUmU2gPjpAdhGIkpEoUvEAVh1G03sSTtKPA7OGIk7cihSNun603tPzwIYuPpAxT2liaMA3PyuYcUeNoGFXMJOd54xRPHNkYZAauDSxSwKABcWrIthjEKik4WHJUPijigaTmDgfoFE08gJ9X8MjIHHxfArY4Ndx8L6c+o3cLfomKKSW4JnlKVNhD3LYaYV2PNBlyeNofHzSQu3n7kd2L3nvmfd45BpWsP1gWT8HnesFJqc5/NPJW1LR64u0FeuqH2NxeszvhTbEmfpWl+9VfMU/AFEMGYzQQEAAA==
+
+  pirate:
+    display-name: '&#FAEDCB&lPIRATE &fKit'
+    cooldown: 86400
+    gui-slot: 12
+    unlocked-material: BLUE_CANDLE
+    unlocked-name: '&#FAEDCB&lPIRATE &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lPIRATE &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/02Py07DMBBFhxikymxanj/ANlILeYguER/QVbfR2J60Vupx5Af8JB9FIhZhe4/uuboSQMDtJyY8UojWM8DmZwWFNfDsLJMO2Ke9seg8my5++2AE3GifOQHAlQSpvRs9E6co4WmpEOszcnIzELBZwJQYy6e5LeBxyXsbqMM4kp7NhYD7hcUzhpEpxolcC3hYSGYVCIc/YQHyv1HnmLzrzHROwt0hq4vVH3kYbDriJVNcwfpEPH6Ne5vIdTlPp1/qWrX41val2m3rslLqtXxXTVMSqi1VBtumqaYp+AUyV3PjOQEAAA==
+      '1': H4sIAAAAAAAA/03PQUvDMBjG8UeDWiKIExW871rIug3tjrIP4GnXkqZv5kuXpLSJ6Hf0QxlP3fnPD55HAgK3ex31gcaJgwcWvwUuucOLY09m1DbuOtYu+K4Z2PT6mwSuTEg+AriQkCa4IXjycZJ4nhF586l9dP9BYDEHG8aYPGUtBB7PgLVsOLOfnG4g8TQ3k6YYXNPloRIPH6k9sXlPfc/xoE+JpgL3R/LD17DjSK5JKR9YVrVa23WrStW9mXLzWrVlW1FVblda6doota1XBe7OYWbXkWlsNnkD/gAezKhQHgEAAA==
+      '2': H4sIAAAAAAAA/02Py07DMBBFhxqkymwory9gG4mS1n0sER/QVbeRa4/bUepxFNsI/pGPwlUXyfYenZl7JYCA+y+d9B77SIEBZn9TmJCFF0+MptcubS1pH9g2+gcF3JmQOQHAjQRpgu8CI6co4XUQkM1Jc/IXIGA2gJJY4uPFFvA8EpwjQ0X7LehWwNOA4kn3HWOMVzKSMh961O313gTkuLLJMQXf2LJMwuMuH85kPnPbUtrrc8Y4hYcjcvfdbSmhb3Iui99qh04tPzZVXRtVLRTaajNf1NVaqZVbmvd6tZ6XV/APJmgrlDYBAAA=
+      '3': H4sIAAAAAAAA/0WOSwrCMBiExxZBIuID9ARuC9KHtC7FA7jqVpL0rwabpLSJvaSHsq66nW+GbxgQYnnjjpfU9coaYPtdIFAVVloZkh2v3UXYIcRcWm8cgBkDk1a31pBxPcNhKpKRL26c/oMQ6wm0dqBu3AZg2E+x9L2z+lGNfobd3YtGyat/v5UreeOpX2DzJNN+2otypB/ej7+OdSxEkp5ElCVxFaU1zyJxjnlUFKdcUpHEeS5GFX57hGzD3AAAAA==
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMBgwAAAlSg8KzkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwKDAAADyxQepPgAAAA==
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMAgwQAAHcw4jz8AAAA=
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwKDAAABfOMZ0RAAAAA==
+      '12': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '13': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '14': H4sIAAAAAAAA/02OsW7CMBiEr0WtkLu0laqqO2skqAMFRtQH6MRq2Y4TLJLfVvybp+ShMGKg6313p08AE7z8atZ7NyYfCHg7T/HoG3wOnpwddcvbFHudDioGLo0JnmzIxAAeBIQNQwzkiJPA131y6yobiK9siudb8v+2D9SpxKOjjg8Q+LgjmxOHQTVFTOD9L5ve210+Hj3vdZ9d+XvtHMVT3Hp2g8q5CM+s/F4u2mZd/Rg5r+p1aypTa1lJJ02zWNV6udoUa1wAY/ov9vUAAAA=
+      '15': H4sIAAAAAAAA/02OsW7CMBiEr0WtkLu0laqqO2skqAMFRtQH6MRq2Y4TLJLfVvybp+ShMGKg6313p08AE7z8atZ7NyYfCHg7T/HoG3wOnpwddcvbFHudDioGLo0JnmzIxAAeBIQNQwzkiJPA131y6yobiK9siudb8v+2D9SpxKOjjg8Q+LgjmxOHQTVFTOD9L5ve210+Hj3vdZ9d+XvtHMVT3Hp2g8q5CM+s/F4u2mZd/Rg5r+p1aypTa1lJJ02zWNV6udoUa1wAY/ov9vUAAAA=
+      '16': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '17': H4sIAAAAAAAA/22Q3UrDQBCFJ/3RGKFgQS+8CuhtxJ+EJr2r5AEEsbdhs5k0S7K7YXdS7Dv6UN0itGC9OTBwvjMzJwAYw3XOiK3RWKEVwM2PDyNRwb0UCrlhNS17I6xkxs2FbZipxjDlelAEAGEAAdey1woV2SuYnahOGwycZeTBhSDWCQ4+TAi/Ce6+LFYh6bAfDG+YxVAQSusfch0Gk41hOzjnZlqF1GBo0WzRPP3xB3B72s4HS1oWikk8z5l+Ht444pcPi+dVvsr/TahcOQHMP4bSJbwPbStozboB3bXzDap+2y8tMd4WTmUPj1kaZ7jANHpLX7MoTrCOyiR2Ur7EdcUw5lXiHVHpitv9tuq5rmAPu/CGa5EBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/12Pu07DQBBFLzFI0dIQxEP0tJaiPMCkRHxAqrTWenacrOydtexZvpKPwiGFJbrRPTq6cw2Q4fbLqj1wP/gowOJnjpl3eA5emHpb6855G6K4sopRhww3FJMogCsDQzF0UVh0MHiaFBY6WdFwBhkWExgT5+V4tjO8THnNVk/cl7Vt2wu/zvAw8a6PyqR/L/5DSaqebXOxZjB4nBilQWMo3bjQ4H6fqtbTZ2oarwfbJh7muDuydN/dziuHMqVx+ev2bcPr96LIV1St8o0dr2K9rHL6WBfE9ZLclscq/AJrpFgaPgEAAA==
+      '1': H4sIAAAAAAAA/1WPvU7DMBSFDw1IlVkoAgZm1khAWmg6Ih6AqWvkn5tgJb6O4muekocihSFiPZ/OnwIKXL5r0Ueako8MbL7XWHmH++CZ7KRbOTivQ2TXDNR1nrtU4MLGzALgTEHZGMbIxJIU7hYXsf3ULOEECmwWMCtujjm5C9wsemYzke7/0OofGqcoZOV3IM6hcLswm5PE0Lj5hML1RzaDt2+5770c9ZAprXHVEY9f48ELhSbn+dxD7R5fzH77XFamonK72+1LXbu6rNvq1baVcdo9zVX4Aba9GhwhAQAA
+      '2': H4sIAAAAAAAA/1XPMU/DMBAF4EcDUmUWioCJkTVDSULkjogfwNQ1cuxLayU+R8mZX8mPIoUhYn2fnu6eAjLcfhgxR5pmHxnYfW+x8Q7PwTPZyXRycN6EyK6xZ5plHIxQhhsbEwuAKwVlYxgjE8us8LT2iO3ZsIQLZNitsCTO8+nSzvCw5onbiUz/R5t/NE5RyMrvi7iGwuNqNs0SQ+OWGQr3n6kdvH1Pfe/laIZE8xZ3J+Lxazx4odCktMx7qYvKVK+dzuva7vNSl3Vu6s7l+zdXlLpqq0Lr5RR+ACuZvtIjAQAA
+      '3': H4sIAAAAAAAA/1WQTU7DMBCFhxqkymwo4u8AbCORJoioS8QBWHUbTexJayUeB2eMxB05FClFCt2+T5/em9EACi7fUHBLcXSBAVbfS1g4Cw/eMZmIrWysQx/Y1nvqPYmCCxMSCwCcadAm+CEwsYwa7maH2OyRxR+AgtUMpsQ63h1sBbdzHmkcXET5HQFKwf3M8CNhjW3r2MnX0byZ6RCDkPkTz09Q4iYSdse+Bej/hSaNEnxtp+M1XL+npnfmNXWdky32icYlXO2Ih89h44R8ndL0lMfmuV1TU5QZvpRVVjbrKqsaY7I8p7Io7VNuC5qq4AdLqVETWQEAAA==
+
+  gunner:
+    display-name: '&#FAEDCB&lGUNNER &fKit'
+    cooldown: 86400
+    gui-slot: 14
+    unlocked-material: ORANGE_CANDLE
+    unlocked-name: '&#FAEDCB&lGUNNER &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lGUNNER &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/02Py07DMBBFh1iVKrNpefUH2EZqIQ/RJeIDWHUbje1Ja6UeR37AT/JRJGIRtvfonqsrAQTcfmDCE4VoPQNsf9ZQWAM7Z5l0wD4djUXn2XTx2wcjYKV95gQANxKk9m70TJyihKelQqwvyMnNQMB2AVNiLJ/ntoDHJe9toA7jSHo2FwLuFxYvGEamGCeyEvCwkMwqEA5/wgLkf6POMXnXmemchLvPrK5Wv+dhsOmE10xxDZsz8fg1Hm0i1+U8nX6ua9Xia9uX6rCvy0qpl/JNNU1JqPZUGWybppqm4BeU8F0XOQEAAA==
+      '1': H4sIAAAAAAAA/03PQUvDMBjG8UeDWiKIExW871rIug3tjrIP4GnXkqZv5kuXpLSJ6Hf0QxlP3fnPD55HAgK3ex31gcaJgwcWvwUuucOLY09m1DbuOtYu+K4Z2PT6mwSuTEg+AriQkCa4IXjycZJ4nhF586l9dP9BYDEHG8aYPGUtBB7PgLVsOLOfnG4g8TQ3k6YYXNPloRIPH6k9sXlPfc/xoE+JpgL3R/LD17DjSK5JKR9YVrVa23WrStW9mXLzWrVlW1FVblda6doota1XBe7OYWbXkWlsNnkD/gAezKhQHgEAAA==
+      '2': H4sIAAAAAAAA/1WPS24CMRBEOzhIyNmE/E6Q7UghhuGzRBwgK7YjY7ehNbg9GttRcsccKkZZDNnW0+uukgAC7nY66T32kQIDTH8mMCILz54YTa9d2ljSPrBt9BcKGJuQOQHAjQRpgu8CI6co4WUQkM1Jc/IXIGA6gJJY4uPFFvB0JThHhor2XdCtgMcBxZPuO8YYCxn/kzIfetTt370RyOvKJscUfGPLMgkPH/lwJrPNbUtpr88Z4wTuj8jdZ7ehhL7JuSx+VQ5dvXhfV0qZuprXaKv1bK6qVV0v3cK8qeVqVl7BL4DPBWA2AQAA
+      '3': H4sIAAAAAAAA/1WOSQrCMBiFn1ZBIuIAegK3BekgrUvxAK7cliT9q8EmKW2il/RQ1lVx+72RAQHmF+74jdpOWQOsPzOMVYmFVoZkyyt3EvYdYCqtNw7AiIFJqxtryLiOYTcYycgHN07/hADLQWjsm9o+O/mjVc01/RrBsB2w9J2zuij7Vwybqxe1kmf/fCp347WnbobVnUzzak7KkS6879/uq0iIODmIMI2jMkwqnobiGPEwzw+ZpDyOskz0U/gCqstfl/IAAAA=
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMDgwAAAY1EDBDkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwGDAAACj18XjPgAAAA==
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMDAwQAAbty0jzkAAAA=
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '12': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMBgwAAAt2Jl0j8AAAA=
+      '13': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '14': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '15': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '16': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '17': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '18': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '19': H4sIAAAAAAAA/02OzWoCMRSFT5UWiZtWKMW92wF/R+NS+gBduQ0xkxmDMzdhcuNT+lBGXNjVgXu+e/gEMMT4V7M+2j46T8DXbYSBq/DTObKm1zXvY2h1PKvgORNDvBufiAG8CQjju+DJEkeB6evlySrjiR/dCB/Py38mcu+pUTksNXyGwPerNCmy71SV1QQmf+nUOnNIl4vjo26TzYufjaVwDXvHtlMpZeWZLMvFZmHmxVbLXbHW801xklYW67JeldVyJZd1lb1xB0kx0nf3AAAA
+      '20': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '21': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '22': H4sIAAAAAAAA/22QT0vDQBDFJ/2jMULBgh48BfQaqZrQpLdKPoAg9ho2m0mzJLsbdifFfkc/lFuEFqyXBwPv92bmBQBjuM4ZsQ0aK7QCuPn2YSQquJdCITesplVvhJXMuLmwDTPVGKZcD4oAYBFAwLXstUJF9gpmJ6rTBgNnGXlwIYh1goMPE8IvgrtPi1VIOuwHwxtmMRSE0vqHXIfBZGvYHs65mVYhNRhaNDs0T3/8AdyetvPBkpaFYhLPc6YfhzeO+OXDcrHO1/m/CZUrJ4D5+1C6hLehbQVtWDegu3a+RdXv+pUlxtvCqezhMUvjDJeYRq/pSxbFCdZRmcROyue4rhjGvEq8IypdcfvfVj3XFfwAz4g6ZJEBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/12Py07DMBBFBwxSZTYU8RB7tpGqpoXQJeIDWHUb2eNJayUeR/GYr+SjSOnCErvRPTq6czWAgptPI2ZPU/KRAZY/C7j0Dp6CZ8LJdLJz3oTIrrUxSlJwjTGzAMCFBo0xjJGJJWl4LAoxHg1LOAEFywLmxHk+nGwFzyXvyMiRprYzw3DmVwruCx+nKITy9+I/lNlOZPqzpUDDQ2GYk8TQunmhhruvbAePH7nvvezNkCkt4PZAPH6POy8U2pzn5S/b1w3Vb01TrdGuq42Zr6Ze2Qrf6wapW6Hb0lwFv9NkEtw+AQAA
+      '1': H4sIAAAAAAAA/1WPu07DMBiFDxikyiwUAQMzayQgLTQdEQ/QqWvky59gJf4dxTZPyUPhwhCxnk/nJgGBqw+V1JHm6AID6+8Vzp3Fg3dMZlZd2lunfGDbjtT3jvsocGlC5gTgTEKa4KfAxClK3C8uYvOpOPkTEFgvoCi2xJzcAreLnlnPpIY/JP6haQ6JTPodiAtI3C3M5JiCb205IXFzyHp05j0Pg0tHNWaKK1z3xNPXtHeJfJtzOffY2KdXvdu8VLWuqdpst7tKNbapmq5+M12trbLPpQo/EBo06CEBAAA=
+      '2': H4sIAAAAAAAA/1XPMU/DMBAF4AcBqTILRcDUkTVDSUKUjogfwNQ1cuxLayU+W8mZX8mPIoUhYn2fnu6eAjLcfWjRR5pmFxjYfm9w7Sx23jGZSfdysE77wLY1Z5oljloow60JiQXAlYIywcfAxDIrPK89YnPWLP4CGbYrLIl1fLq0MzyueeJuIj38UfaP4hSEjPy+iBsoPK1m0izBt3aZofDwmbrRmfc0DE6Oekw0b3B/Io5f8eCEfJvSMu+lLipdvfZNXtdmn5dNWee67m2+f7NF2VRdVTTNcgo/jT6QJiMBAAA=
+      '3': H4sIAAAAAAAA/1WQTU7DMBCFBwxSZTYU8XcAtpFIE0TVJeIArLqNxvaktRKPgzNG4o4cipQiBbbv06f3ZjSAgotXFNxSGn1kgOXXAk69g/vgmWzCVjbOY4jsmj31gUTBuY2ZBQBONGgbwxCZWEYNt7NDbPfIEg5AwXIGU+I87w62gps5TzQOPqH8jACl4G5m+J6xwbb17OXzaF7PdEhRyP6KZ/9QZpMIu2OfAv230OZRYmjcdLyGq7dsem9fctd52WKfaVzA5Y54+Bg2Xig0OU9PeTBP7YpMVRf4XK+L2qzWxdpYW5Ql1VXtHktX0VQF3/NpG9VZAQAA
+
+  admiral:
+    display-name: '&#FAEDCB&lADMIRAL &fKit'
+    cooldown: 86400
+    gui-slot: 15
+    unlocked-material: RED_CANDLE
+    unlocked-name: '&#FAEDCB&lADMIRAL &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lADMIRAL &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/02Py07DMBBFh1iVKrNpefUH2EZqIQ/RJeIDWHUbje1Ja6UeR37AT/JRJGIRtvfonqsrAQTcfmDCE4VoPQNsf9ZQWAM7Z5l0wD4djUXn2XTx2wcjYKV95gQANxKk9m70TJyihKelQqwvyMnNQMB2AVNiLJ/ntoDHJe9toA7jSHo2FwLuFxYvGEamGCeyEvCwkMwqEA5/wgLkf6POMXnXmemchLvPrK5Wv+dhsOmE10xxDZsz8fg1Hm0i1+U8nX6ua9Xia9uX6rCvy0qpl/JNNU1JqPZUGWybppqm4BeU8F0XOQEAAA==
+      '1': H4sIAAAAAAAA/03PQUvDMBjG8UeDWiKIExW871rIug3tjrIP4GnXkqZv5kuXpLSJ6Hf0QxlP3fnPD55HAgK3ex31gcaJgwcWvwUuucOLY09m1DbuOtYu+K4Z2PT6mwSuTEg+AriQkCa4IXjycZJ4nhF586l9dP9BYDEHG8aYPGUtBB7PgLVsOLOfnG4g8TQ3k6YYXNPloRIPH6k9sXlPfc/xoE+JpgL3R/LD17DjSK5JKR9YVrVa23WrStW9mXLzWrVlW1FVblda6doota1XBe7OYWbXkWlsNnkD/gAezKhQHgEAAA==
+      '2': H4sIAAAAAAAA/1WPS24CMRBEOzhIyNmE/E6Q7UghhuGzRBwgK7YjY7ehNbg9GttRcsccKkZZDNnW0+uukgAC7nY66T32kQIDTH8mMCILz54YTa9d2ljSPrBt9BcKGJuQOQHAjQRpgu8CI6co4WUQkM1Jc/IXIGA6gJJY4uPFFvB0JThHhor2XdCtgMcBxZPuO8YYCxn/kzIfetTt370RyOvKJscUfGPLMgkPH/lwJrPNbUtpr88Z4wTuj8jdZ7ehhL7JuSx+VQ5dvXhfV0qZuprXaKv1bK6qVV0v3cK8qeVqVl7BL4DPBWA2AQAA
+      '3': H4sIAAAAAAAA/1WPzW7CMBCEp42QkBHqjyhPwDUSSqBKOFY8QE9c0drZgJV4HSV2eck+VJNT1Ot8M7szCkiwOlOgC/eD9QK8/S7xbCusnRU2PdXhpP0jwcL4KAHAk4Iy3nVeWMKgsJ2NLOZOEtwEErzMoPMP7sfs4p9at+R4uphgM6tRdM/UWLlhaqfwMTMTh+DdtRoLK7x/R91a8xWbxoYLtZGHJV5vLN1Pd7KB3TXGcciuzrTOD3udHvOsSg81HVP9mVFalvvCcJlnRaHHV/gDmfQv7g0BAAA=
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMDgwAAAY1EDBDkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwODAAABVrvrMPgAAAA==
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMAgwAAAN0SvDTkAAAA=
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '12': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '13': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMDgwAAAQRta/T8AAAA=
+      '14': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '15': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '16': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '17': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '18': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '19': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '20': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '21': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '22': H4sIAAAAAAAA/02OzWoCMRSFT5UWiZtWKMW92wF/R+NS+gBduQ0xkxmDMzdhcuNT+lBGXNjVgXu+e/gEMMT4V7M+2j46T8DXbYSBq/DTObKm1zXvY2h1PKvgORNDvBufiAG8CQjju+DJEkeB6evlySrjiR/dCB/Py38mcu+pUTksNXyGwPerNCmy71SV1QQmf+nUOnNIl4vjo26TzYufjaVwDXvHtlMpZeWZLMvFZmHmxVbLXbHW801xklYW67JeldVyJZd1lb1xB0kx0nf3AAAA
+      '23': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '24': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '25': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '26': H4sIAAAAAAAA/02OsW4CMRBEhyAi5DQBKULp054UdFwgVyI+IBWt5VsvxOLOts7rfGU+KkYUpJydt6OngCmeDkbMkcfkggcWv3M8OIvV4DzTaE7Sptib9K1jkEJMMaOQvQCYKCgKQwyevSSF1/vLjdUUvFy7OR5vl//MyY2sR04uifHEUHi5l5SThEHboqaw/Mpd72ifLxcnR9NnLovPZ/bxJ7ZOeNA5F+U3NmR4y1TVdW2rjX1vqpLXVfNpN/yxo467unjjD3ZQWpj3AAAA
+      '27': H4sIAAAAAAAA/02OwUoDMRRFrxalxI0WRNx3O1DaGUO6FD/AVbchffNGQ2eSMHnpV/pRRrqo23vPvRwFLPDw4cQdeM4+BuDpZ4lb3+Nl8oFpdoPscxpd/rYpSiUWuKNYggC4UVAUpxQDB8kKr9fJhbUUg/x1S9xfkv/M4Ge2M2efxQViKDxfSypZ4mT7qqaw+izH0dN7OZ28HNxYuD4+fnFI57T3wpMtpSqv+y23rWbdvGkzNK3pNo3RWjetNh3tdtT1Zlu98QsudEfF9wAAAA==
+      '28': H4sIAAAAAAAA/22QT0vDQBDFJ/2jMULBgh48BfQaqZrQpLdKPoAg9ho2m0mzJLsbdifFfkc/lFuEFqyXBwPv92bmBQBjuM4ZsQ0aK7QCuPn2YSQquJdCITesplVvhJXMuLmwDTPVGKZcD4oAYBFAwLXstUJF9gpmJ6rTBgNnGXlwIYh1goMPE8IvgrtPi1VIOuwHwxtmMRSE0vqHXIfBZGvYHs65mVYhNRhaNDs0T3/8AdyetvPBkpaFYhLPc6YfhzeO+OXDcrHO1/m/CZUrJ4D5+1C6hLehbQVtWDegu3a+RdXv+pUlxtvCqezhMUvjDJeYRq/pSxbFCdZRmcROyue4rhjGvEq8IypdcfvfVj3XFfwAz4g6ZJEBAAA=
+      '29': H4sIAAAAAAAA/0WOO27DMBBEJyECGHRjB4lPkFaFPzQUl0EO4MqtsSJXNiFxKYhkTplDRUYKtfNmME8DCstvynThMfkowPp3gWfvsApe2I7U5lO6e+6dwouNRTKAJw1tYxiisOSksZm7LPZOksMDKKxnMCXOy+2xVnib8yLNyNT9IwWN95nZknIMVzf5abyeS9N7+1W6zucL9YXTAqsby/AznHzmcC1l8v5oTe0+aWcqs21NdXC7Y1XX7b6imuy+cQ1tjZ2u8AcYPgkY/AAAAA==
+    armor:
+      '0': H4sIAAAAAAAA/12Py07DMBBFBwxSZTYU8RB7tpGqpoXQJeIDWHUb2eNJayUeR/GYr+SjSOnCErvRPTq6czWAgptPI2ZPU/KRAZY/C7j0Dp6CZ8LJdLJz3oTIrrUxSlJwjTGzAMCFBo0xjJGJJWl4LAoxHg1LOAEFywLmxHk+nGwFzyXvyMiRprYzw3DmVwruCx+nKITy9+I/lNlOZPqzpUDDQ2GYk8TQunmhhruvbAePH7nvvezNkCkt4PZAPH6POy8U2pzn5S/b1w3Vb01TrdGuq42Zr6Ze2Qrf6wapW6Hb0lwFv9NkEtw+AQAA
+      '1': H4sIAAAAAAAA/1WPu07DMBiFDxikyiwUAQMzayQgLTQdEQ/QqWvky59gJf4dxTZPyUPhwhCxnk/nJgGBqw+V1JHm6AID6+8Vzp3Fg3dMZlZd2lunfGDbjtT3jvsocGlC5gTgTEKa4KfAxClK3C8uYvOpOPkTEFgvoCi2xJzcAreLnlnPpIY/JP6haQ6JTPodiAtI3C3M5JiCb205IXFzyHp05j0Pg0tHNWaKK1z3xNPXtHeJfJtzOffY2KdXvdu8VLWuqdpst7tKNbapmq5+M12trbLPpQo/EBo06CEBAAA=
+      '2': H4sIAAAAAAAA/1XPMU/DMBAF4AcBqTILRcDUkTVDSUKUjogfwNQ1cuxLayU+W8mZX8mPIoUhYn2fnu6eAjLcfWjRR5pmFxjYfm9w7Sx23jGZSfdysE77wLY1Z5oljloow60JiQXAlYIywcfAxDIrPK89YnPWLP4CGbYrLIl1fLq0MzyueeJuIj38UfaP4hSEjPy+iBsoPK1m0izBt3aZofDwmbrRmfc0DE6Oekw0b3B/Io5f8eCEfJvSMu+lLipdvfZNXtdmn5dNWee67m2+f7NF2VRdVTTNcgo/jT6QJiMBAAA=
+      '3': H4sIAAAAAAAA/1WQTU7DMBCFBwxSZTYU8XcAtpFIE0TVJeIArLqNxvaktRKPgzNG4o4cipQiBbbv06f3ZjSAgotXFNxSGn1kgOXXAk69g/vgmWzCVjbOY4jsmj31gUTBuY2ZBQBONGgbwxCZWEYNt7NDbPfIEg5AwXIGU+I87w62gps5TzQOPqH8jACl4G5m+J6xwbb17OXzaF7PdEhRyP6KZ/9QZpMIu2OfAv230OZRYmjcdLyGq7dsem9fctd52WKfaVzA5Y54+Bg2Xig0OU9PeTBP7YpMVRf4XK+L2qzWxdpYW5Ql1VXtHktX0VQF3/NpG9VZAQAA
+
+  captain:
+    display-name: '&#FAEDCB&lCAPTAIN &fKit'
+    cooldown: 86400
+    gui-slot: 16
+    unlocked-material: BLACK_CANDLE
+    unlocked-name: '&#FAEDCB&lCAPTAIN &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lCAPTAIN &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/02Py07DMBBFh1iVKrNpefUH2EZqIQ/RJeIDWHUbje1Ja6UeR37AT/JRJGIRtvfonqsrAQTcfmDCE4VoPQNsf9ZQWAM7Z5l0wD4djUXn2XTx2wcjYKV95gQANxKk9m70TJyihKelQqwvyMnNQMB2AVNiLJ/ntoDHJe9toA7jSHo2FwLuFxYvGEamGCeyEvCwkMwqEA5/wgLkf6POMXnXmemchLvPrK5Wv+dhsOmE10xxDZsz8fg1Hm0i1+U8nX6ua9Xia9uX6rCvy0qpl/JNNU1JqPZUGWybppqm4BeU8F0XOQEAAA==
+      '1': H4sIAAAAAAAA/03PwUoDMRSF4aNBGSKIFRXcux1o7USnXUofwFW3Q5rc6GWaZJhJRN/RhzKupuufD86RgMDVTie9p3HiGIDFb4Vztnj0HMiM2qWtZe1jsN3AptffJHBhYg4JwJmENNEPMVBIk8TDjCiYTx2S/w8Cizm4OKYcqGghcHcCnGPDhf2UVEHifm4mTyn6zpahErfv+XBk85b7ntNeHzNNFW4+KAxfw5YT+S7ncuDJtXb12ra6Vkqt62ajqD6sGlWbzYui5/Vy2Ta6wvUpLOwyMY2dKhvwB7vwzhEeAQAA
+      '2': H4sIAAAAAAAA/1WPS24CMRBEOzhIyNmE/E6Q7UghhuGzRBwgK7YjY7ehNbg9GttRcsccKkZZDNnW0+uukgAC7nY66T32kQIDTH8mMCILz54YTa9d2ljSPrBt9BcKGJuQOQHAjQRpgu8CI6co4WUQkM1Jc/IXIGA6gJJY4uPFFvB0JThHhor2XdCtgMcBxZPuO8YYCxn/kzIfetTt370RyOvKJscUfGPLMgkPH/lwJrPNbUtpr88Z4wTuj8jdZ7ehhL7JuSx+VQ5dvXhfV0qZuprXaKv1bK6qVV0v3cK8qeVqVl7BL4DPBWA2AQAA
+      '3': H4sIAAAAAAAA/1WPzW7CMBCEp42QkBHqjyhPwDUSSqBKOFY8QE9c0drZgJV4HSV2eck+VJNT1Ot8M7szCkiwOlOgC/eD9QK8/S7xbCusnRU2PdXhpP0jwcL4KAHAk4Iy3nVeWMKgsJ2NLOZOEtwEErzMoPMP7sfs4p9at+R4uphgM6tRdM/UWLlhaqfwMTMTh+DdtRoLK7x/R91a8xWbxoYLtZGHJV5vLN1Pd7KB3TXGcciuzrTOD3udHvOsSg81HVP9mVFalvvCcJlnRaHHV/gDmfQv7g0BAAA=
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMDgwAAAY1EDBDkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMCgwAAAxDr+YTkAAAA=
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwODAAABVrvrMPgAAAA==
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwKDAAADyxQepPgAAAA==
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMAgwAAAN0SvDTkAAAA=
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMAgwAAAN0SvDTkAAAA=
+      '12': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '13': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '14': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '15': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '16': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '17': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '18': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '19': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMDgwAAAQRta/T8AAAA=
+      '20': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '21': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '22': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '23': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '24': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '25': H4sIAAAAAAAA/02OzWoCMRSFT5UWiZtWKMW92wF/R+NS+gBduQ0xkxmDMzdhcuNT+lBGXNjVgXu+e/gEMMT4V7M+2j46T8DXbYSBq/DTObKm1zXvY2h1PKvgORNDvBufiAG8CQjju+DJEkeB6evlySrjiR/dCB/Py38mcu+pUTksNXyGwPerNCmy71SV1QQmf+nUOnNIl4vjo26TzYufjaVwDXvHtlMpZeWZLMvFZmHmxVbLXbHW801xklYW67JeldVyJZd1lb1xB0kx0nf3AAAA
+      '26': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '27': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '28': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '29': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '30': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '31': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '32': H4sIAAAAAAAA/0WOO27DMBBEJyECGHRjB4lPkFaFPzQUl0EO4MqtsSJXNiFxKYhkTplDRUYKtfNmME8DCstvynThMfkowPp3gWfvsApe2I7U5lO6e+6dwouNRTKAJw1tYxiisOSksZm7LPZOksMDKKxnMCXOy+2xVnib8yLNyNT9IwWN95nZknIMVzf5abyeS9N7+1W6zucL9YXTAqsby/AznHzmcC1l8v5oTe0+aWcqs21NdXC7Y1XX7b6imuy+cQ1tjZ2u8AcYPgkY/AAAAA==
+      '33': H4sIAAAAAAAA/22Q3UrDQBCFJ/3RGKFgQS+8CuhtxJ+EJr2ykgcQxN6GzWbSLMnuht1Jse/oQ7lFaMF6c2DgfGdmTgAwhsucEVujsUIrgKtvH0aiglspFHLDalr2RljJjJsL2zBTjWHK9aAIAF4DCLiWvVaoyF7A7Eh12mDgLCMPzgSxTnDwYUL4RXDzabEKSYf9YHjDLIaCUFp/n+swmGwM28EpN9MqpAZDi2aL5uGPP4Dr43Y+WNKyUEziac70Y//GAT+/Wzyu8lX+b0Llyglg/j6ULuFtaFtBa9YN6K6db1D1235pifG2cCp7uM/SOMMFptFL+pxFcYJ1VCaxk/IpriuGMa8S74BKV9zut1XPdQU/g+EPSpEBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/1WQzU7DMBCEF1ykylxaxI+4c41UNS2EHhEP0FOvkbPeNFZiO7LXPCUPhUMPgdtqPs3uzEoAAbefitWJQjTeAay/l3BtNDxZ4wiDavmgjbLe6brxnqOAG/TJMQBcSZDo7egdOY4SHmcLOeyUYzsBAesZZEUbd57cAp5nvSXFHYW6VcNw4QsB9zMfg2dC/o04ob/xaOSujhyMppCp+GdMrgmk+stOARIeZoYpsre1zv0l3B1TMxj8SH1v+KSGRHEJqzO58Ws8GCZbp5T/8rJ/3VH5VlXFFpttsVN5qspNU+B7WSG1G9R7yqfgB70FFyxcAQAA
+      '1': H4sIAAAAAAAA/1XPsU7DMBAG4B8MUmUWioCBmTUSkBaajogH6NQ1cmwnWInPUXyGl+ShcGAIrPfpv7tfAgIXb4rV0U7RBQLWXyucOoM778jqSbW8N075QKYebNc56qLAuQ6JGMCJhNTBj4EscZS4XVKW9Lsi9jMIrBfIE5PXzGmB62U+ToGt5p8vcPaPEjWTVf1vSgjcLBQ/Xct1pMyzQf5FnSIHX5tcUOLqkJrB6dfU946Pakg2rnDZWRo/xr1j6+uUcvH7yjw8N7vNU1E2pS022+2uUJWpiqotX3RbNkaZx3wK3/NnS1k9AQAA
+      '2': H4sIAAAAAAAA/1XPMU/DMBAF4AcBqTILRcDUkTVDSUKUjogfwNQ1cuxLayU+W8mZX8mPIoUhYn2fnu6eAjLcfWjRR5pmFxjYfm9w7Sx23jGZSfdysE77wLY1Z5oljloow60JiQXAlYIywcfAxDIrPK89YnPWLP4CGbYrLIl1fLq0MzyueeJuIj38UfaP4hSEjPy+iBsoPK1m0izBt3aZofDwmbrRmfc0DE6Oekw0b3B/Io5f8eCEfJvSMu+lLipdvfZNXtdmn5dNWee67m2+f7NF2VRdVTTNcgo/jT6QJiMBAAA=
+      '3': H4sIAAAAAAAA/1WQTU7DMBCFBwxSZTYU8XcAtpFIE0TVJeIArLqNxvaktRKPgzNG4o4cipQiBbbv06f3ZjSAgotXFNxSGn1kgOXXAk69g/vgmWzCVjbOY4jsmj31gUTBuY2ZBQBONGgbwxCZWEYNt7NDbPfIEg5AwXIGU+I87w62gps5TzQOPqH8jACl4G5m+J6xwbb17OXzaF7PdEhRyP6KZ/9QZpMIu2OfAv230OZRYmjcdLyGq7dsem9fctd52WKfaVzA5Y54+Bg2Xig0OU9PeTBP7YpMVRf4XK+L2qzWxdpYW5Ql1VXtHktX0VQF3/NpG9VZAQAA
+
+  captain+:
+    display-name: '&#FAEDCB&lCAPTAIN+ &fKit'
+    cooldown: 86400
+    gui-slot: 22
+    unlocked-material: YELLOW_CANDLE
+    unlocked-name: '&#FAEDCB&lCAPTAIN+ &fKit'
+    unlocked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&aᴀᴠᴀɪʟᴀʙʟᴇ ᴛᴏ ᴄʟᴀɪᴍ'
+    cooldown-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&7Claimable in:'
+      - '&8» &f%cooldown%'
+    locked-material: BARRIER
+    locked-name: '&#FAEDCB&lCAPTAIN+ &fKit &7(ʟᴏᴄᴋᴇᴅ)'
+    locked-lore:
+      - '&7&m                       '
+      - '&8» &fLeft click to claim.'
+      - '&8» &fRight click to view kit contents.'
+      - '&7&m                       '
+      - '&fAvailable @ &#FAEDCBstore.valoricmc.net'
+    offhand: ''
+    contents:
+      '0': H4sIAAAAAAAA/02QvW7CQBCEJ5yQkNOE/Cp9WktAjCCUUR4gFa113K3tk/He6X7CS+ahclYKU2wzn2ZGswUgcPslozySD8YysPxdYGY0XgfDpLxs4oEpduRNpDpcrNcCc2UTRwA3BQplB2eZOIYCz5OJWHWS4zACgeUEsqINt6Nb4GnSG+OplsGRGpNnAg8TC530jimETOYCjxNJfPIk+/9AIfByZboQuQxq0i2NFMV1n0oh2qHWeXyB++90Ohv1mfrexKM8JwoL3LXE7scd8vKhTik/5W2zrtaratOUu53alpWWuvxY6aZ83zd7Urt8apur8AciMmSzWQEAAA==
+      '1': H4sIAAAAAAAA/03PwUoDMRSF4aNBGSKIFRXcux1o7USnXUofwFW3Q5rc6GWaZJhJRN/RhzKupuufD86RgMDVTie9p3HiGIDFb4Vztnj0HMiM2qWtZe1jsN3AptffJHBhYg4JwJmENNEPMVBIk8TDjCiYTx2S/w8Cizm4OKYcqGghcHcCnGPDhf2UVEHifm4mTyn6zpahErfv+XBk85b7ntNeHzNNFW4+KAxfw5YT+S7ncuDJtXb12ra6Vkqt62ajqD6sGlWbzYui5/Vy2Ta6wvUpLOwyMY2dKhvwB7vwzhEeAQAA
+      '2': H4sIAAAAAAAA/1WPS24CMRBEOzhIyNmE/E6Q7UghhuGzRBwgK7YjY7ehNbg9GttRcsccKkZZDNnW0+uukgAC7nY66T32kQIDTH8mMCILz54YTa9d2ljSPrBt9BcKGJuQOQHAjQRpgu8CI6co4WUQkM1Jc/IXIGA6gJJY4uPFFvB0JThHhor2XdCtgMcBxZPuO8YYCxn/kzIfetTt370RyOvKJscUfGPLMgkPH/lwJrPNbUtpr88Z4wTuj8jdZ7ehhL7JuSx+VQ5dvXhfV0qZuprXaKv1bK6qVV0v3cK8qeVqVl7BL4DPBWA2AQAA
+      '3': H4sIAAAAAAAA/1WPzW7CMBCEp42QkBHqjyhPwDUSSqBKOFY8QE9c0drZgJV4HSV2eck+VJNT1Ot8M7szCkiwOlOgC/eD9QK8/S7xbCusnRU2PdXhpP0jwcL4KAHAk4Iy3nVeWMKgsJ2NLOZOEtwEErzMoPMP7sfs4p9at+R4uphgM6tRdM/UWLlhaqfwMTMTh+DdtRoLK7x/R91a8xWbxoYLtZGHJV5vLN1Pd7KB3TXGcciuzrTOD3udHvOsSg81HVP9mVFalvvCcJlnRaHHV/gDmfQv7g0BAAA=
+      '4': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMDgwAAAY1EDBDkAAAA=
+      '5': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilZyfVJ6axMzAmpxfmlfCwMDgwAAAY1EDBDkAAAA=
+      '6': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwODAAABVrvrMPgAAAA==
+      '7': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZiVZ6ZlxKfnJFYlJ7KzMCanF+aV8LAwODAAABVrvrMPgAAAA==
+      '8': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '9': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZiVZ5YkloUn1SanJ1awszAmpxfmlfCwMDAyAAAY5K81z8AAAA=
+      '10': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMAgwAAAN0SvDTkAAAA=
+      '11': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCQm5mXmlyUmFZilVSanJ1awszAmpxfmlfCwMAgwAAAN0SvDTkAAAA=
+      '12': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '13': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '14': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '15': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCam5mXmlyUmFZilZqXkloUX5CaWJTDzMCanF+aV8LAwCDAAABvPmWLPgAAAA==
+      '16': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '17': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '18': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCdm5mXmlyUmFZilVpRkFqUmZqXnBqflF9SkpPKzMCanF+aV8LAwODAAAD4UzsRRAAAAA==
+      '19': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMDgwAAAQRta/T8AAAA=
+      '20': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCWm5mXmlyUmFZilZ6fk5KaF59YUJCTyszAmpxfmlfCwMCgwAAA5nCnmD8AAAA=
+      '21': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '22': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '23': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwsCfm5mXmlyUmFZilVhUlF/OzMCanF+aV8LAwODAAAA79T2oOAAAAA==
+      '24': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '25': H4sIAAAAAAAA/02OzWoCMRSFT5UWiZtWKMW92wF/R+NS+gBduQ0xkxmDMzdhcuNT+lBGXNjVgXu+e/gEMMT4V7M+2j46T8DXbYSBq/DTObKm1zXvY2h1PKvgORNDvBufiAG8CQjju+DJEkeB6evlySrjiR/dCB/Py38mcu+pUTksNXyGwPerNCmy71SV1QQmf+nUOnNIl4vjo26TzYufjaVwDXvHtlMpZeWZLMvFZmHmxVbLXbHW801xklYW67JeldVyJZd1lb1xB0kx0nf3AAAA
+      '26': H4sIAAAAAAAA/02OwWoCMRRFrxWLpBsVSune7YDTERWXpR/QlduQeSZjcOYlTF78yn5UU1zY1YV3z7scBUzx8mXEnOyYfGBg+TPHkz/jbfBsaTROjin2Jl10DFKIKWYUMguAiYKiMMTAliUpvD9e7qymwPLXzfF8v/xnkoyBO13CcicXKLw+SspJwqDPRU1h9Z3b3tNnvl69nEyfbVlcdJbjLR692EHnXJTXjTsQ1ZuPirbOVFt32FWto6baO2fqmppdu98Ub/wCBivY6vcAAAA=
+      '27': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '28': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '29': H4sIAAAAAAAA/0WOwW7CMBBEp6BWyL20lSrovddIoS0JcER8ACeulmM21CJZW3gNP9mPqhGHXGfejJ4CxnjeGjF7OkfnGXj9m2DkDpj2jsmeTSvrGDoTf3XwkokxHq1PLAAeFJT1ffBMLFHhY5jcWW09y62b4OmeYDYwneejjlfXClOMUHgfOpui+F4fspnC2y41nbObdDo52ZsuUT58ORKHS1g7oV6nlI0/6xXV8y9aFfNFRcUPlU1hqrIujK2a5cKWbfm9zNr4B1RC1pv2AAAA
+      '30': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '31': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '32': H4sIAAAAAAAA/0WOsU4DMRBEByJQZBpAQogmFe0Vp+QESYn4AKq01npvL1i5s63zmq/kozBKce3Mm9EzwAp3n6R0lDn7GICH3zWufY/nyQfhmQY95DRS/rYpaiVWuOFYggK4MjAcpxSDBM0GL8vkwlqOQf+7NW4vCTYLM8ZwsoOfxc6SfVYKLDB4WgguWeNk++pn8PhV3Oj5o5zPXo80Fqm39ycJ6ScdvMpkS6nery3zIG3XN9TtXLMjemv2resat+We37citHdVHn8aC7on/AAAAA==
+      '33': H4sIAAAAAAAA/0WOO27DMBBEJyECGHRjB4lPkFaFPzQUl0EO4MqtsSJXNiFxKYhkTplDRUYKtfNmME8DCstvynThMfkowPp3gWfvsApe2I7U5lO6e+6dwouNRTKAJw1tYxiisOSksZm7LPZOksMDKKxnMCXOy+2xVnib8yLNyNT9IwWN95nZknIMVzf5abyeS9N7+1W6zucL9YXTAqsby/AznHzmcC1l8v5oTe0+aWcqs21NdXC7Y1XX7b6imuy+cQ1tjZ2u8AcYPgkY/AAAAA==
+      '34': H4sIAAAAAAAA/+NiYGBm4HZJLEkMSy0qzszPY2AQPMPBwJSZwiCVm5mXmlyUmFZiVZJfkpobn58WX5qXUpmZl87MwJqcX5pXwsDAwMgAAAsTgtFDAAAA
+      '35': H4sIAAAAAAAA/22Q3UrDQBCFJ/3RGKFgQS+8CuhtxJ+EJr2ykgcQxN6GzWbSLMnuht1Jse/oQ7lFaMF6c2DgfGdmTgAwhsucEVujsUIrgKtvH0aiglspFHLDalr2RljJjJsL2zBTjWHK9aAIAF4DCLiWvVaoyF7A7Eh12mDgLCMPzgSxTnDwYUL4RXDzabEKSYf9YHjDLIaCUFp/n+swmGwM28EpN9MqpAZDi2aL5uGPP4Dr43Y+WNKyUEziac70Y//GAT+/Wzyu8lX+b0Llyglg/j6ULuFtaFtBa9YN6K6db1D1235pifG2cCp7uM/SOMMFptFL+pxFcYJ1VCaxk/IpriuGMa8S74BKV9zut1XPdQU/g+EPSpEBAAA=
+    armor:
+      '0': H4sIAAAAAAAA/1WQzU7DMBCEF1ykylxaxI+4c41UNS2EHhEP0FOvkbPeNFZiO7LXPCUPhUMPgdtqPs3uzEoAAbefitWJQjTeAay/l3BtNDxZ4wiDavmgjbLe6brxnqOAG/TJMQBcSZDo7egdOY4SHmcLOeyUYzsBAesZZEUbd57cAp5nvSXFHYW6VcNw4QsB9zMfg2dC/o04ob/xaOSujhyMppCp+GdMrgmk+stOARIeZoYpsre1zv0l3B1TMxj8SH1v+KSGRHEJqzO58Ws8GCZbp5T/8rJ/3VH5VlXFFpttsVN5qspNU+B7WSG1G9R7yqfgB70FFyxcAQAA
+      '1': H4sIAAAAAAAA/1XPsU7DMBAG4B8MUmUWioCBmTUSkBaajogH6NQ1cmwnWInPUXyGl+ShcGAIrPfpv7tfAgIXb4rV0U7RBQLWXyucOoM778jqSbW8N075QKYebNc56qLAuQ6JGMCJhNTBj4EscZS4XVKW9Lsi9jMIrBfIE5PXzGmB62U+ToGt5p8vcPaPEjWTVf1vSgjcLBQ/Xct1pMyzQf5FnSIHX5tcUOLqkJrB6dfU946Pakg2rnDZWRo/xr1j6+uUcvH7yjw8N7vNU1E2pS022+2uUJWpiqotX3RbNkaZx3wK3/NnS1k9AQAA
+      '2': H4sIAAAAAAAA/1XPMU/DMBAF4AcBqTILRcDUkTVDSUKUjogfwNQ1cuxLayU+W8mZX8mPIoUhYn2fnu6eAjLcfWjRR5pmFxjYfm9w7Sx23jGZSfdysE77wLY1Z5oljloow60JiQXAlYIywcfAxDIrPK89YnPWLP4CGbYrLIl1fLq0MzyueeJuIj38UfaP4hSEjPy+iBsoPK1m0izBt3aZofDwmbrRmfc0DE6Oekw0b3B/Io5f8eCEfJvSMu+lLipdvfZNXtdmn5dNWee67m2+f7NF2VRdVTTNcgo/jT6QJiMBAAA=
+      '3': H4sIAAAAAAAA/1WQTU7DMBCFBwxSZTYU8XcAtpFIE0TVJeIArLqNxvaktRKPgzNG4o4cipQiBbbv06f3ZjSAgotXFNxSGn1kgOXXAk69g/vgmWzCVjbOY4jsmj31gUTBuY2ZBQBONGgbwxCZWEYNt7NDbPfIEg5AwXIGU+I87w62gps5TzQOPqH8jACl4G5m+J6xwbb17OXzaF7PdEhRyP6KZ/9QZpMIu2OfAv230OZRYmjcdLyGq7dsem9fctd52WKfaVzA5Y54+Bg2Xig0OU9PeTBP7YpMVRf4XK+L2qzWxdpYW5Ql1VXtHktX0VQF3/NpG9VZAQAA

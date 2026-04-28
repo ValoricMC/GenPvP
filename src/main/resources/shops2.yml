@@ -1,0 +1,478 @@
+default-shop: books
+
+rarities:
+  COMMON:    "&f"
+  UNCOMMON:  "&a"
+  RARE:      "&#81C7FF"
+  EPIC:      "&5"
+  LEGENDARY: "&6"
+
+shops:
+
+  # enchant books - shop
+  books:
+    title: "Books Shop"
+    currency: money
+    currency-label: "Money"
+    items:
+      - slot: 10
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFUnbreaking 3"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "unbreaking:3"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 11
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFMending 1"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "mending:1"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 12
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFSharpness 5"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "sharpness:5"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 13
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFFire Aspect 2"
+        rarity: RARE
+        price: 8
+        enchants:
+          - "fire_aspect:2"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 14
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFSweaping Edge 3"
+        rarity: RARE
+        price: 8
+        enchants:
+          - "sweaping_edge:1"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 15
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFEfficency 5"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "efficency:5"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 16
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFFortune 3"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "fortune:3"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 19
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFProtection 4"
+        rarity: RARE
+        price: 16
+        enchants:
+          - "protection:4"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 20
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFSwift Sneak 3"
+        rarity: RARE
+        price: 8
+        enchants:
+          - "swift_sneak:3"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 21
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFFeather Falling 4"
+        rarity: RARE
+        price: 10
+        enchants:
+          - "feather_falling:4"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 22
+        material: ENCHANTED_BOOK
+        name: "&#81C7FFEnchanted Book"
+        subtitle: "#4B58FFDepth Strider 3"
+        rarity: RARE
+        price: 10
+        enchants:
+          - "depth_strider:4"
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+
+  shulkers:
+    title: "Shulker Box Shop"
+    currency: money
+    currency-label: "Money"
+    items:
+      - slot: 10
+        material: SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFReguler"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 11
+        material: LIGHT_GRAY_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFLight Gray"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 12
+        material: GRAY_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFGray"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 13
+        material: BLACK_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFBlack"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 14
+        material: YELLOW_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFYellow"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 15
+        material: ORANGE_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFOrange"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 16
+        material: RED_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFRed"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 19
+        material: LIGHT_BLUE_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFLight Blue"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 20
+        material: CYAN_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFCyan"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 21
+        material: GREEN_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFGreen"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 22
+        material: LIME_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFLime"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 23
+        material: PINK_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFPink"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 24
+        material: MAGENTA_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFMagenta"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 25
+        material: PURPLE_SHULKER_BOX
+        name: "Shulker Box"
+        subtitle: "&#81C7FFPurple"
+        rarity: RARE
+        price: 15
+        lore:
+          - "&d%subtitle%"
+          - ""
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+  # armor trims
+  trims:
+    title: "Armor Trims Shop"
+    currency: money
+    currency-label: "Money"
+    items:
+      - slot: 11
+        material: COAST_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Coast Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 12
+        material: DUNE_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Dune Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 13
+        material: WILD_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Wild Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 14
+        material: TIDE_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Tide Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 15
+        material: RAISER_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Raiser Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 16
+        material: SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE
+        name: "Silence Trim"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
+      - slot: 10
+        material: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+        name: "Upgrade Template"
+        rarity: RARE
+        price: 32
+        lore:
+          - "%rarity_color%&l%rarity%"
+          - ""
+          - "&7Cost:"
+          - "&7 - %price% &#5FE2C5%currency%"
+
