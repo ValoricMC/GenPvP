@@ -271,8 +271,20 @@ public class ProtectListener implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) return;
         Player player = event.getPlayer();
         if (protectCommand.isBypassing(player)) return;
+
         if (regionManager.anyDenies(event.getFrom(), RegionRule.ALLOW_PEARL)) {
             event.setCancelled(true);
+            if (regionManager.insideType(event.getFrom(), RegionType.PIT)) {
+                player.sendMessage("§cYou cannot ender pearl out of the PIT!");
+            }
+            return;
+        }
+
+        if (regionManager.anyDenies(event.getTo(), RegionRule.ALLOW_PEARL)) {
+            event.setCancelled(true);
+            if (regionManager.insideType(event.getTo(), RegionType.SPAWN)) {
+                player.sendMessage("§cYou cannot ender pearl into Spawn!");
+            }
         }
     }
 

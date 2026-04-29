@@ -3,11 +3,17 @@ package me.revqz.genPvP.util;
 import me.revqz.genPvP.GenPvP;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +46,36 @@ public class WelcomeMessageListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PlayerJoinEvent event) {
-        if (!enabled) return;
         Player player = event.getPlayer();
+        boolean firstJoin = !player.hasPlayedBefore();
+
+        if (firstJoin) {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (!player.isOnline()) return;
+                spawnFirstJoinRocket(player);
+            }, 5L);
+        }
+
+        if (!enabled) return;
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
             send(player);
         }, delayTicks);
+    }
+
+    private void spawnFirstJoinRocket(Player player) {
+        Location headLoc = player.getEyeLocation();
+        Firework fw = (Firework) headLoc.getWorld().spawnEntity(headLoc, EntityType.FIREWORK_ROCKET);
+        FireworkMeta meta = fw.getFireworkMeta();
+        meta.addEffect(FireworkEffect.builder()
+                .with(FireworkEffect.Type.BALL_LARGE)
+                .withColor(Color.YELLOW, Color.ORANGE)
+                .withFade(Color.WHITE)
+                .withTrail()
+                .withFlicker()
+                .build());
+        meta.setPower(1);
+        fw.setFireworkMeta(meta);
     }
 
     private void send(Player player) {

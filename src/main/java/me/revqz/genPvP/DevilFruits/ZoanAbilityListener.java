@@ -209,34 +209,63 @@ public class ZoanAbilityListener implements Listener {
         UUID uuid        = shooter.getUniqueId();
         int  webDuration = cfg("kumo_kumo_tarantula", "web-duration-seconds", 3) * 20;
 
-        // Place webs on the open face of the hit block, not inside the solid block itself
-        Location center;
+        // Resolve placement centre — use the open face adjacent to the hit block,
+        // not the solid block itself. Fall back to the snowball's world position.
+        final Location center;
         if (event.getHitBlock() != null && event.getHitBlockFace() != null) {
             center = event.getHitBlock().getRelative(event.getHitBlockFace()).getLocation();
         } else {
-            center = shot.getLocation();
+            center = shot.getLocation().getBlock().getLocation();
         }
 
-        List<Block> placed = new ArrayList<>();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                Block block = center.clone().add(dx, 0, dz).getBlock();
-                if (block.getType() == Material.AIR) {
-                    block.setType(Material.COBWEB);
-                    placed.add(block);
-                }
-            }
-        }
-        if (!placed.isEmpty()) webBlocks.put(uuid, placed);
-
-        center.getWorld().playSound(center, Sound.ENTITY_SPIDER_STEP, 1f, 0.6f);
+        // Impact burst
+        center.getWorld().playSound(center, Sound.ENTITY_SPIDER_AMBIENT, 1f, 0.8f);
         center.getWorld().spawnParticle(Particle.CLOUD, center.clone().add(0.5, 0.5, 0.5),
-                18, 0.9, 0.3, 0.9, 0.02);
+                12, 0.6, 0.2, 0.6, 0.03);
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            List<Block> webs = webBlocks.remove(uuid);
-            if (webs != null) webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
-        }, webDuration);
+        // Animate the 3×3 grid row by row (dz = -1 → 0 → +1), 2 ticks per row.
+        // Using isAir() instead of == AIR to handle CAVE_AIR and VOID_AIR correctly.
+        final List<Block> allPlaced = new ArrayList<>();
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int row = 0; // 0 = dz-1, 1 = dz+0, 2 = dz+1
+
+            @Override
+            public void run() {
+                int dz = row - 1;
+                for (int dx = -1; dx <= 1; dx++) {
+                    Block block = center.clone().add(dx, 0, dz).getBlock();
+                    if (block.getType().isAir()) {
+                        block.setType(Material.COBWEB);
+                        allPlaced.add(block);
+                        // Small puff at each freshly placed web
+                        block.getWorld().spawnParticle(Particle.CLOUD,
+                                block.getLocation().add(0.5, 0.5, 0.5),
+                                4, 0.15, 0.15, 0.15, 0.01);
+                    }
+                }
+                // Pitch rises slightly each row for a crisp "thwick thwick thwick" feel
+                center.getWorld().playSound(center, Sound.ENTITY_SPIDER_STEP,
+                        0.9f, 0.65f + row * 0.2f);
+
+                row++;
+                if (row < 3) return;
+
+                // All rows placed — register and schedule dissolution
+                cancel();
+                if (!allPlaced.isEmpty()) webBlocks.put(uuid, allPlaced);
+
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    List<Block> webs = webBlocks.remove(uuid);
+                    if (webs != null) {
+                        webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
+                        // Dissolve puff
+                        webs.forEach(b -> b.getWorld().spawnParticle(Particle.CLOUD,
+                                b.getLocation().add(0.5, 0.5, 0.5), 2, 0.1, 0.1, 0.1, 0.01));
+                    }
+                }, webDuration);
+            }
+        }.runTaskTimer(plugin, 0L, 2L); // rows at ticks 0, 2, 4 → 200 ms total
     }
 
     // ── Zou Zou no Mi, Model: Mammoth ─────────────────────────────────────────

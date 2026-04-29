@@ -5,9 +5,11 @@ import me.revqz.genPvP.util.ColorUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,7 +21,9 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +60,11 @@ public class CombatListener implements Listener {
      * ConcurrentHashMap-backed set is used defensively.
      */
     private final Set<UUID> kickedPlayers = ConcurrentHashMap.newKeySet();
+
+    private static final long PEARL_COOLDOWN_MS = 3_000L; // 60 ticks
+    private static final long WIND_COOLDOWN_MS  = 3_000L; // 60 ticks
+    private final Map<UUID, Long> pearlThrowTime = new HashMap<>();
+    private final Map<UUID, Long> windThrowTime  = new HashMap<>();
 
     private BukkitTask actionBarTask;
 
@@ -140,11 +149,41 @@ public class CombatListener implements Listener {
     public void onPearlLaunch(ProjectileLaunchEvent event) {
         if (!(event.getEntity() instanceof EnderPearl pearl)) return;
         if (!(pearl.getShooter() instanceof Player player)) return;
-        if (!combat.isInCombat(player.getUniqueId())) return;
 
-        if (!combat.tryThrowPearl(player.getUniqueId())) {
+        long now = System.currentTimeMillis();
+        Long last = pearlThrowTime.get(player.getUniqueId());
+        if (last != null && now - last < PEARL_COOLDOWN_MS) {
             event.setCancelled(true);
+            return;
         }
+
+        if (combat.isInCombat(player.getUniqueId()) && !combat.tryThrowPearl(player.getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        pearlThrowTime.put(player.getUniqueId(), now);
+        // Schedule 1 tick later so vanilla's 20-tick cooldown doesn't overwrite ours
+        plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> player.setCooldown(Material.ENDER_PEARL, 60), 1L);
+    }
+
+    // wind charge cooldown
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWindChargeLaunch(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof WindCharge)) return;
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+
+        long now = System.currentTimeMillis();
+        Long last = windThrowTime.get(player.getUniqueId());
+        if (last != null && now - last < WIND_COOLDOWN_MS) {
+            event.setCancelled(true);
+            return;
+        }
+
+        windThrowTime.put(player.getUniqueId(), now);
+        plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> player.setCooldown(Material.WIND_CHARGE, 60), 1L);
     }
 
     // ── death: clear combat tag ──────────────────────────────────────────────
@@ -191,6 +230,9 @@ public class CombatListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         UUID   uuid   = player.getUniqueId();
+
+        pearlThrowTime.remove(uuid);
+        windThrowTime.remove(uuid);
 
         boolean wasKicked = kickedPlayers.remove(uuid); // also clears the entry
 

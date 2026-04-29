@@ -47,6 +47,7 @@ public final class GenPvP extends JavaPlugin {
     private me.revqz.genPvP.util.Nametag nametag;
     private me.revqz.genPvP.DevilFruits.DevilFruitManager devilFruitManager;
     private me.revqz.genPvP.DevilFruits.FruitRollManager fruitRollManager;
+    private me.revqz.genPvP.SpawnDisplays.DisplaysManager displaysManager;
 
     @Override
     public void onEnable() {
@@ -456,6 +457,12 @@ public final class GenPvP extends JavaPlugin {
         nametag = new me.revqz.genPvP.util.Nametag(this);
         getServer().getPluginManager().registerEvents(nametag, this);
 
+        // Spawn displays (discord / store interaction holograms)
+        displaysManager = new me.revqz.genPvP.SpawnDisplays.DisplaysManager(this);
+        getServer().getPluginManager().registerEvents(
+                new me.revqz.genPvP.SpawnDisplays.DisplaysListener(this, displaysManager), this);
+        getServer().getScheduler().runTaskLater(this, displaysManager::summon, 1L);
+
         // Particle circle effect — start on next tick so the world is fully loaded
         getServer().getScheduler().runTaskLater(this, () ->
                 new me.revqz.genPvP.util.ParticleCircleEffect(this).start(), 1L);
@@ -507,6 +514,9 @@ public final class GenPvP extends JavaPlugin {
         }
         if (crossServerMessenger != null) {
             crossServerMessenger.shutdown();
+        }
+        if (displaysManager != null) {
+            displaysManager.shutdown();
         }
         if (nametag != null) {
             nametag.shutdown();
