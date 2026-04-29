@@ -55,9 +55,11 @@ devil-fruits:
     zou_zou_mammoth:
       mana-cost: 3
       cooldown-seconds: 14
-      radius: 5.0
-      knockback-y: 1.8
-      knockback-xz: 0.4
+      dash-ticks: 12
+      dash-speed: 1.4
+      damage: 4.0
+      side-knockback: 1.5
+      knockback-y: 0.5
     neko_neko_leopard:
       mana-cost: 2
       cooldown-seconds: 10

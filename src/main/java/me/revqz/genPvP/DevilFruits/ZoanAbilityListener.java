@@ -42,32 +42,32 @@ public class ZoanAbilityListener implements Listener {
     private final Set<UUID>             activeAbility   = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> endTasks        = new ConcurrentHashMap<>();
 
-    // Tori Tori Falcon
-    private final NamespacedKey               FALCON_ELYTRA_KEY;
-    private final Map<UUID, ItemStack>        savedChestplate = new ConcurrentHashMap<>();
+    // Tori Tori Falcon: saved chestplate + tagged elytra key
+    private final NamespacedKey          FALCON_ELYTRA_KEY;
+    private final Map<UUID, ItemStack>   savedChestplate = new ConcurrentHashMap<>();
 
-    // Kumo Kumo Tarantula
-    private final NamespacedKey               WEB_SHOT_KEY;
-    private final Map<UUID, List<Block>>      webBlocks = new ConcurrentHashMap<>();
+    // Kumo Kumo Tarantula: projectile tag + placed web blocks per shooter
+    private final NamespacedKey          WEB_SHOT_KEY;
+    private final Map<UUID, List<Block>> webBlocks = new ConcurrentHashMap<>();
 
-    // Neko Neko Leopard
+    // Zou Zou Mammoth / Neko Neko Leopard: shared dash state
     private final Set<UUID>             dashing   = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> dashTasks = new ConcurrentHashMap<>();
 
     public ZoanAbilityListener(GenPvP plugin, DevilFruitManager fruitManager,
                                ManaManager manaManager, RegionManager regionManager,
                                FruitGUIManager guiManager, FruitSlotManager fruitSlotManager) {
-        this.plugin           = plugin;
-        this.fruitManager     = fruitManager;
-        this.manaManager      = manaManager;
-        this.regionManager    = regionManager;
-        this.guiManager       = guiManager;
-        this.fruitSlotManager = fruitSlotManager;
+        this.plugin            = plugin;
+        this.fruitManager      = fruitManager;
+        this.manaManager       = manaManager;
+        this.regionManager     = regionManager;
+        this.guiManager        = guiManager;
+        this.fruitSlotManager  = fruitSlotManager;
         this.FALCON_ELYTRA_KEY = new NamespacedKey(plugin, "falcon_elytra");
         this.WEB_SHOT_KEY      = new NamespacedKey(plugin, "kumo_web_shot");
     }
 
-    // ── Activation ────────────────────────────────────────────────────────────
+    // ── Activation: Sneak + Right-click ──────────────────────────────────────
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
@@ -131,16 +131,17 @@ public class ZoanAbilityListener implements Listener {
     }
 
     // ── Tori Tori no Mi, Model: Falcon ────────────────────────────────────────
-    // Launch 10 blocks up; equip a tagged Elytra for duration seconds, then restore.
+    // Launch ~10 blocks up; force-equip a tagged Elytra for duration seconds, then restore.
 
     private void activateToriTori(Player player) {
-        UUID uuid         = player.getUniqueId();
-        int durationTicks = cfg("tori_tori_falcon", "duration-seconds", 4) * 20;
-        int cooldownTicks = cfg("tori_tori_falcon", "cooldown-seconds",  15) * 20;
-        double launchY    = cfgD("tori_tori_falcon", "launch-velocity-y", 1.3);
+        UUID uuid          = player.getUniqueId();
+        int  durationTicks = cfg("tori_tori_falcon", "duration-seconds",   4) * 20;
+        int  cooldownTicks = cfg("tori_tori_falcon", "cooldown-seconds",  15) * 20;
+        double launchY     = cfgD("tori_tori_falcon", "launch-velocity-y", 1.3);
 
         activeAbility.add(uuid);
 
+        // Save whatever is in the chestplate slot, including null
         ItemStack current = player.getInventory().getChestplate();
         savedChestplate.put(uuid, current != null ? current.clone() : null);
 
@@ -155,34 +156,35 @@ public class ZoanAbilityListener implements Listener {
         player.setVelocity(player.getVelocity().setY(launchY));
 
         player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1f, 1.2f);
-        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0), 20, 0.4, 0.5, 0.4, 0.05);
+        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_AMBIENT, 0.6f, 1.5f);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0),
+                25, 0.4, 0.5, 0.4, 0.06);
         player.sendMessage(msg("ability.tori_tori_falcon"));
 
-        // Restore chestplate after the active window
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            if (player.isOnline()) restoreToriChestplate(player, uuid);
-        }, durationTicks);
-
+        // Restore after the active window; scheduleEnd also calls it as a safety net
+        plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> restoreToriChestplate(player, uuid), durationTicks);
         scheduleEnd(uuid, cooldownTicks, () -> restoreToriChestplate(player, uuid));
     }
 
     private void restoreToriChestplate(Player player, UUID uuid) {
-        if (!player.isOnline()) return;
+        // Always pull out of the map first — prevents leaks if the player removed the elytra manually
+        ItemStack saved = savedChestplate.remove(uuid);
+        if (saved == null || !player.isOnline()) return;
+        // Only overwrite if our tagged elytra is still in the slot
         ItemStack chest = player.getInventory().getChestplate();
         if (chest == null || !chest.hasItemMeta()) return;
         ItemMeta m = chest.getItemMeta();
         if (m == null || !m.getPersistentDataContainer().has(FALCON_ELYTRA_KEY, PersistentDataType.BYTE)) return;
-        // Only restore if the elytra we put there is still present
-        ItemStack saved = savedChestplate.remove(uuid);
-        player.getInventory().setChestplate(saved);
+        player.getInventory().setChestplate(saved.getType() == Material.AIR ? null : saved);
     }
 
     // ── Kumo Kumo no Mi, Model: Tarantula ─────────────────────────────────────
-    // Fire a projectile; on hit, place 3x3 cobwebs that dissolve after webDuration.
+    // Fire a tagged projectile; on block hit, spawn a 3×3 cobweb trap at the hit face.
 
     private void activateKumoKumo(Player player) {
-        UUID uuid         = player.getUniqueId();
-        int cooldownTicks = cfg("kumo_kumo_tarantula", "cooldown-seconds", 12) * 20;
+        UUID uuid          = player.getUniqueId();
+        int  cooldownTicks = cfg("kumo_kumo_tarantula", "cooldown-seconds", 12) * 20;
         activeAbility.add(uuid);
 
         Snowball shot = player.getWorld().spawn(player.getEyeLocation(), Snowball.class);
@@ -191,39 +193,45 @@ public class ZoanAbilityListener implements Listener {
         shot.getPersistentDataContainer().set(WEB_SHOT_KEY, PersistentDataType.BYTE, (byte) 1);
 
         player.playSound(player.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 1f, 1.5f);
-        player.getWorld().spawnParticle(Particle.CLOUD, player.getEyeLocation(), 6, 0.2, 0.2, 0.2, 0.01);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getEyeLocation(),
+                6, 0.2, 0.2, 0.2, 0.01);
         player.sendMessage(msg("ability.kumo_kumo_tarantula"));
 
         scheduleEnd(uuid, cooldownTicks, null);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onProjectileHit(ProjectileHitEvent event) {
         if (!(event.getEntity() instanceof Snowball shot)) return;
         if (!shot.getPersistentDataContainer().has(WEB_SHOT_KEY, PersistentDataType.BYTE)) return;
         if (!(shot.getShooter() instanceof Player shooter)) return;
 
-        UUID uuid          = shooter.getUniqueId();
-        int  webDuration   = cfg("kumo_kumo_tarantula", "web-duration-seconds", 3) * 20;
+        UUID uuid        = shooter.getUniqueId();
+        int  webDuration = cfg("kumo_kumo_tarantula", "web-duration-seconds", 3) * 20;
 
-        Location hitLoc = event.getHitBlock() != null
-                ? event.getHitBlock().getLocation()
-                : shot.getLocation();
+        // Place webs on the open face of the hit block, not inside the solid block itself
+        Location center;
+        if (event.getHitBlock() != null && event.getHitBlockFace() != null) {
+            center = event.getHitBlock().getRelative(event.getHitBlockFace()).getLocation();
+        } else {
+            center = shot.getLocation();
+        }
 
         List<Block> placed = new ArrayList<>();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                Block block = hitLoc.clone().add(dx, 0, dz).getBlock();
+                Block block = center.clone().add(dx, 0, dz).getBlock();
                 if (block.getType() == Material.AIR) {
                     block.setType(Material.COBWEB);
                     placed.add(block);
                 }
             }
         }
-        webBlocks.put(uuid, placed);
+        if (!placed.isEmpty()) webBlocks.put(uuid, placed);
 
-        hitLoc.getWorld().playSound(hitLoc, Sound.ENTITY_SPIDER_STEP, 1f, 0.8f);
-        hitLoc.getWorld().spawnParticle(Particle.CLOUD, hitLoc.clone().add(0.5, 0.5, 0.5), 15, 0.8, 0.3, 0.8, 0.02);
+        center.getWorld().playSound(center, Sound.ENTITY_SPIDER_STEP, 1f, 0.6f);
+        center.getWorld().spawnParticle(Particle.CLOUD, center.clone().add(0.5, 0.5, 0.5),
+                18, 0.9, 0.3, 0.9, 0.02);
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             List<Block> webs = webBlocks.remove(uuid);
@@ -232,48 +240,108 @@ public class ZoanAbilityListener implements Listener {
     }
 
     // ── Zou Zou no Mi, Model: Mammoth ─────────────────────────────────────────
-    // 5-block radius stomp — massive vertical knockback on nearby enemies.
+    // Barrel forward at high speed, dealing damage and pushing enemies sideways.
+    // Unlike Neko Neko, the charge does NOT stop on first hit — it tramples through.
 
     private void activateZouZou(Player player) {
-        UUID   uuid         = player.getUniqueId();
+        UUID   uuid          = player.getUniqueId();
         int    cooldownTicks = cfg("zou_zou_mammoth", "cooldown-seconds", 14) * 20;
-        double radius       = cfgD("zou_zou_mammoth", "radius",        5.0);
-        double knockY       = cfgD("zou_zou_mammoth", "knockback-y",   1.8);
-        double knockXZ      = cfgD("zou_zou_mammoth", "knockback-xz",  0.4);
-        activeAbility.add(uuid);
+        int    dashTick      = cfg("zou_zou_mammoth", "dash-ticks",        12);
+        double dashSpeed     = cfgD("zou_zou_mammoth", "dash-speed",        1.4);
+        double damage        = cfgD("zou_zou_mammoth", "damage",            4.0);
+        double sideKnockback = cfgD("zou_zou_mammoth", "side-knockback",    1.5);
+        double knockY        = cfgD("zou_zou_mammoth", "knockback-y",       0.5);
 
-        Location origin = player.getLocation();
-        player.playSound(origin, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.5f);
-        origin.getWorld().spawnParticle(Particle.EXPLOSION, origin.clone().add(0, 0.1, 0),
-                5, radius * 0.4, 0.1, radius * 0.4, 0);
-        origin.getWorld().spawnParticle(Particle.DUST, origin.clone().add(0, 0.1, 0),
-                40, radius * 0.5, 0.1, radius * 0.5, 0,
-                new Particle.DustOptions(Color.fromRGB(139, 69, 19), 2.0f));
+        activeAbility.add(uuid);
+        dashing.add(uuid);
+
+        Vector dir = player.getLocation().getDirection().setY(0);
+        if (dir.lengthSquared() < 1e-6) dir = new Vector(1, 0, 0);
+        final Vector chargeDir = dir.normalize().clone();
+        player.setVelocity(chargeDir.clone().multiply(dashSpeed).setY(0.25));
+
+        // Activation burst
+        player.playSound(player.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 1f, 0.7f);
+        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.4f);
+        player.getWorld().spawnParticle(Particle.EXPLOSION, player.getLocation(), 3, 0.4, 0.1, 0.4, 0);
+        player.getWorld().spawnParticle(Particle.DUST, player.getLocation().add(0, 0.1, 0),
+                30, 0.8, 0.1, 0.8, 0, new Particle.DustOptions(Color.fromRGB(101, 67, 33), 2.5f));
         player.sendMessage(msg("ability.zou_zou_mammoth"));
 
-        for (Entity entity : origin.getWorld().getNearbyEntities(origin, radius, 3, radius)) {
-            if (!(entity instanceof LivingEntity target) || entity.equals(player)) continue;
-            if (target instanceof Player tp && isInSpawn(tp)) continue;
+        BukkitTask dashTask = new org.bukkit.scheduler.BukkitRunnable() {
+            int tick = 0;
+            final Set<UUID> hit = new HashSet<>();
 
-            Vector xzDelta = target.getLocation().toVector().subtract(origin.toVector()).setY(0);
-            if (xzDelta.lengthSquared() < 1e-6) xzDelta = new Vector(1, 0, 0);
-            target.setVelocity(xzDelta.normalize().multiply(knockXZ).setY(knockY));
-            target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0),
-                    8, 0.3, 0.5, 0.3, 0.05);
-        }
+            @Override
+            public void run() {
+                if (!player.isOnline() || !dashing.contains(uuid) || tick >= dashTick) {
+                    dashing.remove(uuid);
+                    dashTasks.remove(uuid);
+                    cancel();
+                    return;
+                }
+                tick++;
 
-        scheduleEnd(uuid, cooldownTicks, null);
+                // Re-apply horizontal charge velocity each tick to resist drag
+                Vector vel = player.getVelocity();
+                double hSpeed = Math.sqrt(vel.getX() * vel.getX() + vel.getZ() * vel.getZ());
+                if (hSpeed < dashSpeed * 0.65) {
+                    player.setVelocity(chargeDir.clone().multiply(dashSpeed * 0.85)
+                            .setY(Math.max(vel.getY(), 0)));
+                }
+
+                // Dust + ground debris trail
+                player.getWorld().spawnParticle(Particle.DUST,
+                        player.getLocation().add(0, 0.3, 0), 12, 0.5, 0.3, 0.5, 0,
+                        new Particle.DustOptions(Color.fromRGB(101, 67, 33), 1.8f));
+                player.getWorld().spawnParticle(Particle.BLOCK,
+                        player.getLocation().add(0, 0.1, 0), 8, 0.4, 0.1, 0.4, 0.04,
+                        Material.DIRT.createBlockData());
+
+                // Wide hitbox — tramples through all enemies in range
+                for (Entity nearby : player.getNearbyEntities(2.2, 2.0, 2.2)) {
+                    if (!(nearby instanceof LivingEntity target) || nearby.equals(player)) continue;
+                    if (hit.contains(target.getUniqueId())) continue;
+                    if (target instanceof Player tp && isInSpawn(tp)) continue;
+                    hit.add(target.getUniqueId());
+
+                    target.damage(damage, player);
+
+                    // Push the target sideways away from the charge path
+                    Vector pushDir = target.getLocation().toVector()
+                            .subtract(player.getLocation().toVector()).setY(0);
+                    if (pushDir.lengthSquared() < 1e-6) pushDir = new Vector(1, 0, 0);
+                    target.setVelocity(pushDir.normalize().multiply(sideKnockback).setY(knockY));
+
+                    // Impact effects
+                    target.getWorld().spawnParticle(Particle.CRIT,
+                            target.getLocation().add(0, 1, 0), 18, 0.5, 0.6, 0.5, 0.1);
+                    target.getWorld().spawnParticle(Particle.EXPLOSION,
+                            target.getLocation().add(0, 0.5, 0), 2, 0.2, 0.2, 0.2, 0);
+                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_IRON_GOLEM_ATTACK, 1f, 0.7f);
+                    player.playSound(player.getLocation(), Sound.ENTITY_RAVAGER_ATTACK, 0.8f, 0.9f);
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+        dashTasks.put(uuid, dashTask);
+
+        scheduleEnd(uuid, cooldownTicks, () -> {
+            dashing.remove(uuid);
+            BukkitTask dt = dashTasks.remove(uuid);
+            if (dt != null) dt.cancel();
+        });
     }
 
     // ── Neko Neko no Mi, Model: Leopard ──────────────────────────────────────
-    // Rapid forward dash; first collision deals burst damage + disables the target's shield.
+    // Rapid forward dash; first collision deals burst damage + disables shield. Stops on hit.
 
     private void activateNekoNeko(Player player) {
-        UUID   uuid         = player.getUniqueId();
+        UUID   uuid          = player.getUniqueId();
         int    cooldownTicks = cfg("neko_neko_leopard", "cooldown-seconds", 10) * 20;
-        int    dashTick     = cfg("neko_neko_leopard", "dash-ticks",        8);
-        double dashSpeed    = cfgD("neko_neko_leopard", "dash-speed",        1.2);
-        double burstDamage  = cfgD("neko_neko_leopard", "burst-damage",      5.0);
+        int    dashTick      = cfg("neko_neko_leopard", "dash-ticks",        8);
+        double dashSpeed     = cfgD("neko_neko_leopard", "dash-speed",        1.2);
+        double burstDamage   = cfgD("neko_neko_leopard", "burst-damage",      5.0);
+
         activeAbility.add(uuid);
         dashing.add(uuid);
 
@@ -289,6 +357,7 @@ public class ZoanAbilityListener implements Listener {
         BukkitTask dashTask = new org.bukkit.scheduler.BukkitRunnable() {
             int tick = 0;
             final Set<UUID> hit = new HashSet<>();
+
             @Override
             public void run() {
                 if (!player.isOnline() || !dashing.contains(uuid) || tick >= dashTick) {
@@ -298,6 +367,7 @@ public class ZoanAbilityListener implements Listener {
                     return;
                 }
                 tick++;
+
                 for (Entity nearby : player.getNearbyEntities(1.5, 2.0, 1.5)) {
                     if (!(nearby instanceof Player target)) continue;
                     if (hit.contains(target.getUniqueId())) continue;
@@ -305,11 +375,12 @@ public class ZoanAbilityListener implements Listener {
                     hit.add(target.getUniqueId());
 
                     target.damage(burstDamage, player);
-                    target.setCooldown(Material.SHIELD, 100);
+                    target.setCooldown(Material.SHIELD, 100); // ~5 s shield disable
                     target.getWorld().spawnParticle(Particle.CRIT,
                             target.getLocation().add(0, 1, 0), 12, 0.3, 0.5, 0.3, 0.05);
                     target.playSound(target.getLocation(), Sound.ITEM_SHIELD_BREAK, 1f, 1f);
 
+                    // Stop the dash on first contact
                     dashing.remove(uuid);
                     dashTasks.remove(uuid);
                     endAbilityEarly(uuid);
@@ -331,15 +402,17 @@ public class ZoanAbilityListener implements Listener {
     // Pull nearest enemy slightly toward the user + apply Poison II.
 
     private void activateHebiHebi(Player player) {
-        UUID   uuid          = player.getUniqueId();
-        int    cooldownTicks = cfg("hebi_hebi_cobra", "cooldown-seconds",       12) * 20;
-        double range         = cfgD("hebi_hebi_cobra", "range",                  12.0);
-        double pullStrength  = cfgD("hebi_hebi_cobra", "pull-strength",           0.4);
-        int    poisonDuration = cfg("hebi_hebi_cobra", "poison-duration-seconds", 6) * 20;
-        int    poisonAmp     = cfg("hebi_hebi_cobra", "poison-amplifier",          1);
+        UUID   uuid           = player.getUniqueId();
+        int    cooldownTicks  = cfg("hebi_hebi_cobra", "cooldown-seconds",        12) * 20;
+        double range          = cfgD("hebi_hebi_cobra", "range",                   12.0);
+        double pullStrength   = cfgD("hebi_hebi_cobra", "pull-strength",            0.4);
+        int    poisonDuration = cfg("hebi_hebi_cobra", "poison-duration-seconds",    6) * 20;
+        int    poisonAmp      = cfg("hebi_hebi_cobra", "poison-amplifier",            1);
+
         activeAbility.add(uuid);
 
-        Player target = null;
+        // Find nearest non-spawn player within range
+        Player target  = null;
         double nearest = range;
         for (Entity entity : player.getNearbyEntities(range, range, range)) {
             if (!(entity instanceof Player t)) continue;
@@ -360,8 +433,8 @@ public class ZoanAbilityListener implements Listener {
         target.addPotionEffect(new PotionEffect(PotionEffectType.POISON, poisonDuration, poisonAmp, false, true));
 
         target.getWorld().spawnParticle(Particle.DUST,
-                target.getLocation().add(0, 1, 0), 20, 0.4, 0.6, 0.4, 0,
-                new Particle.DustOptions(Color.fromRGB(0, 120, 0), 1.2f));
+                target.getLocation().add(0, 1, 0), 24, 0.4, 0.6, 0.4, 0,
+                new Particle.DustOptions(Color.fromRGB(0, 140, 0), 1.2f));
         player.playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_ATTACK, 0.8f, 0.5f);
         player.sendMessage(msg("ability.hebi_hebi_cobra"));
 
@@ -378,12 +451,17 @@ public class ZoanAbilityListener implements Listener {
         int    speedAmp      = cfg("inu_inu_wolf", "speed-amplifier",          1);
         int    speedDuration = cfg("inu_inu_wolf", "speed-duration-seconds",   8) * 20;
         int    glowDuration  = cfg("inu_inu_wolf", "glow-duration-seconds",   10) * 20;
+
         activeAbility.add(uuid);
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, speedDuration, speedAmp, false, true));
+
         player.playSound(player.getLocation(), Sound.ENTITY_WOLF_GROWL, 1f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_WOLF_AMBIENT, 0.8f, 0.4f);
         player.getWorld().spawnParticle(Particle.NOTE, player.getLocation().add(0, 2, 0),
-                8, 0.5, 0.3, 0.5, 1.0);
+                10, 0.6, 0.3, 0.6, 1.0);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0),
+                12, 0.5, 0.4, 0.5, 0.03);
         player.sendMessage(msg("ability.inu_inu_wolf"));
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
@@ -396,22 +474,20 @@ public class ZoanAbilityListener implements Listener {
         scheduleEnd(uuid, cooldownTicks, null);
     }
 
-    // ── Death / Respawn: restore Tori Tori chestplate ────────────────────────
+    // ── Death: Tori Tori chestplate handling ──────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent event) {
         UUID uuid = event.getEntity().getUniqueId();
         if (!savedChestplate.containsKey(uuid)) return;
 
-        ItemStack saved = savedChestplate.get(uuid);
-
         if (event.getKeepInventory()) {
-            // Chestplate slot is preserved; onRespawn will swap the elytra back out
+            // Chestplate slot is preserved — onRespawn will swap the elytra out
             return;
         }
 
-        // Remove our tagged elytra from the drops and add the real chestplate instead
-        savedChestplate.remove(uuid);
+        // keepInventory off: remove our tagged elytra from drops, add the real chestplate
+        ItemStack saved = savedChestplate.remove(uuid);
         event.getDrops().removeIf(i -> {
             if (i == null || !i.hasItemMeta()) return false;
             ItemMeta m = i.getItemMeta();
@@ -427,10 +503,9 @@ public class ZoanAbilityListener implements Listener {
         Player player = event.getPlayer();
         UUID   uuid   = player.getUniqueId();
         if (!savedChestplate.containsKey(uuid)) return;
-        // keepInventory=true path: player still has elytra in slot; restore after 1 tick
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            if (player.isOnline()) restoreToriChestplate(player, uuid);
-        }, 1L);
+        // keepInventory=true path: player respawns with elytra still in slot
+        plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> restoreToriChestplate(player, uuid), 1L);
     }
 
     // ── Cleanup on disconnect ─────────────────────────────────────────────────
@@ -447,7 +522,7 @@ public class ZoanAbilityListener implements Listener {
         if (dt != null) dt.cancel();
         dashing.remove(uuid);
 
-        // Restore chestplate before inventory is saved to disk
+        // Restore chestplate before the inventory is serialised to disk
         restoreToriChestplate(player, uuid);
         savedChestplate.remove(uuid);
 

@@ -2,7 +2,7 @@ title: "Devil Fruit Menu: Zoan"
 
 fruits:
   tori_tori_falcon:
-    slot: 21
+    slot: 10
     material: PHANTOM_MEMBRANE
     name: "&#F5DEB3&lTori Tori no Mi: Falcon &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
@@ -23,7 +23,7 @@ fruits:
       - ""
       - "&fCost: &7- 3.0 &#89CBFFMana"
   kumo_kumo_tarantula:
-    slot: 22
+    slot: 11
     material: COBWEB
     name: "&#8B0000&lKumo Kumo no Mi: Tarantula &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
@@ -44,7 +44,7 @@ fruits:
       - ""
       - "&fCost: &7- 2.0 &#89CBFFMana"
   zou_zou_mammoth:
-    slot: 23
+    slot: 12
     material: BROWN_WOOL
     name: "&#8B4513&lZou Zou no Mi: Mammoth &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
@@ -65,7 +65,7 @@ fruits:
       - ""
       - "&fCost: &7- 3.0 &#89CBFFMana"
   neko_neko_leopard:
-    slot: 24
+    slot: 13
     material: YELLOW_DYE
     name: "&#FFD700&lNeko Neko no Mi: Leopard &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
@@ -86,7 +86,7 @@ fruits:
       - ""
       - "&fCost: &7- 2.0 &#89CBFFMana"
   hebi_hebi_cobra:
-    slot: 25
+    slot: 14
     material: SPIDER_EYE
     name: "&#228B22&lHebi Hebi no Mi: Cobra &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
@@ -107,7 +107,7 @@ fruits:
       - ""
       - "&fCost: &7- 3.0 &#89CBFFMana"
   inu_inu_wolf:
-    slot: 26
+    slot: 15
     material: BONE
     name: "&#A9A9A9&lInu Inu no Mi: Wolf &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
