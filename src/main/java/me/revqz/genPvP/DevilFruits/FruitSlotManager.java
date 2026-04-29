@@ -244,7 +244,7 @@ public class FruitSlotManager implements Listener {
 
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent event) {
-        if (isFruitSlotItem(event.getMainHandItem())) {
+        if (isFruitSlotItem(event.getMainHandItem()) || isFruitSlotItem(event.getOffHandItem())) {
             event.setCancelled(true);
         }
     }
