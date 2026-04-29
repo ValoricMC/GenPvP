@@ -59,6 +59,14 @@ ability:
   bari_bari: "&#87CEEB&lBari Bari &r&8» Barrier raised!"
   fuwa_fuwa: "&#FFFACD&lFuwa Fuwa &r&8» Rising!"
   gura_gura: "&#8B4513&lGura Gura &r&8» Shockwave released!"
+  tori_tori_falcon: "&#F5DEB3&lTori Tori &r&8» Launching into the skies!"
+  kumo_kumo_tarantula: "&#8B0000&lKumo Kumo &r&8» Web shot fired!"
+  kumo_kumo_tarantula_miss: "&#8B0000&lKumo Kumo &r&8» No target in range."
+  zou_zou_mammoth: "&#8B4513&lZou Zou &r&8» Ground stomp!"
+  neko_neko_leopard: "&#FFD700&lNeko Neko &r&8» Pouncing!"
+  hebi_hebi_cobra: "&#228B22&lHebi Hebi &r&8» Venom strike!"
+  hebi_hebi_cobra_miss: "&#228B22&lHebi Hebi &r&8» No target in range."
+  inu_inu_wolf: "&#A9A9A9&lInu Inu &r&8» Howling!"
 
 #fruit rolling
 roll-usage:           "&cTry using: /fruit roll (fruit type)"

@@ -29,6 +29,14 @@ public enum DevilFruit {
     BARI_BARI   ("bari_bari",    "&#87CEEB&lBari Bari no Mi",    FruitType.PARAMECIA),
     FUWA_FUWA   ("fuwa_fuwa",    "&#FFFACD&lFuwa Fuwa no Mi",    FruitType.PARAMECIA),
     GURA_GURA   ("gura_gura",    "&#8B4513&lGura Gura no Mi",    FruitType.PARAMECIA),
+
+    // ── Zoan ──────────────────────────────────────────────────────────────────
+    TORI_TORI_FALCON    ("tori_tori_falcon",    "&#F5DEB3&lTori Tori no Mi: Falcon",    FruitType.ZOAN),
+    KUMO_KUMO_TARANTULA ("kumo_kumo_tarantula", "&#8B0000&lKumo Kumo no Mi: Tarantula", FruitType.ZOAN),
+    ZOU_ZOU_MAMMOTH     ("zou_zou_mammoth",     "&#8B4513&lZou Zou no Mi: Mammoth",     FruitType.ZOAN),
+    NEKO_NEKO_LEOPARD   ("neko_neko_leopard",   "&#FFD700&lNeko Neko no Mi: Leopard",   FruitType.ZOAN),
+    HEBI_HEBI_COBRA     ("hebi_hebi_cobra",     "&#228B22&lHebi Hebi no Mi: Cobra",     FruitType.ZOAN),
+    INU_INU_WOLF        ("inu_inu_wolf",        "&#A9A9A9&lInu Inu no Mi: Wolf",        FruitType.ZOAN),
     ;
 
     private final String key;

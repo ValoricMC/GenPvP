@@ -337,6 +337,12 @@ public final class GenPvP extends JavaPlugin {
                         fruitGUIManager, fruitSlotManager);
         getServer().getPluginManager().registerEvents(parameciaAbilities, this);
 
+        me.revqz.genPvP.DevilFruits.ZoanAbilityListener zoanAbilities =
+                new me.revqz.genPvP.DevilFruits.ZoanAbilityListener(
+                        this, devilFruitManager, manaManager, regionManager,
+                        fruitGUIManager, fruitSlotManager);
+        getServer().getPluginManager().registerEvents(zoanAbilities, this);
+
         // Fruit Roll system — rolling slot-machine GUI
         fruitRollManager =
                 new me.revqz.genPvP.DevilFruits.FruitRollManager(this, databaseManager);

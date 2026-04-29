@@ -12,7 +12,8 @@
       "Bash(xargs -I{} jar tf {})",
       "Bash(./gradlew.bat compileJava)",
       "Bash(./gradlew.bat build *)",
-      "Bash(./gradlew.bat compileJava --info)"
+      "Bash(./gradlew.bat compileJava --info)",
+      "Bash(mvn package *)"
     ]
   }
 }
