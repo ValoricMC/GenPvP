@@ -51,7 +51,7 @@ devil-fruits:
     kumo_kumo_tarantula:
       mana-cost: 2
       cooldown-seconds: 12
-      web-duration-seconds: 3
+      web-duration-seconds: 5
     zou_zou_mammoth:
       mana-cost: 3
       cooldown-seconds: 14

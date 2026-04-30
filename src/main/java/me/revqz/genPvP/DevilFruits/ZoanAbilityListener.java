@@ -7,6 +7,7 @@ import me.revqz.genPvP.Protect.flags.RegionType;
 import me.revqz.genPvP.util.ColorUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,8 +47,8 @@ public class ZoanAbilityListener implements Listener {
     private final NamespacedKey          FALCON_ELYTRA_KEY;
     private final Map<UUID, ItemStack>   savedChestplate = new ConcurrentHashMap<>();
 
-    // Kumo Kumo Tarantula: projectile tag + placed web blocks per shooter
-    private final NamespacedKey          WEB_SHOT_KEY;
+    // Kumo Kumo Tarantula: shot entity UUID → shooter UUID, plus placed web blocks per shooter
+    private final Map<UUID, UUID>        webShots  = new ConcurrentHashMap<>(); // shot entity → shooter
     private final Map<UUID, List<Block>> webBlocks = new ConcurrentHashMap<>();
 
     // Zou Zou Mammoth / Neko Neko Leopard: shared dash state
@@ -64,7 +65,6 @@ public class ZoanAbilityListener implements Listener {
         this.guiManager        = guiManager;
         this.fruitSlotManager  = fruitSlotManager;
         this.FALCON_ELYTRA_KEY = new NamespacedKey(plugin, "falcon_elytra");
-        this.WEB_SHOT_KEY      = new NamespacedKey(plugin, "kumo_web_shot");
     }
 
     // ── Activation: Sneak + Right-click ──────────────────────────────────────
@@ -187,10 +187,9 @@ public class ZoanAbilityListener implements Listener {
         int  cooldownTicks = cfg("kumo_kumo_tarantula", "cooldown-seconds", 12) * 20;
         activeAbility.add(uuid);
 
-        Snowball shot = player.getWorld().spawn(player.getEyeLocation(), Snowball.class);
-        shot.setShooter(player);
+        Snowball shot = player.launchProjectile(Snowball.class);
         shot.setVelocity(player.getLocation().getDirection().normalize().multiply(2.0));
-        shot.getPersistentDataContainer().set(WEB_SHOT_KEY, PersistentDataType.BYTE, (byte) 1);
+        webShots.put(shot.getUniqueId(), uuid);
 
         player.playSound(player.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 1f, 1.5f);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getEyeLocation(),
@@ -202,70 +201,57 @@ public class ZoanAbilityListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (!(event.getEntity() instanceof Snowball shot)) return;
-        if (!shot.getPersistentDataContainer().has(WEB_SHOT_KEY, PersistentDataType.BYTE)) return;
-        if (!(shot.getShooter() instanceof Player shooter)) return;
+        if (!(event.getEntity() instanceof Snowball snowball)) return;
 
-        UUID uuid        = shooter.getUniqueId();
-        int  webDuration = cfg("kumo_kumo_tarantula", "web-duration-seconds", 3) * 20;
+        UUID shooterUuid = webShots.remove(snowball.getUniqueId());
+        if (shooterUuid == null) return;
 
-        // Resolve placement centre — use the open face adjacent to the hit block,
-        // not the solid block itself. Fall back to the snowball's world position.
-        final Location center;
-        if (event.getHitBlock() != null && event.getHitBlockFace() != null) {
-            center = event.getHitBlock().getRelative(event.getHitBlockFace()).getLocation();
-        } else {
-            center = shot.getLocation().getBlock().getLocation();
+        int  webDuration = cfg("kumo_kumo_tarantula", "web-duration-seconds", 5) * 20;
+        final UUID uuid  = shooterUuid;
+
+        // Find the base Y: start at impact position, scan up until we're in air.
+        Location impact = snowball.getLocation();
+        World world = impact.getWorld();
+        int cx = impact.getBlockX();
+        int cz = impact.getBlockZ();
+        int cy = impact.getBlockY();
+        for (int scan = cy; scan <= cy + 4; scan++) {
+            if (world.getBlockAt(cx, scan, cz).getType().isAir()) { cy = scan; break; }
         }
+
+        Location center = new Location(world, cx + 0.5, cy, cz + 0.5);
 
         // Impact burst
         center.getWorld().playSound(center, Sound.ENTITY_SPIDER_AMBIENT, 1f, 0.8f);
-        center.getWorld().spawnParticle(Particle.CLOUD, center.clone().add(0.5, 0.5, 0.5),
-                12, 0.6, 0.2, 0.6, 0.03);
+        center.getWorld().spawnParticle(Particle.CLOUD, center, 12, 0.6, 0.2, 0.6, 0.03);
 
-        // Animate the 3×3 grid row by row (dz = -1 → 0 → +1), 2 ticks per row.
-        // Using isAir() instead of == AIR to handle CAVE_AIR and VOID_AIR correctly.
-        final List<Block> allPlaced = new ArrayList<>();
-
-        new org.bukkit.scheduler.BukkitRunnable() {
-            int row = 0; // 0 = dz-1, 1 = dz+0, 2 = dz+1
-
-            @Override
-            public void run() {
-                int dz = row - 1;
-                for (int dx = -1; dx <= 1; dx++) {
-                    Block block = center.clone().add(dx, 0, dz).getBlock();
+        // Place a 3×3×3 cube of cobwebs at once
+        List<Block> allPlaced = new ArrayList<>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 2; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    Block block = world.getBlockAt(cx + dx, cy + dy, cz + dz);
                     if (block.getType().isAir()) {
                         block.setType(Material.COBWEB);
                         allPlaced.add(block);
-                        // Small puff at each freshly placed web
-                        block.getWorld().spawnParticle(Particle.CLOUD,
-                                block.getLocation().add(0.5, 0.5, 0.5),
-                                4, 0.15, 0.15, 0.15, 0.01);
                     }
                 }
-                // Pitch rises slightly each row for a crisp "thwick thwick thwick" feel
-                center.getWorld().playSound(center, Sound.ENTITY_SPIDER_STEP,
-                        0.9f, 0.65f + row * 0.2f);
-
-                row++;
-                if (row < 3) return;
-
-                // All rows placed — register and schedule dissolution
-                cancel();
-                if (!allPlaced.isEmpty()) webBlocks.put(uuid, allPlaced);
-
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    List<Block> webs = webBlocks.remove(uuid);
-                    if (webs != null) {
-                        webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
-                        // Dissolve puff
-                        webs.forEach(b -> b.getWorld().spawnParticle(Particle.CLOUD,
-                                b.getLocation().add(0.5, 0.5, 0.5), 2, 0.1, 0.1, 0.1, 0.01));
-                    }
-                }, webDuration);
             }
-        }.runTaskTimer(plugin, 0L, 2L); // rows at ticks 0, 2, 4 → 200 ms total
+        }
+
+        broadcastOps("[KumoKumo] " + (allPlaced.isEmpty()
+                ? "NOT placed — no air at " + cx + "," + cy + "," + cz
+                : "placed " + allPlaced.size() + " cobwebs at " + cx + "," + cy + "," + cz));
+        if (!allPlaced.isEmpty()) webBlocks.put(uuid, allPlaced);
+
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            List<Block> webs = webBlocks.remove(uuid);
+            if (webs != null) {
+                webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
+                webs.forEach(b -> b.getWorld().spawnParticle(Particle.CLOUD,
+                        b.getLocation().add(0.5, 0.5, 0.5), 2, 0.1, 0.1, 0.1, 0.01));
+            }
+        }, webDuration);
     }
 
     // ── Zou Zou no Mi, Model: Mammoth ─────────────────────────────────────────
@@ -555,6 +541,8 @@ public class ZoanAbilityListener implements Listener {
         restoreToriChestplate(player, uuid);
         savedChestplate.remove(uuid);
 
+        webShots.values().removeIf(v -> v.equals(uuid)); // remove any in-flight shots by this player
+
         List<Block> webs = webBlocks.remove(uuid);
         if (webs != null) webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
 
@@ -597,6 +585,13 @@ public class ZoanAbilityListener implements Listener {
 
     private double cfgD(String key, String field, double def) {
         return guiManager.getBalanceConfig().getDouble("devil-fruits.abilities." + key + "." + field, def);
+    }
+
+    private void broadcastOps(String message) {
+        String colored = "§7[§bDebug§7] §f" + message;
+        for (Player op : plugin.getServer().getOnlinePlayers()) {
+            if (op.isOp()) op.sendMessage(colored);
+        }
     }
 
     private boolean isInSpawn(Player player) {
