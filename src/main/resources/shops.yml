@@ -1128,7 +1128,7 @@ shops:
 
       - slot: 23
         material: NETHERITE_PICKAXE
-        name: "&#A0D0F6&lTIER 5 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1765&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_5"
         price: 32
         currency-type: money
