@@ -10,21 +10,21 @@ gui:
 
 info:
   slot: 13
-  name: "&#00A4FB%player%"
+  name: "&#F1C176%player%"
   lore:
     - ""
-    - "&#A7A7A7Balance: &#00A4FB$%balance%"
-    - "&#A7A7A7Shards in inventory: &#00A4FB%shards%"
+    - "&#A7A7A7Balance: &#F1C176$%balance%"
+    - "&#A7A7A7Shards in inventory: &#F1C176%shards%"
     - ""
 
   deposit-1:
     slot: 12
     material: GREEN_CONCRETE_POWDER
     amount: 1
-    name: "&#7AFB00Deposit &#00A4FB%amount% &#7AFB00Shard(s)"
+    name: "&#7AFB00Deposit &7%amount% &#7AFB00Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to deposit &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to deposit &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7into your bank."
       - ""
 
@@ -32,10 +32,10 @@ info:
     slot: 11
     material: GREEN_WOOL
     amount: 8
-    name: "&#7AFB00Deposit &#00A4FB%amount% &#7AFB00Shard(s)"
+    name: "&#7AFB00Deposit &7%amount% &#7AFB00Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to deposit &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to deposit &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7into your bank."
       - ""
 
@@ -43,10 +43,10 @@ info:
     slot: 10
     material: GREEN_CONCRETE
     amount: 32
-    name: "&#7AFB00Deposit &#00A4FB%amount% &#7AFB00Shard(s)"
+    name: "&#7AFB00Deposit &7%amount% &#7AFB00Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to deposit &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to deposit &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7into your bank."
       - ""
 
@@ -56,7 +56,7 @@ info:
     name: "&#7AFB00Deposit All"
     lore:
       - ""
-      - "&#A7A7A7Deposits &#00A4FBall &#A7A7A7Money Shards"
+      - "&#A7A7A7Deposits &7all &#A7A7A7Money Shards"
       - "&#A7A7A7from your inventory into the bank."
       - ""
 
@@ -66,10 +66,10 @@ info:
     slot: 14
     material: RED_CONCRETE_POWDER
     amount: 8
-    name: "&#FC0000Withdraw &#00A4FB%amount% &#FC0000Shard(s)"
+    name: "&#FC0000Withdraw &7%amount% &#FC0000Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to withdraw &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to withdraw &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7from your bank."
       - ""
 
@@ -77,10 +77,10 @@ info:
     slot: 15
     material: RED_WOOL
     amount: 16
-    name: "&#FC0000Withdraw &#00A4FB%amount% &#FC0000Shard(s)"
+    name: "&#FC0000Withdraw &7%amount% &#FC0000Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to withdraw &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to withdraw &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7from your bank."
       - ""
 
@@ -88,10 +88,10 @@ info:
     slot: 16
     material: RED_CONCRETE
     amount: 32
-    name: "&#FC0000Withdraw &#00A4FB%amount% &#FC0000Shard(s)"
+    name: "&#FC0000Withdraw &7%amount% &#FC0000Shard(s)"
     lore:
       - ""
-      - "&#A7A7A7Click to withdraw &#00A4FB%amount% &#A7A7A7shard(s)"
+      - "&#A7A7A7Click to withdraw &7%amount% &#A7A7A7shard(s)"
       - "&#A7A7A7from your bank."
       - ""
 
@@ -107,11 +107,11 @@ info:
 
 messages:
   loading:                   "&#A7A7A7Your data is still loading, please wait..."
-  deposit-success:           "&#A7A7A7Deposited &#00A4FB%amount% &#A7A7A7shard(s) (&#7AFB00+$%value%&#A7A7A7) into your bank."
-  deposit-not-enough:        "&cNot enough Money Shards. &#A7A7A7Have &#00A4FB%have% &#A7A7A7| Need &#00A4FB%need%"
+  deposit-success:           "&#A7A7A7Deposited &7%amount% &#A7A7A7shard(s) (&#7AFB00+$%value%&#A7A7A7) into your bank."
+  deposit-not-enough:        "&cNot enough Money Shards. &#A7A7A7Have &7%have% &#A7A7A7| Need &7%need%"
   deposit-all-empty:         "&cYou have no Money Shards to deposit."
-  withdraw-success:          "&#A7A7A7Withdrew &#00A4FB%amount% &#A7A7A7shard(s) (&#FC0000-$%value%&#A7A7A7) from your bank."
-  withdraw-not-enough-funds: "&cYou do not have enough funds. &#A7A7A7Need &#00A4FB$%need% &#A7A7A7| Have &#00A4FB$%balance%"
-  withdraw-no-space:         "&cNot enough inventory space for &#00A4FB%amount% &cshard(s). Please free up some room first."
+  withdraw-success:          "&#A7A7A7Withdrew &7%amount% &#A7A7A7shard(s) (&#FC0000-$%value%&#A7A7A7) from your bank."
+  withdraw-not-enough-funds: "&cYou do not have enough funds. &#A7A7A7Need &7$%need% &#A7A7A7| Have &7$%balance%"
+  withdraw-no-space:         "&cNot enough inventory space for &7%amount% &cshard(s). Please free up some room first."
   withdraw-all-full:         "&cYour inventory is completely full."
   withdraw-all-no-funds:     "&cYou do not have any funds to withdraw."
