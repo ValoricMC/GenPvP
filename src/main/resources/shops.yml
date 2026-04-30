@@ -999,7 +999,6 @@ shops:
           - "&7 - 2.0 &#5FE2C5Money"
         enchants:
           - "efficiency:2"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 1 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
