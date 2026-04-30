@@ -533,20 +533,16 @@ shops:
       # Premium (no prestige required)
       - slot: 19
         material: DIAMOND_SWORD
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fSword &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Sword &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Fire Aspect: &71"
+          - "&#F1C176• &7Sharpness III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Fire Aspect I"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
@@ -554,34 +550,26 @@ shops:
           - "sharpness:3"
           - "unbreaking:2"
           - "fire_aspect:1"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fSword"
+        after-store-bought-title: "&#F1C176Sword &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Fire Aspect: &71"
+          - "&#F1C176• &7Sharpness III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Fire Aspect I"
           - ""
 
       - slot: 28
         material: DIAMOND_AXE
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fAxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Axe &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Efficiency: &73"
+          - "&#F1C176• &7Sharpness III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Efficiency III"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
@@ -589,34 +577,26 @@ shops:
           - "sharpness:3"
           - "unbreaking:2"
           - "efficiency:3"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fAxe"
+        after-store-bought-title: "&#F1C176Axe &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Sharpness III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Efficiency III"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Efficiency: &73"
-          - ""
+
 
       - slot: 20
         material: DIAMOND_BOOTS
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fBoots &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Boots &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Feather Falling: &73"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
@@ -624,99 +604,76 @@ shops:
           - "protection:3"
           - "unbreaking:2"
           - "feather_falling:3"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fBoots"
+        after-store-bought-title: "&#F1C176Boots &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Feather Falling: &73"
-          - ""
+
 
       - slot: 21
         material: DIAMOND_LEGGINGS
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fLeggings &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Leggings &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
         enchants:
           - "protection:3"
           - "unbreaking:2"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fLeggings"
+        after-store-bought-title: "&#F1C176Leggings &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - ""
+
 
       - slot: 29
         material: DIAMOND_CHESTPLATE
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fChestplate &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Chestplate &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
         enchants:
           - "protection:3"
           - "unbreaking:2"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fChestplate"
+        after-store-bought-title: "&#F1C176Chestplate &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
           - ""
 
       - slot: 30
         material: DIAMOND_HELMET
-        name: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fHelmet &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Helmet &#FFB849[&#F1C1761&#FFB849]"
         price: 16
         currency-type: money
         allow-multiple: false
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Respiration: &73"
-          - "&#91CAF8Aqua Affinity: &71"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Respiration III"
+          - "&#F1C176• &7Aqua Affinity I"
           - ""
           - "&7Cost:"
           - "&7 - 16.0 &#5FE2C5Money"
@@ -725,38 +682,30 @@ shops:
           - "unbreaking:2"
           - "respiration:3"
           - "aqua_affinity:1"
-        after-store-bought-title: "&#4498DB&lP&#6BB1EA&lR&#91CAF8&lE&#4498DB&lM&#6BB1EA&lI&#91CAF8&lU&#4498DB&lM &fHelmet"
+        after-store-bought-title: "&#F1C176Helmet &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &73"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Respiration: &73"
-          - "&#91CAF8Aqua Affinity: &71"
+          - "&#F1C176• &7Protection III"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Respiration III"
+          - "&#F1C176• &7Aqua Affinity I"
           - ""
 
 
       # Legendary (requires prestige 1)
       - slot: 23
         material: DIAMOND_SWORD
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fSword &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Sword &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Fire Aspect: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Sharpness IV"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Fire Aspect II"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -765,36 +714,28 @@ shops:
           - "unbreaking:2"
           - "fire_aspect:2"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fSword"
+        after-store-bought-title: "&#F1C176Sword &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Fire Aspect: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Sharpness IV"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Fire Aspect II"
+          - "&#F1C176• &7Mending I"
           - ""
 
       - slot: 32
         material: DIAMOND_AXE
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fAxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Axe &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Efficiency: &74"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Sharpness IV"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Efficiency IV"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -803,7 +744,7 @@ shops:
           - "unbreaking:2"
           - "efficiency:4"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fAxe"
+        after-store-bought-title: "&#F1C176Axe &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
@@ -818,21 +759,17 @@ shops:
 
       - slot: 24
         material: DIAMOND_BOOTS
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fBoots &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Boots &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Feather Falling: &74"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Feather Falling IV"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -841,35 +778,27 @@ shops:
           - "unbreaking:2"
           - "feather_falling:4"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fBoots"
+        after-store-bought-title: "&#F1C176Boots &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Feather Falling: &74"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Feather Falling IV"
+          - "&#F1C176• &7Mending I"
           - ""
 
       - slot: 25
         material: DIAMOND_LEGGINGS
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fLeggings &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Leggings &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -877,34 +806,26 @@ shops:
           - "protection:4"
           - "unbreaking:2"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fLeggings"
+        after-store-bought-title: "&#F1C176Leggings &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Mending I"
           - ""
 
       - slot: 33
         material: DIAMOND_CHESTPLATE
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fChestplate &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Chestplate &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -912,36 +833,28 @@ shops:
           - "protection:4"
           - "unbreaking:2"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fChestplate"
+        after-store-bought-title: "&#F1C176Chestplate &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Mending I"
           - ""
 
       - slot: 34
         material: DIAMOND_HELMET
-        name: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fHelmet &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Helmet &#FFB849[&#F1C1762&#FFB849]"
         price: 32
         currency-type: money
         allow-multiple: false
         requires-prestige: 1
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Respiration: &73"
-          - "&#91CAF8Aqua Affinity: &71"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Respiration III"
+          - "&#F1C176• &7Aqua Affinity I"
+          - "&#F1C176• &7Mending I"
           - ""
           - "&7Cost:"
           - "&7 - 32.0 &#5FE2C5Money"
@@ -951,18 +864,14 @@ shops:
           - "respiration:3"
           - "aqua_affinity:1"
           - "mending:1"
-        after-store-bought-title: "&#FCD05C&lL&#FFEAB4&lE&#FEDD88&lG&#FCD05C&lE&#FFEAB4&lN&#FCD05C&lD&#FEDD88&lA&#FFEAB4&lR&#FCD05C&lY &fHelmet"
+        after-store-bought-title: "&#F1C176Helmet &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Protection: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Respiration: &73"
-          - "&#91CAF8Aqua Affinity: &71"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Protection IV"
+          - "&#F1C176• &7Unbreaking III"
+          - "&#F1C176• &7Respiration III"
+          - "&#F1C176• &7Aqua Affinity I"
+          - "&#F1C176• &7Mending I"
           - ""
 
     buttons: []
