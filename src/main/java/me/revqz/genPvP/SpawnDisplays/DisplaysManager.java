@@ -39,8 +39,8 @@ public class DisplaysManager {
 
     // Raw config values — stored separately so loadConfig() is safe before worlds load
     private String discordWorld, storeWorld;
-    private double discordX, discordY, discordZ;
-    private double storeX, storeY, storeZ;
+    private double discordX, discordY, discordZ, discordYaw, discordPitch;
+    private double storeX, storeY, storeZ, storeYaw, storePitch;
     private String discordSkull, storeSkull;
     private String discordText, storeText;
 
@@ -63,6 +63,8 @@ public class DisplaysManager {
         discordX     = cfg.getDouble("discord.x");
         discordY     = cfg.getDouble("discord.y");
         discordZ     = cfg.getDouble("discord.z");
+        discordYaw   = cfg.getDouble("discord.yaw", 0);
+        discordPitch = cfg.getDouble("discord.pitch", 0);
         discordSkull = cfg.getString("discord.skull", "");
         discordText  = cfg.getString("discord.text", "DISCORD");
 
@@ -70,6 +72,8 @@ public class DisplaysManager {
         storeX     = cfg.getDouble("store.x");
         storeY     = cfg.getDouble("store.y");
         storeZ     = cfg.getDouble("store.z");
+        storeYaw   = cfg.getDouble("store.yaw", 0);
+        storePitch = cfg.getDouble("store.pitch", 0);
         storeSkull = cfg.getString("store.skull", "");
         storeText  = cfg.getString("store.text", "STORE");
     }
@@ -95,21 +99,21 @@ public class DisplaysManager {
         }
 
         // Item displays at base + Y 2
-        ItemDisplay discord = dw.spawn(loc(dw, discordX, discordY + 2, discordZ), ItemDisplay.class, e -> {
+        ItemDisplay discord = dw.spawn(loc(dw, discordX, discordY + 2, discordZ, discordYaw, discordPitch), ItemDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             applyItemDisplay(e, discordSkull);
         });
-        ItemDisplay store = sw.spawn(loc(sw, storeX, storeY + 2, storeZ), ItemDisplay.class, e -> {
+        ItemDisplay store = sw.spawn(loc(sw, storeX, storeY + 2, storeZ, storeYaw, storePitch), ItemDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             applyItemDisplay(e, storeSkull);
         });
 
         // Text displays at base + Y 2.75, riding their item display
-        TextDisplay discordLabel = dw.spawn(loc(dw, discordX, discordY + 2.75, discordZ), TextDisplay.class, e -> {
+        TextDisplay discordLabel = dw.spawn(loc(dw, discordX, discordY + 2.75, discordZ, discordYaw, discordPitch), TextDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             applyTextDisplay(e, discordText);
         });
-        TextDisplay storeLabel = sw.spawn(loc(sw, storeX, storeY + 2.75, storeZ), TextDisplay.class, e -> {
+        TextDisplay storeLabel = sw.spawn(loc(sw, storeX, storeY + 2.75, storeZ, storeYaw, storePitch), TextDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             applyTextDisplay(e, storeText);
         });
@@ -120,14 +124,14 @@ public class DisplaysManager {
         dw.spawn(loc(dw, discordX, discordY - 1, discordZ), Interaction.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             e.getPersistentDataContainer().set(KEY_DISCORD, PersistentDataType.STRING, discord.getUniqueId().toString());
-            e.setInteractionWidth(4.0f);
-            e.setInteractionHeight(4.0f);
+            e.setInteractionWidth(3.0f);
+            e.setInteractionHeight(3.0f);
         });
         sw.spawn(loc(sw, storeX, storeY - 1, storeZ), Interaction.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             e.getPersistentDataContainer().set(KEY_STORE, PersistentDataType.STRING, store.getUniqueId().toString());
-            e.setInteractionWidth(4.0f);
-            e.setInteractionHeight(4.0f);
+            e.setInteractionWidth(3.0f);
+            e.setInteractionHeight(3.0f);
         });
 
         tasks.add(startRotation(discord));
@@ -140,7 +144,7 @@ public class DisplaysManager {
         e.setTransformation(new Transformation(
             new Vector3f(0, 0, 0),
             new AxisAngle4f(0, 0, 1, 0),
-            new Vector3f(4, 4, 4),
+            new Vector3f(3, 3, 3),
             new AxisAngle4f(0, 0, 1, 0)
         ));
         e.setGlowing(true);
@@ -172,7 +176,7 @@ public class DisplaysManager {
             display.setTransformation(new Transformation(
                 new Vector3f(0, yOffset, 0),
                 new AxisAngle4f(yawRad, 0, 1, 0),
-                new Vector3f(4, 4, 4),
+                new Vector3f(3, 3, 3),
                 new AxisAngle4f(0, 0, 1, 0)
             ));
         }, 1L, 1L);
@@ -199,6 +203,10 @@ public class DisplaysManager {
 
     private static org.bukkit.Location loc(World w, double x, double y, double z) {
         return new org.bukkit.Location(w, x, y, z);
+    }
+
+    private static org.bukkit.Location loc(World w, double x, double y, double z, double yaw, double pitch) {
+        return new org.bukkit.Location(w, x, y, z, (float) yaw, (float) pitch);
     }
 
     public void shutdown() {
