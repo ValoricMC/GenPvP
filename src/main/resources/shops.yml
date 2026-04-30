@@ -980,7 +980,7 @@ shops:
     items:
       - slot: 19
         material: DIAMOND_PICKAXE
-        name: "&#A0D0F6&lTIER 1 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_1"
         price: 2
         currency-type: money
@@ -999,7 +999,7 @@ shops:
           - "&7 - 2.0 &#5FE2C5Money"
         enchants:
           - "efficiency:2"
-        after-store-bought-title: "&#A0D0F6&lTIER 1 &fPickaxe"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
@@ -1011,7 +1011,7 @@ shops:
 
       - slot: 20
         material: DIAMOND_PICKAXE
-        name: "&#A0D0F6&lTIER 2 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1762&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_2"
         price: 8
         currency-type: money
@@ -1037,7 +1037,7 @@ shops:
         enchants:
           - "efficiency:3"
           - "fortune:1"
-        after-store-bought-title: "&#A0D0F6&lTIER 2 &fPickaxe"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
@@ -1050,7 +1050,7 @@ shops:
 
       - slot: 21
         material: DIAMOND_PICKAXE
-        name: "&#A0D0F6&lTIER 3 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1763&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_3"
         price: 16
         currency-type: money
@@ -1076,7 +1076,7 @@ shops:
         enchants:
           - "efficiency:5"
           - "fortune:2"
-        after-store-bought-title: "&#A0D0F6&lTIER 3 &fPickaxe"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1763&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
@@ -1089,7 +1089,7 @@ shops:
 
       - slot: 22
         material: DIAMOND_PICKAXE
-        name: "&#A0D0F6&lTIER 4 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1764&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_4"
         price: 24
         currency-type: money
@@ -1115,7 +1115,7 @@ shops:
         enchants:
           - "efficiency:7"
           - "fortune:3"
-        after-store-bought-title: "&#A0D0F6&lTIER 4 &fPickaxe"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1764&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
