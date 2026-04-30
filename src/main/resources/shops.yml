@@ -1172,6 +1172,7 @@ shops:
         price: 64
         currency-type: money
         allow-multiple: false
+        unbreakable: true
         requires-prestige: 2
         requires-item:
           material: NETHERITE_PICKAXE
