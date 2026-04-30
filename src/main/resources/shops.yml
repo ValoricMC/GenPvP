@@ -1154,7 +1154,7 @@ shops:
         enchants:
           - "efficiency:8"
           - "fortune:3"
-        after-store-bought-title: "&#A0D0F6&lTIER 5 &fPickaxe"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1765&#FFB849]"
         after-store-bought-lore:
           - "&8Amount: 1"
           - ""
