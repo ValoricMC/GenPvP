@@ -1010,7 +1010,7 @@ shops:
           - ""
 
       - slot: 20
-        material: NETHERITE_PICKAXE
+        material: DIAMOND_PICKAXE
         name: "&#A0D0F6&lTIER 2 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_2"
         price: 8
@@ -1037,7 +1037,6 @@ shops:
         enchants:
           - "efficiency:3"
           - "fortune:1"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 2 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1050,7 +1049,7 @@ shops:
           - ""
 
       - slot: 21
-        material: NETHERITE_PICKAXE
+        material: DIAMOND_PICKAXE
         name: "&#A0D0F6&lTIER 3 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_3"
         price: 16
@@ -1059,7 +1058,7 @@ shops:
         unbreakable: true
         requires-prestige: 0
         requires-item:
-          material: NETHERITE_PICKAXE
+          material: DIAMOND_PICKAXE
           item-id: "tier_2"
           consume: true
         lore:
@@ -1077,7 +1076,6 @@ shops:
         enchants:
           - "efficiency:5"
           - "fortune:2"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 3 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1090,7 +1088,7 @@ shops:
           - ""
 
       - slot: 22
-        material: NETHERITE_PICKAXE
+        material: DIAMOND_PICKAXE
         name: "&#A0D0F6&lTIER 4 &fPickaxe &8[&7ᴄʟɪᴄᴋ&8]"
         item-id: "tier_4"
         price: 24
@@ -1099,7 +1097,7 @@ shops:
         unbreakable: true
         requires-prestige: 0
         requires-item:
-          material: NETHERITE_PICKAXE
+          material: DIAMOND_PICKAXE
           item-id: "tier_3"
           consume: true
         lore:
@@ -1117,7 +1115,6 @@ shops:
         enchants:
           - "efficiency:7"
           - "fortune:3"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 4 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1137,7 +1134,7 @@ shops:
         currency-type: money
         allow-multiple: false
         unbreakable: true
-        requires-prestige: 1
+        requires-prestige: 0
         requires-item:
           material: NETHERITE_PICKAXE
           item-id: "tier_4"
@@ -1157,7 +1154,6 @@ shops:
         enchants:
           - "efficiency:8"
           - "fortune:3"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 5 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1177,7 +1173,7 @@ shops:
         currency-type: money
         allow-multiple: false
         unbreakable: true
-        requires-prestige: 2
+        requires-prestige: 1
         requires-item:
           material: NETHERITE_PICKAXE
           item-id: "tier_5"
@@ -1197,7 +1193,6 @@ shops:
         enchants:
           - "efficiency:9"
           - "fortune:4"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 6 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1238,7 +1233,6 @@ shops:
         enchants:
           - "efficiency:11"
           - "fortune:4"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 7 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
@@ -1258,7 +1252,7 @@ shops:
         currency-type: money
         allow-multiple: false
         unbreakable: true
-        requires-prestige: 3
+        requires-prestige: 2
         requires-item:
           material: NETHERITE_PICKAXE
           item-id: "tier_7"
@@ -1278,7 +1272,6 @@ shops:
         enchants:
           - "efficiency:13"
           - "fortune:5"
-        unbreakable: true
         after-store-bought-title: "&#A0D0F6&lTIER 8 &fPickaxe"
         after-store-bought-lore:
           - "&8Amount: 1"
