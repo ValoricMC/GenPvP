@@ -985,6 +985,7 @@ shops:
         price: 2
         currency-type: money
         allow-multiple: false
+        unbreakable: true
         requires-prestige: 0
         lore:
           - "&8Amount: 1"
