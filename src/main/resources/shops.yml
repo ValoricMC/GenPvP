@@ -1585,6 +1585,7 @@ shops:
         currency-type: devil-shards
         allow-multiple: true
         requires-prestige: 0
+        command: "fruit roll_give %player_name% logia 1"
         lore:
           - "&8Amount: %amount%"
           - ""
