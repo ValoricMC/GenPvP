@@ -980,7 +980,7 @@ shops:
     items:
       - slot: 19
         material: DIAMOND_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849]"
         item-id: "tier_1"
         price: 2
         currency-type: money
@@ -988,12 +988,10 @@ shops:
         unbreakable: true
         requires-prestige: 0
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &72"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - 2.0 &#5FE2C5Money"
@@ -1001,17 +999,14 @@ shops:
           - "efficiency:2"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &72"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 20
         material: DIAMOND_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1762&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1762&#FFB849]"
         item-id: "tier_2"
         price: 8
         currency-type: money
@@ -1023,13 +1018,11 @@ shops:
           item-id: "tier_1"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7III"
+          - "&#F1C176• &7Fortune &7I"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &73"
-          - "&#91CAF8Fortune: &71"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 1 &#5FE2C5Pickaxe"
@@ -1037,20 +1030,17 @@ shops:
         enchants:
           - "efficiency:3"
           - "fortune:1"
-        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1761&#FFB849]"
+        after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7III"
+          - "&#F1C176• &7Fortune &7I"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &73"
-          - "&#91CAF8Fortune: &71"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 21
         material: DIAMOND_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1763&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1763&#FFB849]"
         item-id: "tier_3"
         price: 16
         currency-type: money
@@ -1062,13 +1052,11 @@ shops:
           item-id: "tier_2"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7V"
+          - "&#F1C176• &7Fortune &7II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &75"
-          - "&#91CAF8Fortune: &72"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 2 &#5FE2C5Pickaxe"
@@ -1078,18 +1066,15 @@ shops:
           - "fortune:2"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1763&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7V"
+          - "&#F1C176• &7Fortune &7II"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &75"
-          - "&#91CAF8Fortune: &72"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 22
         material: DIAMOND_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1764&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1764&#FFB849]"
         item-id: "tier_4"
         price: 24
         currency-type: money
@@ -1101,13 +1086,11 @@ shops:
           item-id: "tier_3"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7VII"
+          - "&#F1C176• &7Fortune &7III"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &77"
-          - "&#91CAF8Fortune: &73"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 3 &#5FE2C5Pickaxe"
@@ -1117,18 +1100,15 @@ shops:
           - "fortune:3"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1764&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7VII"
+          - "&#F1C176• &7Fortune &7III"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &77"
-          - "&#91CAF8Fortune: &73"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 23
         material: NETHERITE_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1765&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1765&#FFB849]"
         item-id: "tier_5"
         price: 32
         currency-type: money
@@ -1140,13 +1120,11 @@ shops:
           item-id: "tier_4"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7VIII"
+          - "&#F1C176• &7Fortune &7III"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &78"
-          - "&#91CAF8Fortune: &73"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 4 &#5FE2C5Pickaxe"
@@ -1156,18 +1134,15 @@ shops:
           - "fortune:3"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1765&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7VIII"
+          - "&#F1C176• &7Fortune &7III"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &78"
-          - "&#91CAF8Fortune: &73"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 24
         material: NETHERITE_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1766&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1766&#FFB849]"
         item-id: "tier_6"
         price: 64
         currency-type: money
@@ -1179,13 +1154,11 @@ shops:
           item-id: "tier_5"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7IX"
+          - "&#F1C176• &7Fortune &7IV"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &79"
-          - "&#91CAF8Fortune: &74"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 5 &#5FE2C5Pickaxe"
@@ -1195,18 +1168,15 @@ shops:
           - "fortune:4"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1766&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7IX"
+          - "&#F1C176• &7Fortune &7IV"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &79"
-          - "&#91CAF8Fortune: &74"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 25
         material: NETHERITE_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1767&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1767&#FFB849]"
         item-id: "tier_7"
         price: 128
         currency-type: money
@@ -1218,14 +1188,11 @@ shops:
           item-id: "tier_6"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7XI"
+          - "&#F1C176• &7Fortune &7IV"
           - ""
-
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &711"
-          - "&#91CAF8Fortune: &74"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 6 &#5FE2C5Pickaxe"
@@ -1235,18 +1202,15 @@ shops:
           - "fortune:4"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1767&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7XI"
+          - "&#F1C176• &7Fortune &7IV"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &711"
-          - "&#91CAF8Fortune: &74"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
       - slot: 28
         material: NETHERITE_PICKAXE
-        name: "&#F1C176Pickaxe &#FFB849[&#F1C1768&#FFB849] &8[&7ᴄʟɪᴄᴋ&8]"
+        name: "&#F1C176Pickaxe &#FFB849[&#F1C1768&#FFB849]"
         item-id: "tier_8"
         price: 256
         currency-type: money
@@ -1258,13 +1222,11 @@ shops:
           item-id: "tier_7"
           consume: true
         lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7XIII"
+          - "&#F1C176• &7Fortune &7V"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficency: &713"
-          - "&#91CAF8Fortune: &75"
+          - "&#F1C176☀ Unbreakable"
           - ""
           - "&7Cost:"
           - "&7 - Tier 7 &#5FE2C5Pickaxe"
@@ -1274,14 +1236,11 @@ shops:
           - "fortune:5"
         after-store-bought-title: "&#F1C176Pickaxe &#FFB849[&#F1C1768&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
+          - "&#F1C176• &7Efficency &7XIII"
+          - "&#F1C176• &7Fortune &7V"
           - ""
-          - "&fEnchants:"
-          - "&#91CAF8Efficiency: &713"
-          - "&#91CAF8Fortune: &75"
-          - ""
+          - "&#F1C176☀ Unbreakable"
 
     buttons: []
     slot-buttons:
