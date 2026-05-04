@@ -16,6 +16,7 @@ public class ManaManager implements Listener {
     private final GenPvP plugin;
     private final YamlConfiguration fruitConfig;
     private final ConcurrentHashMap<UUID, Integer> mana = new ConcurrentHashMap<>();
+    private volatile long nextRegenAt = 0;
 
     public ManaManager(GenPvP plugin, YamlConfiguration fruitConfig) {
         this.plugin      = plugin;
@@ -25,11 +26,19 @@ public class ManaManager implements Listener {
 
     private void startRegenTask() {
         long intervalTicks = (long) fruitConfig.getInt("mana.regen-interval-seconds", 10) * 20L;
-        int regenAmount    = fruitConfig.getInt("mana.regen-amount", 1);
+        long intervalMs    = intervalTicks * 50L;
+        int  regenAmount   = fruitConfig.getInt("mana.regen-amount", 1);
+        nextRegenAt = System.currentTimeMillis() + intervalMs;
         plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             int max = getMax();
             mana.replaceAll((uuid, current) -> Math.min(current + regenAmount, max));
+            nextRegenAt = System.currentTimeMillis() + intervalMs;
         }, intervalTicks, intervalTicks);
+    }
+
+    /** Milliseconds until the next mana regen tick fires. */
+    public long getMillisUntilRegen() {
+        return Math.max(0, nextRegenAt - System.currentTimeMillis());
     }
 
     public int getMax() {

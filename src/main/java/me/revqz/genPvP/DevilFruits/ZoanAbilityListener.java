@@ -93,8 +93,8 @@ public class ZoanAbilityListener implements Listener {
             return;
         }
 
-        if (activeAbility.contains(uuid)) {
-            player.sendMessage(msg("ability-already-active"));
+        if (fruitManager.isFruitKeyDisabled(equipped)) {
+            player.sendMessage(msg("ability-disabled").replace("%fruit%", fruit.getDisplayName()));
             return;
         }
 
@@ -106,6 +106,11 @@ public class ZoanAbilityListener implements Listener {
             return;
         }
         abilityCooldown.remove(uuid);
+
+        if (activeAbility.contains(uuid)) {
+            player.sendMessage(msg("ability-already-active"));
+            return;
+        }
 
         int cost = cfg(equipped, "mana-cost", 1);
         if (!manaManager.spend(uuid, cost)) {
@@ -209,14 +214,14 @@ public class ZoanAbilityListener implements Listener {
         int  webDuration = cfg("kumo_kumo_tarantula", "web-duration-seconds", 5) * 20;
         final UUID uuid  = shooterUuid;
 
-        // Find the base Y: start at impact position, scan up until we're in air.
         Location impact = snowball.getLocation();
         World world = impact.getWorld();
         int cx = impact.getBlockX();
         int cz = impact.getBlockZ();
         int cy = impact.getBlockY();
+        // Scan up from impact until we find a non-solid block to anchor the cube base
         for (int scan = cy; scan <= cy + 4; scan++) {
-            if (world.getBlockAt(cx, scan, cz).getType().isAir()) { cy = scan; break; }
+            if (!world.getBlockAt(cx, scan, cz).getType().isSolid()) { cy = scan; break; }
         }
 
         Location center = new Location(world, cx + 0.5, cy, cz + 0.5);
@@ -225,13 +230,13 @@ public class ZoanAbilityListener implements Listener {
         center.getWorld().playSound(center, Sound.ENTITY_SPIDER_AMBIENT, 1f, 0.8f);
         center.getWorld().spawnParticle(Particle.CLOUD, center, 12, 0.6, 0.2, 0.6, 0.03);
 
-        // Place a 3×3×3 cube of cobwebs at once
+        // Place a 3×3×3 cube of cobwebs — skip solid blocks and liquids only
         List<Block> allPlaced = new ArrayList<>();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = 0; dy <= 2; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Block block = world.getBlockAt(cx + dx, cy + dy, cz + dz);
-                    if (block.getType().isAir()) {
+                    if (!block.getType().isSolid() && !block.isLiquid()) {
                         block.setType(Material.COBWEB);
                         allPlaced.add(block);
                     }

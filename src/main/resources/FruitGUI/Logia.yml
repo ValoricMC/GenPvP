@@ -1,49 +1,62 @@
 title: "Devil Fruit Menu: Logia"
 
 fruits:
-  mera_mera:
-    slot: 12
-    material: FIRE_CHARGE
-    name: "&#FF4500&lMera Mera no Mi"
+  goro_goro:
+    slot: 10
+    material: LIGHTNING_ROD
+    name: "&#FFD700&lGoro Goro no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
-      - "&7The Flame Fruit"
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
       - ""
+      - "&7The Rumble-Rumble Fruit"
+      - "&8Teleport forward & strike landing with lightning"
       - ""
-    devil-equipped-name: "&#FF4500&lMera Mera no Mi"
+      - "&fCost: &7- 3 &#89CBFFMana"
+    devil-equipped-name: "&#FFD700&lGoro Goro no Mi"
     devil-equipped-lore:
-      - "&8ʟᴏɢɪᴀ"
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
       - ""
-      - "&7The Flame-Flame Fruit"
+      - "&7The Rumble-Rumble Fruit"
+      - "&8Teleport forward &7& &8strike landing with lightning"
       - ""
-      - "&#FFDE87▶ Right-click to activate"
+      - "&fCost: &7- 3 &#89CBFFMana"
 
-  magu_magu:
-    slot: 13
-    material: MAGMA_CREAM
-    name: "&#EE5A24&lMagu Magu no Mi"
+  hie_hie:
+    slot: 11
+    material: BLUE_ICE
+    name: "&#00FFFF&lHie Hie no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
-      - "&7The Magma Fruit"
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
       - ""
+      - "&7The Chilly-Chilly Fruit"
+      - "&8Freezes surrounding ground & severely slows enemies"
       - ""
-    devil-equipped-name: "&#EE5A24&lMagu Magu no Mi"
+      - "&fCost: &7- 2 &#89CBFFMana"
+    devil-equipped-name: "&#00FFFF&lHie Hie no Mi"
     devil-equipped-lore:
-      - "&8ʟᴏɢɪᴀ"
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
       - ""
-      - "&7The Magma-Magma Fruit"
+      - "&7The Chilly-Chilly Fruit"
+      - "&8Freezes surrounding ground &7& &8severely slows enemies"
       - ""
-      - "&#FFDE87▶ Right-click to activate"
+      - "&fCost: &7- 2 &#89CBFFMana"
+
   yami_yami:
-    slot: 14
-    material: BLACK_DYE
-    name: "&#2C003E&lYami Yami no Mi"
+    slot: 12
+    material: OBSIDIAN
+    name: "&#191970&lYami Yami no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
-      - "&7The Darkness Fruit"
-      - ""
-      - ""
-    devil-equipped-name: "&#2C003E&lYami Yami no Mi"
-    devil-equipped-lore:
-      - "&8ʟᴏɢɪᴀ"
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
       - ""
       - "&7The Dark-Dark Fruit"
+      - "&8Pulls nearby enemies to you & inflicts Blindness"
       - ""
-      - "&#FFDE87▶ Right-click to activate"
+      - "&fCost: &7- 3 &#89CBFFMana"
+    devil-equipped-name: "&#191970&lYami Yami no Mi"
+    devil-equipped-lore:
+      - "&8ʟᴏɢɪᴀ ғʀᴜɪᴛ"
+      - ""
+      - "&7The Dark-Dark Fruit"
+      - "&8Pulls nearby enemies to you &7& &8inflicts Blindness"
+      - ""
+      - "&fCost: &7- 3 &#89CBFFMana"

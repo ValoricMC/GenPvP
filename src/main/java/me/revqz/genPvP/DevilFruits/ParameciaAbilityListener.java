@@ -100,12 +100,11 @@ public class ParameciaAbilityListener implements Listener {
             return;
         }
 
-        if (activeAbility.contains(uuid)) {
-            player.sendMessage(msg("ability-already-active"));
+        if (fruitManager.isFruitKeyDisabled(equipped)) {
+            player.sendMessage(msg("ability-disabled").replace("%fruit%", fruit.getDisplayName()));
             return;
         }
 
-        // Check cooldown
         Long expiresAt = abilityCooldown.get(uuid);
         if (expiresAt != null && System.currentTimeMillis() < expiresAt) {
             double secondsLeft = (expiresAt - System.currentTimeMillis()) / 1000.0;
@@ -114,6 +113,11 @@ public class ParameciaAbilityListener implements Listener {
             return;
         }
         abilityCooldown.remove(uuid);
+
+        if (activeAbility.contains(uuid)) {
+            player.sendMessage(msg("ability-already-active"));
+            return;
+        }
 
         int cost = cfg(equipped, "mana-cost", 1);
         if (!manaManager.spend(uuid, cost)) {
@@ -285,10 +289,9 @@ public class ParameciaAbilityListener implements Listener {
             potionItem.setItemMeta(meta);
         }
 
-        ThrownPotion tp = player.getWorld().spawn(player.getEyeLocation(), ThrownPotion.class);
+        ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
         tp.setItem(potionItem);
         tp.setVelocity(player.getLocation().getDirection().normalize().multiply(1.5));
-        tp.setShooter(player);
 
         player.playSound(player.getLocation(), Sound.ENTITY_WITCH_THROW, 1f, 1f);
         Particle.DustOptions venomDust = new Particle.DustOptions(Color.fromRGB(100, 0, 180), 1.2f);

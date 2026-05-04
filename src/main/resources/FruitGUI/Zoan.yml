@@ -4,19 +4,17 @@ fruits:
   tori_tori_falcon:
     slot: 10
     material: PHANTOM_MEMBRANE
-    name: "&#F5DEB3&lTori Tori no Mi: Falcon &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#F5DEB3&lTori Tori no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Bird-Bird Fruit, Model: Falcon"
-      - ""
       - "&8Launch upward & temporary Elytra flight"
       - ""
-      - "&fCost:"
-      - "&7- 3.0 &#89CBFFMana"
+      - "&fCost: &7- 3 &#89CBFFMana"
     devil-equipped-name: "&#F5DEB3&lTori Tori no Mi: Falcon"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Bird-Bird Fruit, Model: Falcon"
       - "&8Launch upward &7& &8temporary Elytra flight"
@@ -25,19 +23,17 @@ fruits:
   kumo_kumo_tarantula:
     slot: 11
     material: COBWEB
-    name: "&#8B0000&lKumo Kumo no Mi: Tarantula &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#8B0000&lKumo Kumo no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Spider-Spider Fruit, Model: Tarantula"
-      - ""
       - "&8Shoots venom that spawns a 3x3 cobweb trap"
       - ""
-      - "&fCost:"
-      - "&7- 2.0 &#89CBFFMana"
+      - "&fCost: &7- 2 &#89CBFFMana"
     devil-equipped-name: "&#8B0000&lKumo Kumo no Mi: Tarantula"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Spider-Spider Fruit, Model: Tarantula"
       - "&8Shoots venom that spawns a 3x3 cobweb trap"
@@ -46,19 +42,17 @@ fruits:
   zou_zou_mammoth:
     slot: 12
     material: BROWN_WOOL
-    name: "&#8B4513&lZou Zou no Mi: Mammoth &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#8B4513&lZou Zou no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Elephant-Elephant Fruit, Model: Mammoth"
-      - ""
       - "&8Ground stomp launches enemies vertically"
       - ""
-      - "&fCost:"
-      - "&7- 3.0 &#89CBFFMana"
+      - "&fCost: &7- 3 &#89CBFFMana"
     devil-equipped-name: "&#8B4513&lZou Zou no Mi: Mammoth"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Elephant-Elephant Fruit, Model: Mammoth"
       - "&8Ground stomp launches enemies vertically"
@@ -67,19 +61,17 @@ fruits:
   neko_neko_leopard:
     slot: 13
     material: YELLOW_DYE
-    name: "&#FFD700&lNeko Neko no Mi: Leopard &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#FFD700&lNeko Neko no Mi &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Cat-Cat Fruit, Model: Leopard"
-      - ""
       - "&8Fierce pounce that bypasses shields on impact"
       - ""
-      - "&fCost:"
-      - "&7- 2.0 &#89CBFFMana"
+      - "&fCost: &7- 2 &#89CBFFMana"
     devil-equipped-name: "&#FFD700&lNeko Neko no Mi: Leopard"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Cat-Cat Fruit, Model: Leopard"
       - "&8Fierce pounce that bypasses shields on impact"
@@ -88,19 +80,17 @@ fruits:
   hebi_hebi_cobra:
     slot: 14
     material: SPIDER_EYE
-    name: "&#228B22&lHebi Hebi no Mi: Cobra &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#228B22&lHebi Hebi no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Snake-Snake Fruit, Model: King Cobra"
-      - ""
       - "&8Pulls target slightly in & inflicts deadly poison"
       - ""
-      - "&fCost:"
-      - "&7- 3.0 &#89CBFFMana"
+      - "&fCost: &7- 3 &#89CBFFMana"
     devil-equipped-name: "&#228B22&lHebi Hebi no Mi: Cobra"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Snake-Snake Fruit, Model: King Cobra"
       - "&8Pulls target slightly in &7& &8inflicts deadly poison"
@@ -109,19 +99,17 @@ fruits:
   inu_inu_wolf:
     slot: 15
     material: BONE
-    name: "&#A9A9A9&lInu Inu no Mi: Wolf &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
+    name: "&#A9A9A9&lInu Inu no Mi &fFruit &8[&7ᴄʟɪᴄᴋ&8]"
     lore:
       - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Dog-Dog Fruit, Model: Wolf"
-      - ""
       - "&8Howl makes nearby enemies glow & grants Speed"
       - ""
-      - "&fCost:"
-      - "&7- 2.0 &#89CBFFMana"
+      - "&fCost: &7- 2 &#89CBFFMana"
     devil-equipped-name: "&#A9A9A9&lInu Inu no Mi: Wolf"
     devil-equipped-lore:
-      - "&8ᴢᴏᴀɴ"
+      - "&8ᴢᴏᴀɴ ғʀᴜɪᴛ"
       - ""
       - "&7The Dog-Dog Fruit, Model: Wolf"
       - "&8Howl makes nearby enemies glow &7& &8grants Speed"

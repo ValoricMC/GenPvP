@@ -47,26 +47,40 @@ ability-already-active: "&cYou already have an ability active."
 ability-on-cooldown:    "&cAbility on cooldown: &7%time%&8(&7s&8)"
 # %current% = player's current mana, %cost% = required mana
 not-enough-mana:        "&#FACBE6&lMANA &8» &cNo Mana &f(&7%current%&8/&7%cost%&f)"
+# %fruit% = fruit display name
+ability-disabled:       "&cThis ability is currently disabled: &7%fruit%"
+
+# /fruit disable and /fruit enable (OP)
+fruit-disabled:         "&#FC0000Disabled &f%fruit% &7ability for all players."
+fruit-enabled:          "&#7AFB00Enabled &f%fruit% &7ability for all players."
+fruit-already-disabled: "&c%fruit% &cability is already disabled."
+fruit-not-disabled:     "&c%fruit% &cability is not currently disabled."
+disable-usage:          "&cTry using: /fruit disable <fruit>"
+enable-usage:           "&cTry using: /fruit enable <fruit>"
 
 # Ability activation messages
 ability:
-  sube_sube: "&#ADD8E6&lSube Sube &r&8» Sliding burst activated!"
-  suke_suke: "&#E0E0E0&lSuke Suke &r&8» Turning invisible!"
-  bane_bane: "&#90EE90&lBane Bane &r&8» Spring leap!"
-  supa_supa: "&#C0C0C0&lSupa Supa &r&8» Blade body active!"
-  doku_doku: "&#4B0082&lDoku Doku &r&8» Venom launched!"
-  bomu_bomu: "&#FF6347&lBomu Bomu &r&8» Next hit will explode!"
-  bari_bari: "&#87CEEB&lBari Bari &r&8» Barrier raised!"
-  fuwa_fuwa: "&#FFFACD&lFuwa Fuwa &r&8» Rising!"
-  gura_gura: "&#8B4513&lGura Gura &r&8» Shockwave released!"
-  tori_tori_falcon: "&#F5DEB3&lTori Tori &r&8» Launching into the skies!"
-  kumo_kumo_tarantula: "&#8B0000&lKumo Kumo &r&8» Web shot fired!"
-  kumo_kumo_tarantula_miss: "&#8B0000&lKumo Kumo &r&8» No target in range."
-  zou_zou_mammoth: "&#8B4513&lZou Zou &r&8» Ground stomp!"
-  neko_neko_leopard: "&#FFD700&lNeko Neko &r&8» Pouncing!"
-  hebi_hebi_cobra: "&#228B22&lHebi Hebi &r&8» Venom strike!"
-  hebi_hebi_cobra_miss: "&#228B22&lHebi Hebi &r&8» No target in range."
-  inu_inu_wolf: "&#A9A9A9&lInu Inu &r&8» Howling!"
+  goro_goro: "&#FFD700&lGoro Goro &r&8» &7Lightning strike!"
+  goro_goro_miss: "&#FFD700&lGoro Goro &r&8» &7No target in range."
+  hie_hie: "&#00FFFF&lHie Hie &r&8» &7Frozen!"
+  yami_yami: "&#2C003E&lYami Yami &r&8» &7Darkness pull!"
+  sube_sube: "&#ADD8E6&lSube Sube &r&8» &7Sliding burst activated!"
+  suke_suke: "&#E0E0E0&lSuke Suke &r&8» &7Turning invisible!"
+  bane_bane: "&#90EE90&lBane Bane &r&8» &7Spring leap!"
+  supa_supa: "&#C0C0C0&lSupa Supa &r&8» &7Blade body active!"
+  doku_doku: "&#4B0082&lDoku Doku &r&8» &7Venom launched!"
+  bomu_bomu: "&#FF6347&lBomu Bomu &r&8» &7Next hit will explode!"
+  bari_bari: "&#87CEEB&lBari Bari &r&8» &7Barrier raised!"
+  fuwa_fuwa: "&#FFFACD&lFuwa Fuwa &r&8» &7Rising!"
+  gura_gura: "&#8B4513&lGura Gura &r&8» &7Shockwave released!"
+  tori_tori_falcon: "&#F5DEB3&lTori Tori &r&8» &7Launching into the skies!"
+  kumo_kumo_tarantula: "&#8B0000&lKumo Kumo &r&8» &7Web shot fired!"
+  kumo_kumo_tarantula_miss: "&#8B0000&lKumo Kumo &r&8» &7No target in range."
+  zou_zou_mammoth: "&#8B4513&lZou Zou &r&8» &7Ground stomp!"
+  neko_neko_leopard: "&#FFD700&lNeko Neko &r&8» &7Pouncing!"
+  hebi_hebi_cobra: "&#228B22&lHebi Hebi &r&8» &7Venom strike!"
+  hebi_hebi_cobra_miss: "&#228B22&lHebi Hebi &r&8» &7No target in range."
+  inu_inu_wolf: "&#A9A9A9&lInu Inu &r&8» &7Howling!"
 
 #fruit rolling
 roll-usage:           "&cTry using: /fruit roll (fruit type)"
@@ -104,6 +118,6 @@ give-shard-given:  "&d&lSHARD &8» &7Gave &d%amount% &7Devil Fruit Shard(s) to &
 
 # Mana values
 mana:
-  max: 10
+  max: 5
   regen-amount: 1
   regen-interval-seconds: 10

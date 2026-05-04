@@ -103,6 +103,16 @@ All placeholders use the `%genpvp_<identifier>%` format and require PlaceholderA
 
 ---
 
+## Devil Fruits
+
+| Placeholder | Description |
+|---|---|
+| `%genpvp_devil_fruit_equipped%` | Display name of the player's currently equipped Devil Fruit, or `None` |
+| `%genpvp_devil_fruit_mana%` | Player's current mana amount (integer, e.g. `7`) |
+| `%genpvp_devil_fruit_mana_regen%` | Time until the next mana regen tick, formatted to 1 decimal place (e.g. `4.3s`) |
+
+---
+
 ## Player Head Placeholders
 
 All `_playerhead_<1-10>` placeholders return a `<head:UUID>` tag that the ScoreboardPanel image renderer draws as a 2D face (8x8 skin pixels, hat layer composited on top, scaled to the configured line height).
@@ -120,6 +130,59 @@ scoreboard:
 - **Minecraft sidebar**: renders only the player's name
 
 Faces are cached when players connect. If a leaderboard entry is for an offline player whose skin was never cached this session, a grey square placeholder is shown until they log in.
+
+---
+
+# Devil Fruit Reference
+
+Fruits are split into three types. Players equip one fruit at a time and activate its ability by **right-clicking** with the Fruit Slot item while **sneaking**. Each use costs mana; mana regenerates over time.
+
+---
+
+## Logia
+
+Logia fruits are passive — they grant elemental properties without an active ability button.
+
+| Internal Key | Display Name | Effect |
+|---|---|---|
+| `mera_mera` | Mera Mera no Mi | Flame Logia — fire elemental body |
+| `magu_magu` | Magu Magu no Mi | Magma Logia — magma elemental body |
+| `yami_yami` | Yami Yami no Mi | Darkness Logia — darkness elemental body |
+
+---
+
+## Paramecia
+
+All Paramecia fruits have an active ability triggered by right-click.
+
+| Internal Key | Display Name | Mana | What it does |
+|---|---|---|---|
+| `sube_sube` | Sube Sube no Mi | 1 | Gives Speed II and reduces friction for 5 s, letting you slide across the ground. |
+| `suke_suke` | Suke Suke no Mi | 2 | Turns you fully invisible (Invisibility I) for 8 s. |
+| `bane_bane` | Bane Bane no Mi | 2 | Stores a spring charge on right-click; releasing launches you into the air with a powerful leap. Charge window is 30 s. |
+| `supa_supa` | Supa Supa no Mi | 3 | Activates blade mode for 10 s — your attacks deal +2.5 bonus damage. |
+| `doku_doku` | Doku Doku no Mi | 3 | Sprays venom at the enemy in front of you, applying Poison I and Slowness II for 8 s. |
+| `bomu_bomu` | Bomu Bomu no Mi | 2 | Primes your body; the next hit within 5 s triggers an explosion (yield 1.2) centred on you. |
+| `bari_bari` | Bari Bari no Mi | 3 | Erects a barrier in front of you that blocks projectiles and pushes back enemies for 6 s. |
+| `fuwa_fuwa` | Fuwa Fuwa no Mi | 3 | Launches you upward with strong Levitation (amplifier 6) for 5 s, then applies Slow Falling for 1 s to let you descend safely. |
+| `gura_gura` | Gura Gura no Mi | 4 | Releases a shockwave in a 5-block radius dealing 6 damage and launching enemies away (knockback ×2.2). |
+| `zushi_zushi` | Zushi Zushi no Mi | — | Gravity Paramecia — gravity manipulation (passive / custom handling). |
+| `nikyu_nikyu` | Nikyu Nikyu no Mi | — | Paw Paramecia — repulsion pads (passive / custom handling). |
+
+---
+
+## Zoan
+
+Zoan fruits have an active ability and a cooldown before the ability can be used again.
+
+| Internal Key | Display Name | Mana | Cooldown | What it does |
+|---|---|---|---|---|
+| `tori_tori_falcon` | Tori Tori no Mi: Falcon | 3 | 15 s | Launches you ~10 blocks into the air and force-equips an Elytra for 4 s, letting you glide. Your original chestplate is restored automatically. |
+| `kumo_kumo_tarantula` | Kumo Kumo no Mi: Tarantula | 2 | 12 s | Fires a web projectile. On impact it spawns a 3×3×3 cube of cobwebs that traps anyone inside for 10 s before dissolving. |
+| `zou_zou_mammoth` | Zou Zou no Mi: Mammoth | 3 | 14 s | Charges forward at high speed for ~9 ticks, trampling through all enemies in your path — dealing 4 damage and knocking each one sideways. |
+| `neko_neko_leopard` | Neko Neko no Mi: Leopard | 2 | 10 s | Dashes forward at high speed. The first enemy hit takes 5 burst damage and has their shield disabled for ~5 s; the dash then stops. |
+| `hebi_hebi_cobra` | Hebi Hebi no Mi: Cobra | 3 | 12 s | Pulls the nearest enemy within 12 blocks toward you and applies Poison II for 6 s. |
+| `inu_inu_wolf` | Inu Inu no Mi: Wolf | 2 | 18 s | Howls to grant yourself Speed II for 8 s, and marks all enemies within 20 blocks with Glowing for 10 s (also strips their Invisibility). |
 
 ---
 

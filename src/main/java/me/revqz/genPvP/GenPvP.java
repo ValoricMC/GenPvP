@@ -344,6 +344,12 @@ public final class GenPvP extends JavaPlugin {
                         fruitGUIManager, fruitSlotManager);
         getServer().getPluginManager().registerEvents(zoanAbilities, this);
 
+        me.revqz.genPvP.DevilFruits.LogiaAbilityListener logiaAbilities =
+                new me.revqz.genPvP.DevilFruits.LogiaAbilityListener(
+                        this, devilFruitManager, manaManager, regionManager,
+                        fruitGUIManager, fruitSlotManager);
+        getServer().getPluginManager().registerEvents(logiaAbilities, this);
+
         // Fruit Roll system — rolling slot-machine GUI
         fruitRollManager =
                 new me.revqz.genPvP.DevilFruits.FruitRollManager(this, databaseManager);
@@ -439,7 +445,7 @@ public final class GenPvP extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new GenPvPExpansion(this, pvpRoomManager, kothManager, bankManager, prestigeManager, statsManager,
-                    skinCache, teamManager, devilFruitManager, luffyArmorManager).register();
+                    skinCache, teamManager, devilFruitManager, luffyArmorManager, manaManager).register();
         }
 
         scoreboardManager = new ScoreboardManager(this, kothManager);

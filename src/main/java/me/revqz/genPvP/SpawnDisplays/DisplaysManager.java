@@ -23,6 +23,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -82,7 +83,10 @@ public class DisplaysManager {
         tasks.forEach(BukkitTask::cancel);
         tasks.clear();
 
-        // Kill old spawn entities across all worlds
+        // Kill entities from the previous session by UUID (force-loads their chunks so the scan is reliable)
+        killSavedEntities();
+
+        // Fallback PDC scan for any strays not covered by the UUID file
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity.getPersistentDataContainer().has(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN)) {
@@ -121,21 +125,66 @@ public class DisplaysManager {
         store.addPassenger(storeLabel);
 
         // Interactions at base - Y 1, linked to their item display by UUID
-        dw.spawn(loc(dw, discordX, discordY - 1, discordZ), Interaction.class, e -> {
+        Interaction discordInteraction = dw.spawn(loc(dw, discordX, discordY - 1, discordZ), Interaction.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             e.getPersistentDataContainer().set(KEY_DISCORD, PersistentDataType.STRING, discord.getUniqueId().toString());
             e.setInteractionWidth(3.0f);
             e.setInteractionHeight(3.0f);
         });
-        sw.spawn(loc(sw, storeX, storeY - 1, storeZ), Interaction.class, e -> {
+        Interaction storeInteraction = sw.spawn(loc(sw, storeX, storeY - 1, storeZ), Interaction.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             e.getPersistentDataContainer().set(KEY_STORE, PersistentDataType.STRING, store.getUniqueId().toString());
             e.setInteractionWidth(3.0f);
             e.setInteractionHeight(3.0f);
         });
 
+        saveEntityUUIDs(discord, store, discordLabel, storeLabel, discordInteraction, storeInteraction);
+
         tasks.add(startRotation(discord));
         tasks.add(startRotation(store));
+    }
+
+    // ── UUID persistence helpers ──────────────────────────────────────────────
+
+    private static final String ENTITY_FILE = "display_entity_uuids.yml";
+
+    private void saveEntityUUIDs(Entity... entities) {
+        File file = new File(plugin.getDataFolder(), ENTITY_FILE);
+        var cfg = new org.bukkit.configuration.file.YamlConfiguration();
+        int i = 0;
+        for (Entity e : entities) {
+            if (e == null) continue;
+            String base = "entities." + i;
+            cfg.set(base + ".uuid",  e.getUniqueId().toString());
+            cfg.set(base + ".world", e.getWorld().getName());
+            cfg.set(base + ".cx",    e.getLocation().getBlockX() >> 4);
+            cfg.set(base + ".cz",    e.getLocation().getBlockZ() >> 4);
+            i++;
+        }
+        try { cfg.save(file); } catch (IOException ex) {
+            plugin.getLogger().warning("[Displays] Failed to save entity UUIDs: " + ex.getMessage());
+        }
+    }
+
+    private void killSavedEntities() {
+        File file = new File(plugin.getDataFolder(), ENTITY_FILE);
+        if (!file.exists()) return;
+        var cfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
+        var section = cfg.getConfigurationSection("entities");
+        if (section == null) { file.delete(); return; }
+        for (String key : section.getKeys(false)) {
+            String uuidStr   = section.getString(key + ".uuid");
+            String worldName = section.getString(key + ".world");
+            int cx = section.getInt(key + ".cx");
+            int cz = section.getInt(key + ".cz");
+            if (uuidStr == null || worldName == null) continue;
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) continue;
+            world.loadChunk(cx, cz); // force entity data into memory
+            Entity entity = Bukkit.getEntity(UUID.fromString(uuidStr));
+            if (entity != null) entity.remove();
+        }
+        file.delete();
     }
 
     private void applyItemDisplay(ItemDisplay e, String skull) {

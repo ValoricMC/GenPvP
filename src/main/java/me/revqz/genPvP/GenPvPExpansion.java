@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.revqz.genPvP.Bank.BankManager;
 import me.revqz.genPvP.DevilFruits.DevilFruit;
 import me.revqz.genPvP.DevilFruits.DevilFruitManager;
+import me.revqz.genPvP.DevilFruits.ManaManager;
 import me.revqz.genPvP.Items.LuffyArmorManager;
 import me.revqz.genPvP.Koth.KothManager;
 import me.revqz.genPvP.Prestige.PrestigeManager;
@@ -76,6 +77,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
     private final TeamManager teamManager;
     private final DevilFruitManager devilFruitManager;
     private final LuffyArmorManager luffyArmorManager;
+    private final ManaManager manaManager;
 
     public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
             KothManager kothManager, BankManager bankManager,
@@ -83,7 +85,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             Object skinCache /* unused — kept for GenPvP.java compat */,
             TeamManager teamManager) {
         this(plugin, pvpRoomManager, kothManager, bankManager, prestigeManager,
-                statsManager, skinCache, teamManager, null, null);
+                statsManager, skinCache, teamManager, null, null, null);
     }
 
     public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
@@ -93,6 +95,18 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             TeamManager teamManager,
             DevilFruitManager devilFruitManager,
             LuffyArmorManager luffyArmorManager) {
+        this(plugin, pvpRoomManager, kothManager, bankManager, prestigeManager,
+                statsManager, skinCache, teamManager, devilFruitManager, luffyArmorManager, null);
+    }
+
+    public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
+            KothManager kothManager, BankManager bankManager,
+            PrestigeManager prestigeManager, StatsManager statsManager,
+            Object skinCache /* unused — kept for GenPvP.java compat */,
+            TeamManager teamManager,
+            DevilFruitManager devilFruitManager,
+            LuffyArmorManager luffyArmorManager,
+            ManaManager manaManager) {
         this.plugin = plugin;
         this.pvpRoomManager = pvpRoomManager;
         this.kothManager = kothManager;
@@ -103,6 +117,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
         this.teamManager = teamManager;
         this.devilFruitManager = devilFruitManager;
         this.luffyArmorManager = luffyArmorManager;
+        this.manaManager = manaManager;
     }
 
     @Override
@@ -466,6 +481,18 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             if (key == null) return "None";
             DevilFruit fruit = DevilFruit.fromKey(key);
             return fruit != null ? fruit.getDisplayName() : key;
+        }
+
+        if (params.equalsIgnoreCase("devil_fruit_mana")) {
+            if (player == null || manaManager == null) return "0";
+            return String.valueOf(manaManager.getMana(player.getUniqueId()));
+        }
+
+        if (params.equalsIgnoreCase("devil_fruit_mana_regen")) {
+            if (manaManager == null) return "FULL";
+            if (player == null || manaManager.getMana(player.getUniqueId()) >= manaManager.getMax()) return "FULL";
+            double seconds = manaManager.getMillisUntilRegen() / 1000.0;
+            return String.format("%.1fs", seconds);
         }
 
         // ── Luffy Armor placeholders ─────────────────────────────────────────

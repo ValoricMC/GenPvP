@@ -1,5 +1,26 @@
 devil-fruits:
   abilities:
+    goro_goro:
+      mana-cost: 3
+      cooldown-seconds: 12
+      raycast-distance: 15.0
+      aoe-damage: 5.0
+      aoe-radius: 4.0
+    hie_hie:
+      mana-cost: 2
+      cooldown-seconds: 14
+      radius: 3
+      ice-duration-seconds: 8
+      slowness-amplifier: 3
+      slowness-duration-seconds: 5
+      fatigue-duration-seconds: 5
+      fatigue-amplifier: 0
+    yami_yami:
+      mana-cost: 3
+      cooldown-seconds: 16
+      radius: 12.0
+      pull-strength: 2.5
+      blindness-duration-seconds: 3
     sube_sube:
       mana-cost: 1
       duration-seconds: 5
@@ -51,7 +72,7 @@ devil-fruits:
     kumo_kumo_tarantula:
       mana-cost: 2
       cooldown-seconds: 12
-      web-duration-seconds: 5
+      web-duration-seconds: 10
     zou_zou_mammoth:
       mana-cost: 3
       cooldown-seconds: 14

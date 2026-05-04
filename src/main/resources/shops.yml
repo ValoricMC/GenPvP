@@ -699,7 +699,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Sharpness IV"
@@ -729,7 +729,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Sharpness IV"
@@ -746,15 +746,11 @@ shops:
           - "mending:1"
         after-store-bought-title: "&#F1C176Axe &#FFB849[&#F1C1762&#FFB849]"
         after-store-bought-lore:
-          - "&8Amount: 1"
           - ""
-          - "&#81C7FF&lRARE"
-          - ""
-          - "&fEnchants:"
-          - "&#91CAF8Sharpness: &74"
-          - "&#91CAF8Unbreaking: &72"
-          - "&#91CAF8Efficiency: &74"
-          - "&#91CAF8Mending: &71"
+          - "&#F1C176• &7Sharpness IV"
+          - "&#F1C176• &7Unbreaking II"
+          - "&#F1C176• &7Efficiency IV"
+          - "&#F1C176• &7Mending I"
           - ""
 
       - slot: 24
@@ -763,7 +759,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Protection IV"
@@ -793,7 +789,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Protection IV"
@@ -820,7 +816,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Protection IV"
@@ -847,7 +843,7 @@ shops:
         price: 32
         currency-type: money
         allow-multiple: false
-        requires-prestige: 1
+        requires-prestige: 0
         lore:
           - ""
           - "&#F1C176• &7Protection IV"

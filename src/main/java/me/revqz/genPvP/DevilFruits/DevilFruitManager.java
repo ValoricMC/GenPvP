@@ -28,6 +28,9 @@ public class DevilFruitManager implements Listener {
     private final ConcurrentHashMap<UUID, Long> fruitDisabledUntil = new ConcurrentHashMap<>();
     private final Set<UUID> loadedPlayers = ConcurrentHashMap.newKeySet();
 
+    // Fruits disabled server-wide by an OP via /fruit disable <key>
+    private final Set<String> globallyDisabledFruits = ConcurrentHashMap.newKeySet();
+
     private volatile Consumer<UUID> onEquipChange;
 
     public DevilFruitManager(GenPvP plugin, DatabaseManager dbManager) {
@@ -128,6 +131,26 @@ public class DevilFruitManager implements Listener {
             return false;
         }
         return true;
+    }
+
+    // ── Global fruit disable (OP command) ─────────────────────────────────────
+
+    /** Disables the fruit ability server-wide. Returns false if already disabled. */
+    public boolean disableFruitKey(String key) {
+        return globallyDisabledFruits.add(key.toLowerCase());
+    }
+
+    /** Re-enables the fruit ability server-wide. Returns false if it wasn't disabled. */
+    public boolean enableFruitKey(String key) {
+        return globallyDisabledFruits.remove(key.toLowerCase());
+    }
+
+    public boolean isFruitKeyDisabled(String key) {
+        return globallyDisabledFruits.contains(key.toLowerCase());
+    }
+
+    public Set<String> getDisabledFruitKeys() {
+        return Collections.unmodifiableSet(globallyDisabledFruits);
     }
 
     public Set<String> getOwnedFruits(UUID uuid) {

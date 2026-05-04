@@ -15,6 +15,8 @@ public enum DevilFruit {
     // ── Logia ─────────────────────────────────────────────────────────────────
     MERA_MERA  ("mera_mera",   "&#FF4500&lMera Mera no Mi",   FruitType.LOGIA),
     MAGU_MAGU  ("magu_magu",   "&#EE5A24&lMagu Magu no Mi",   FruitType.LOGIA),
+    GORO_GORO  ("goro_goro",   "&#FFD700&lGoro Goro no Mi",   FruitType.LOGIA),
+    HIE_HIE    ("hie_hie",     "&#00FFFF&lHie Hie no Mi",     FruitType.LOGIA),
     YAMI_YAMI  ("yami_yami",   "&#2C003E&lYami Yami no Mi",   FruitType.LOGIA),
 
     // ── Paramecia ─────────────────────────────────────────────────────────────

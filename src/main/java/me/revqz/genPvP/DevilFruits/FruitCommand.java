@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 public class FruitCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> OP_SUBCOMMANDS = Arrays.asList(
-            "give", "remove", "equip", "unequip", "logia", "paramecia", "zoan", "roll_give", "roll_giveall", "give_shard"
+            "give", "remove", "equip", "unequip", "logia", "paramecia", "zoan",
+            "roll_give", "roll_giveall", "give_shard", "disable", "enable"
     );
     private static final List<String> PLAYER_SUBCOMMANDS = Arrays.asList(
             "equip", "unequip", "logia", "paramecia", "zoan"
@@ -89,7 +90,9 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
             case "roll_give"    -> handleRollGive(player, args);
             case "roll_giveall" -> handleRollGiveAll(player, args);
             case "give_shard"   -> handleGiveShard(player, args);
-            default          -> sendUsage(player);
+            case "disable"      -> handleDisable(player, args);
+            case "enable"       -> handleEnable(player, args);
+            default             -> sendUsage(player);
         }
 
         return true;
@@ -408,6 +411,50 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         return c.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
     }
 
+    // ── Disable / Enable (OP) ────────────────────────────────────────────────
+
+    private void handleDisable(Player admin, String[] args) {
+        if (!admin.isOp()) {
+            admin.sendMessage(msg("no-permission"));
+            return;
+        }
+        if (args.length < 2) {
+            admin.sendMessage(msg("disable-usage"));
+            return;
+        }
+        DevilFruit fruit = DevilFruit.fromKey(args[1]);
+        if (fruit == null) {
+            admin.sendMessage(msg("unknown-fruit").replace("%fruits%", allFruitKeys()));
+            return;
+        }
+        if (!fruitManager.disableFruitKey(fruit.getKey())) {
+            admin.sendMessage(msg("fruit-already-disabled").replace("%fruit%", fruit.getDisplayName()));
+            return;
+        }
+        admin.sendMessage(msg("fruit-disabled").replace("%fruit%", fruit.getDisplayName()));
+    }
+
+    private void handleEnable(Player admin, String[] args) {
+        if (!admin.isOp()) {
+            admin.sendMessage(msg("no-permission"));
+            return;
+        }
+        if (args.length < 2) {
+            admin.sendMessage(msg("enable-usage"));
+            return;
+        }
+        DevilFruit fruit = DevilFruit.fromKey(args[1]);
+        if (fruit == null) {
+            admin.sendMessage(msg("unknown-fruit").replace("%fruits%", allFruitKeys()));
+            return;
+        }
+        if (!fruitManager.enableFruitKey(fruit.getKey())) {
+            admin.sendMessage(msg("fruit-not-disabled").replace("%fruit%", fruit.getDisplayName()));
+            return;
+        }
+        admin.sendMessage(msg("fruit-enabled").replace("%fruit%", fruit.getDisplayName()));
+    }
+
     // ── Tab completion ────────────────────────────────────────────────────────
 
     @Override
@@ -431,6 +478,21 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                     return Bukkit.getOnlinePlayers().stream()
                             .map(Player::getName)
                             .filter(n -> n.toLowerCase().startsWith(prefix))
+                            .toList();
+                }
+                case "disable" -> {
+                    if (!sender.isOp()) return Collections.emptyList();
+                    String prefix = args[1].toLowerCase();
+                    return Arrays.stream(DevilFruit.values())
+                            .map(DevilFruit::getKey)
+                            .filter(k -> k.startsWith(prefix))
+                            .toList();
+                }
+                case "enable" -> {
+                    if (!sender.isOp()) return Collections.emptyList();
+                    String prefix = args[1].toLowerCase();
+                    return fruitManager.getDisabledFruitKeys().stream()
+                            .filter(k -> k.startsWith(prefix))
                             .toList();
                 }
                 case "equip" -> {
