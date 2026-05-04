@@ -1021,7 +1021,7 @@ shops:
         unbreakable: true
         requires-prestige: 0
         requires-item:
-          material: NETHERITE_PICKAXE
+          material: DIAMOND_PICKAXE
           item-id: "tier_4"
           consume: true
         lore:
