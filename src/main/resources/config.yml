@@ -425,9 +425,9 @@ autobroadcast:
         - " &#FCD05C&lS&#FFEBB6&lT&#FCD05C&lO&#FFEBB6&lR&#FCD05C&lE &8[&7ᴄʟɪᴄᴋ ʜᴇʀᴇ&8]"
         - " &fSupport us by visiting our store!"
         - ""
-        - "&8» &#FCD05C&nsᴛᴏʀᴇ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+        - "&8» &#FCD05C&nᴠᴀʟᴏʀɪᴄ.ᴛᴇʙᴇx.ɪᴏ"
         - ""
-      url: "https://store.valoricmc.net"
+      url: "https://valoric.tebex.io"
 
 # Bank GUI
 bank:
@@ -479,7 +479,7 @@ scoreboard:
     - text: "  %genpvp_level_bar_lines% &7(%genpvp_level_bar_percentage%)"
     - text: " &7&m                       "
     - text: " &#B4DEFF● &fᴘɪɴɢ&7: (%player_ping%ms)"
-    - text: " &#B4DEFFᴘʟᴀʏ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+    - text: " &#B4DEFFᴠᴀʟᴏʀɪᴄ.ᴍɪɴᴇʜᴜᴛ.ɢɢ"
 
   koth:
     title: "&#4CC2FA&lV&#6FCBFC&lA&#91D5FD&lL&#B4DEFF&lO&#91D5FD&lR&#6FCBFC&lI&#4CC2FA&lC"
@@ -497,7 +497,7 @@ scoreboard:
       - text: "  %genpvp_koth_claim_bar% &7(%genpvp_time_till_koth_capture%)"
       - text: " &7&m                       "
       - text: " &#B4DEFF● &fᴘɪɴɢ&7: (%player_ping%ms)"
-      - text: " &#B4DEFFᴘʟᴀʏ.ᴠᴀʟᴏʀɪᴄᴍᴄ.ɴᴇᴛ"
+      - text: " &#B4DEFFᴠᴀʟᴏʀɪᴄ.ᴍɪɴᴇʜᴜᴛ.ɢɢ"
 
 # gens regen
 gens-regen-ticks: 1
@@ -525,7 +525,7 @@ prestige:
     blocks-per-xp: 10
 
   messages:
-    ready: "&#7AFB00&lYou are ready to prestige! &7&l[CLICK TO PRESTIGE] &#A7A7A7to reach &7Prestige %prestige%"
+    ready: "&#7AFB00You are ready to prestige! &7&l[CLICK TO PRESTIGE] &#A7A7A7to reach &7Prestige %prestige%"
     # Admin feedback (actionbar)
     # Placeholders: %player%, %amount%, %total%
     prestige-added:          "&#A7A7A7Added &7%amount% &#A7A7A7prestige level(s) to &7%player%&#A7A7A7. Now: &7%total%"
