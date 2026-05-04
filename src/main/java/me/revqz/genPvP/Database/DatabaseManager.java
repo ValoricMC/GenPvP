@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DatabaseManager {
 
@@ -49,13 +50,15 @@ public class DatabaseManager {
         try {
             MongoClientSettings settings = MongoClientSettings.builder()
                     .applyConnectionString(new ConnectionString(uri))
+                    .applyToClusterSettings(cluster -> cluster
+                            .serverSelectionTimeout(5, TimeUnit.SECONDS))
                     .applyToConnectionPoolSettings(pool -> pool
                             .maxSize(20)
                             .minSize(5)
                             .maxWaitTime(5, TimeUnit.SECONDS)
                             .maxConnectionIdleTime(10, TimeUnit.MINUTES))
                     .applyToSocketSettings(socket -> socket
-                            .connectTimeout(5, TimeUnit.SECONDS)
+                            .connectTimeout(3, TimeUnit.SECONDS)
                             .readTimeout(10, TimeUnit.SECONDS))
                     .build();
 
@@ -172,12 +175,24 @@ public class DatabaseManager {
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
     public void close() {
+        // Mark as disconnected FIRST so in-flight async tasks stop using the client
+        mongoConnected = false;
+        redisConnected = false;
+
         if (mongoClient != null) {
-            mongoClient.close();
+            try {
+                mongoClient.close();
+            } catch (Exception e) {
+                plugin.getLogger().warning("[DatabaseManager] Error closing MongoDB: " + e.getMessage());
+            }
             plugin.getLogger().info("[DatabaseManager] MongoDB connection closed.");
         }
         if (jedisPool != null && !jedisPool.isClosed()) {
-            jedisPool.close();
+            try {
+                jedisPool.close();
+            } catch (Exception e) {
+                plugin.getLogger().warning("[DatabaseManager] Error closing Redis: " + e.getMessage());
+            }
             plugin.getLogger().info("[DatabaseManager] Redis connection pool closed.");
         }
     }

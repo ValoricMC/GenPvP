@@ -77,6 +77,39 @@ public class PlayerDataLoader implements Listener {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> load(uuid, name));
     }
 
+    /**
+     * Called after a PlugMan reload to re-load data for every player that is
+     * already online.  PlugMan does NOT fire PlayerJoinEvent for existing
+     * players, so without this their caches would stay empty (0 balance, etc.).
+     */
+    public void reloadOnlinePlayers() {
+        var online = plugin.getServer().getOnlinePlayers();
+        if (online.isEmpty()) return;
+
+        // Inject safe defaults immediately so placeholders never return null
+        for (var p : online) injectDefaults(p.getUniqueId());
+
+        if (db == null) {
+            plugin.getLogger().warning("[PlayerDataLoader] MongoDB unavailable — online players have default values.");
+            return;
+        }
+
+        // Async: load real values from MongoDB and overwrite the defaults
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            int count = 0;
+            for (var p : online) {
+                try {
+                    loadReload(p.getUniqueId(), p.getName());
+                    count++;
+                } catch (Exception e) {
+                    plugin.getLogger().warning("[PlayerDataLoader] Reload-load failed for "
+                            + p.getName() + ": " + e.getMessage());
+                }
+            }
+            plugin.getLogger().info("[PlayerDataLoader] Reloaded data for " + count + " online player(s).");
+        });
+    }
+
     private void load(UUID uuid, String name) {
         try {
             MongoCollection<Document> players = db.getCollection("players");
@@ -136,6 +169,37 @@ public class PlayerDataLoader implements Listener {
 
         } catch (Exception e) {
             plugin.getLogger().warning("[PlayerDataLoader] Failed to load data for " + uuid + ": " + e.getMessage());
+            injectDefaults(uuid);
+        }
+    }
+
+    /**
+     * Same as {@link #load} but skips the first-join reward. Used during
+     * PlugMan reloads where players are already online.
+     */
+    private void loadReload(UUID uuid, String name) {
+        try {
+            MongoCollection<Document> players = db.getCollection("players");
+            String uuidStr = uuid.toString();
+
+            // Read the full document (no upsert needed — player already exists)
+            Document doc = players.find(eq("_id", uuidStr)).first();
+            if (doc != null) {
+                try {
+                    injectAll(uuid, doc);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("[PlayerDataLoader] injectAll failed for " + uuid + ": " + e.getMessage());
+                    injectDefaults(uuid);
+                }
+            } else {
+                injectDefaults(uuid);
+            }
+
+            // Load fruit data independently
+            loadFruitData(uuid);
+
+        } catch (Exception e) {
+            plugin.getLogger().warning("[PlayerDataLoader] Reload-load failed for " + uuid + ": " + e.getMessage());
             injectDefaults(uuid);
         }
     }

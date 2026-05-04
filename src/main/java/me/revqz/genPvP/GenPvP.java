@@ -48,6 +48,7 @@ public final class GenPvP extends JavaPlugin {
     private me.revqz.genPvP.DevilFruits.DevilFruitManager devilFruitManager;
     private me.revqz.genPvP.DevilFruits.FruitRollManager fruitRollManager;
     private me.revqz.genPvP.SpawnDisplays.DisplaysManager displaysManager;
+    private me.revqz.genPvP.Database.PlayerDataLoader playerDataLoader;
 
     @Override
     public void onEnable() {
@@ -430,11 +431,10 @@ public final class GenPvP extends JavaPlugin {
         // Unified player-data loader — fires at LOW priority (before each manager's
         // NORMAL handler)
         // so all caches are populated in one async task / one DB round trip.
-        getServer().getPluginManager().registerEvents(
-                new me.revqz.genPvP.Database.PlayerDataLoader(
-                        this, databaseManager, bankManager, prestigeManager, statsManager,
-                        devilFruitManager, kitManager, fruitRollManager),
-                this);
+        playerDataLoader = new me.revqz.genPvP.Database.PlayerDataLoader(
+                this, databaseManager, bankManager, prestigeManager, statsManager,
+                devilFruitManager, kitManager, fruitRollManager);
+        getServer().getPluginManager().registerEvents(playerDataLoader, this);
 
         me.revqz.genPvP.util.SkinCache skinCache = new me.revqz.genPvP.util.SkinCache(this);
         getServer().getPluginManager().registerEvents(skinCache, this);
@@ -476,6 +476,17 @@ public final class GenPvP extends JavaPlugin {
         // Double-jump — permission genpvp.doublejump, SPAWN regions only
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.util.DoubleJumpListener(this, regionManager), this);
+
+        // ── PlugMan reload safety ─────────────────────────────────────────────
+        // PlugMan does NOT fire PlayerJoinEvent for already-online players when
+        // it reloads a plugin.  Schedule a 1-tick delayed task so that after
+        // everything is registered we re-load every online player's data from
+        // MongoDB into the fresh in-memory caches.
+        getServer().getScheduler().runTaskLater(this, () -> {
+            if (playerDataLoader != null) {
+                playerDataLoader.reloadOnlinePlayers();
+            }
+        }, 1L);
     }
 
     public RegionManager getRegionManager() {
@@ -496,7 +507,13 @@ public final class GenPvP extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Stop HTTP threads first — keeps the old classloader from leaking into the
+        // ── Cancel ALL Bukkit scheduler tasks FIRST ────────────────────────────
+        // This prevents orphaned repeating tasks (leaderboards, mana regen,
+        // particle effects, PvP room scanners, etc.) from executing against
+        // a closing MongoDB connection during a PlugMan reload.
+        getServer().getScheduler().cancelTasks(this);
+
+        // Stop HTTP threads — keeps the old classloader from leaking into the
         // next Plugman reload, which would prevent MongoDB from reconnecting.
         me.revqz.genPvP.Webhook.DiscordWebhook.shutdown();
 
