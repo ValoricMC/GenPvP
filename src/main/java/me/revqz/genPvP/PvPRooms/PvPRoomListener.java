@@ -47,16 +47,21 @@ public class PvPRoomListener implements Listener {
 
             boolean landingInside = region.contains(event.getTo());
 
-            // ── Block participants from pearling OUT of the room ─────────────
+            // ── Participant teleporting OUT of the room ──────────────────────
             if (room.isParticipant(uuid) && !landingInside) {
-                // Only block pearls / chorus fruit — allow admin /tp
+                // Block pearls / chorus fruit — these are exploits
                 if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                         || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.RED + "You cannot pearl out of the PvP room!");
                     return;
                 }
-                continue; // allow other teleport types (admin /tp)
+
+                // Any other teleport out (admin /tp, /spawn, plugin) — allow it
+                // but treat as the player leaving: clear title and reset the room
+                player.sendTitle(" ", " ", 0, 1, 0);
+                pvpRoomManager.handleParticipantLeave(player);
+                return;
             }
 
             // ── Block non-participants from entering ─────────────────────────
@@ -75,15 +80,28 @@ public class PvPRoomListener implements Listener {
      * and triggers an immediate gate-seal check if the player entered or exited.
      * This replaces the 10-tick polling delay for the 2-player trigger.
      */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!event.hasChangedBlock()) return; // skip sub-block movements
 
         Player player = event.getPlayer();
+
+        // ── Containment: prevent participants from walking out during FIGHTING ─
+        PvPRoomState room = pvpRoomManager.getRoomByParticipant(player.getUniqueId());
+        if (room != null && room.getCurrentPhase() == PvPPhase.FIGHTING) {
+            ProtectRegion region = regionManager.getRegion(room.getRoomIdentifier());
+            if (region != null && region.contains(event.getFrom()) && !region.contains(event.getTo())) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        // ── Room detection: fires on every block-boundary cross ─────────────
         pvpRoomManager.onPlayerBlockChange(player, event.getFrom(), event.getTo());
 
         // ── Clear "WIN!" title when the winner walks out of the room region ─
-        PvPRoomState room = pvpRoomManager.getRoomByParticipant(player.getUniqueId());
+        // Re-fetch in case the player was just added as a participant above
+        room = pvpRoomManager.getRoomByParticipant(player.getUniqueId());
         if (room != null && room.getCurrentPhase() == PvPPhase.LOOTING) {
             ProtectRegion region = regionManager.getRegion(room.getRoomIdentifier());
             if (region != null && region.contains(event.getFrom()) && !region.contains(event.getTo())) {

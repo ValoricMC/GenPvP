@@ -80,11 +80,12 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "reload"    -> handleReload(sender);
-            case "item_give" -> handleGiveItem(sender, args);
-            case "onepiece"  -> handleRegisterItem(sender, args, "onepiece", ONEPIECE_NAMES);
-            case "head"      -> handleRegisterItem(sender, args, "head", HEAD_NAMES);
-            default          -> sender.sendMessage(msg("usage"));
+            case "reload"      -> handleReload(sender);
+            case "item_give"   -> handleGiveItem(sender, args);
+            case "onepiece"    -> handleRegisterItem(sender, args, "onepiece", ONEPIECE_NAMES);
+            case "head"        -> handleRegisterItem(sender, args, "head", HEAD_NAMES);
+            case "debug_armor" -> handleDebugArmor(sender);
+            default            -> sender.sendMessage(msg("usage"));
         }
 
         return true;
@@ -98,7 +99,7 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         String partial = args.length > 0 ? args[args.length - 1].toLowerCase() : "";
 
         return switch (args.length) {
-            case 1 -> filter(List.of("reload", "item_give", "onepiece", "head"), partial);
+            case 1 -> filter(List.of("reload", "item_give", "onepiece", "head", "debug_armor"), partial);
             case 2 -> switch (args[0].toLowerCase()) {
                 case "item_give"        -> filter(availableItems(), partial);
                 case "onepiece", "head" -> filter(List.of("set"), partial);
@@ -198,6 +199,48 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         player.getInventory().setItemInMainHand(held);
         player.updateInventory();
         sender.sendMessage(msg("register-success", "%name%", name));
+    }
+
+    // ── debug_armor ──────────────────────────────────────────────────────────
+
+    private void handleDebugArmor(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("§cMust be a player.");
+            return;
+        }
+        String[] slotNames = {"Helmet", "Chestplate", "Leggings", "Boots"};
+        String[] pieceIds  = me.revqz.genPvP.Items.LuffyArmorManager.PIECE_IDS;
+        org.bukkit.inventory.ItemStack[] slots = {
+                player.getInventory().getHelmet(),
+                player.getInventory().getChestplate(),
+                player.getInventory().getLeggings(),
+                player.getInventory().getBoots()
+        };
+        player.sendMessage("§6§l── Armor Debug ──");
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            String type = slots[i] == null ? "empty" : slots[i].getType().name();
+            String pdcId = (slots[i] != null && !slots[i].getType().isAir())
+                    ? registry.getItemId(slots[i]) : "none";
+            boolean match = registry.hasId(slots[i], pieceIds[i]);
+            if (match) count++;
+            java.util.List<String> tLore = registry.getTemplateLore(pieceIds[i]);
+            int loreCount = tLore != null ? tLore.size() : 0;
+            boolean hasPapi = tLore != null && tLore.stream().anyMatch(l -> l.contains("%"));
+            player.sendMessage("§e" + slotNames[i] + "§7: type=§f" + type
+                    + "§7 pdc=§f" + pdcId
+                    + "§7 expect=§f" + pieceIds[i]
+                    + (match ? " §a✓" : " §c✗"));
+            player.sendMessage("   §7template=§f" + loreCount + " lines§7 hasPAPI=§f" + hasPapi);
+            if (tLore != null && !tLore.isEmpty()) {
+                // Show first 60 chars of first line
+                String preview = tLore.get(0);
+                if (preview.length() > 60) preview = preview.substring(0, 60) + "...";
+                player.sendMessage("   §7line[0]=§f" + preview);
+            }
+        }
+        player.sendMessage("§6Detected pieces: §f" + count + "/4");
+        player.sendMessage("§6Registered items: §f" + String.join(", ", registry.getRegisteredNames()));
     }
 
     // ── helpers ───────────────────────────────────────────────────────────────

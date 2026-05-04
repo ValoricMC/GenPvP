@@ -236,7 +236,8 @@ public class ZoanAbilityListener implements Listener {
             for (int dy = 0; dy <= 2; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Block block = world.getBlockAt(cx + dx, cy + dy, cz + dz);
-                    if (!block.getType().isSolid() && !block.isLiquid()) {
+                    if (!block.getType().isSolid() && !block.isLiquid()
+                            && !isInSpawn(block.getLocation())) {
                         block.setType(Material.COBWEB);
                         allPlaced.add(block);
                     }
@@ -600,7 +601,11 @@ public class ZoanAbilityListener implements Listener {
     }
 
     private boolean isInSpawn(Player player) {
-        for (ProtectRegion region : regionManager.getRegionsAt(player.getLocation())) {
+        return isInSpawn(player.getLocation());
+    }
+
+    private boolean isInSpawn(Location location) {
+        for (ProtectRegion region : regionManager.getRegionsAt(location)) {
             if (region.getType() == RegionType.SPAWN) return true;
         }
         return false;

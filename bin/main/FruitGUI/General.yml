@@ -1,0 +1,37 @@
+title: "Devil Fruits Menu - Main"
+
+paramecia:
+  slot: 3
+  material: MELON_SEEDS
+  name: "&#FCD05C&lPARMECIA&f Fruits"
+  lore:
+    - "&8ᴅᴇᴠɪʟ ғʀᴜɪᴛ"
+    - ""
+    - "&7● &fProvide varied, specialized powers that are"
+    - "&f  environmental based"
+    - ""
+    - "&fꐗ &8» &7Click click to browse"
+
+zoan:
+  slot: 4
+  material: MELON_SLICE
+  name: "&#FCD05C&lZOAN&f Fruits"
+  lore:
+    - "&8ᴅᴇᴠɪʟ ғʀᴜɪᴛ"
+    - ""
+    - "&7● &fAllows transformation into animals or hybrid forms"
+    - "&f  or hybrid forms"
+    - ""
+    - "&fꐗ &8» &7Click click to browse"
+
+logia:
+  slot: 5
+  material: MELON
+  name: "&#FCD05C&lLOGIA&f Fruits"
+  lore:
+    - "&8ᴅᴇᴠɪʟ ғʀᴜɪᴛ"
+    - ""
+    - "&7● &fThe rarest and most powerful fruits"
+    - "&f  allowing the user to create and control their body."
+    - ""
+    - "&fꐗ &8» &7Click click to browse"

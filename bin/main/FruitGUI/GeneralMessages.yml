@@ -1,0 +1,123 @@
+#gui navigation
+wrong-region:   "&cCan only switch fruits in spawn."
+click-too-fast: "&cPlease slow down."
+
+# no fruit slot
+no-fruit-name: "&#FDCD4DNo Fruit"
+no-fruit-lore:
+  - ""
+  - "&#FF6A6A❌ You have not equipped"
+  - "&#FF6A6A   any fruit."
+  - ""
+  - "&fꐘ &#FFDE87Choose a fruit"
+cannot-sell-fruit: "&cYou cannot sell the Devil Fruit slot item."
+
+# ── Fruit item lore labels ─────────────────────────────────────────────────────
+click-to-equip: "&#CEF1C6✔ Right-click to activate"
+not-owned: "&8» &fAvailable at &#ADD8E6@ store.valoricmc.net"
+
+# ── Command feedback ───────────────────────────────────────────────────────────
+no-permission:        "&cYou do not have permission to do that."
+players-only:         "&cOnly players can use /fruit."
+player-never-joined:  "&cPlayer &e%player% &chas never played on this server."
+give-usage:           "&cTry using: /fruit give <player> <fruit>"
+remove-usage:         "&cTry using: /fruit remove <player> <fruit>"
+equip-usage:          "&cTry using: /fruit equip <fruit>"
+unknown-fruit:        "&cUnknown fruit. Valid fruits: &7%fruits%"
+fruit-already-owned:  "&cThat player already owns this fruit."
+fruit-given:          "&#7AFB00Gave &f%fruit% &7to &f%player%&7."
+fruit-not-owned:      "&cThat player does not own this fruit."
+fruit-removed:        "&#FC0000Removed &f%fruit% &7from &f%player%&7."
+fruit-not-yours:      "&cYou do not own this fruit."
+fruit-equipped:       "&#7AFB00Equipped &f%fruit%&7."
+fruit-unequipped:     "&#FC6A6AFruit unequipped."
+no-fruit-equipped:    "&cYou don't have a fruit equipped."
+
+# fruit usage lines (shown on unknown subcommand
+usage-header:  "&7Devil Fruit commands:"
+usage-equip:   "&cTry using: /fruit equip (fruit) &8— &7equip an owned fruit"
+usage-unequip: "&cTry using: /fruit unequip &8— &7unequip your current fruit"
+usage-give:    "&cTry using: /fruit give (player) (fruit) &8— &7give a fruit"
+usage-remove:  "&cTry using: /fruit remove (player) (fruit) &8— &7remove a fruit"
+
+# ability gate messages
+ability-in-spawn:       "&cYou cannot use abilities in spawn."
+ability-already-active: "&cYou already have an ability active."
+# %time% = seconds remaining on cooldown
+ability-on-cooldown:    "&cAbility on cooldown: &7%time%&8(&7s&8)"
+# %current% = player's current mana, %cost% = required mana
+not-enough-mana:        "&#FACBE6&lMANA &8» &cNo Mana &f(&7%current%&8/&7%cost%&f)"
+# %fruit% = fruit display name
+ability-disabled:       "&cThis ability is currently disabled: &7%fruit%"
+
+# /fruit disable and /fruit enable (OP)
+fruit-disabled:         "&#FC0000Disabled &f%fruit% &7ability for all players."
+fruit-enabled:          "&#7AFB00Enabled &f%fruit% &7ability for all players."
+fruit-already-disabled: "&c%fruit% &cability is already disabled."
+fruit-not-disabled:     "&c%fruit% &cability is not currently disabled."
+disable-usage:          "&cTry using: /fruit disable <fruit>"
+enable-usage:           "&cTry using: /fruit enable <fruit>"
+
+# Ability activation messages
+ability:
+  goro_goro: "&#FFD700&lGoro Goro &r&8» &7Lightning strike!"
+  goro_goro_miss: "&#FFD700&lGoro Goro &r&8» &7No target in range."
+  hie_hie: "&#00FFFF&lHie Hie &r&8» &7Frozen!"
+  yami_yami: "&#2C003E&lYami Yami &r&8» &7Darkness pull!"
+  sube_sube: "&#ADD8E6&lSube Sube &r&8» &7Sliding burst activated!"
+  suke_suke: "&#E0E0E0&lSuke Suke &r&8» &7Turning invisible!"
+  bane_bane: "&#90EE90&lBane Bane &r&8» &7Spring leap!"
+  supa_supa: "&#C0C0C0&lSupa Supa &r&8» &7Blade body active!"
+  doku_doku: "&#4B0082&lDoku Doku &r&8» &7Venom launched!"
+  bomu_bomu: "&#FF6347&lBomu Bomu &r&8» &7Next hit will explode!"
+  bari_bari: "&#87CEEB&lBari Bari &r&8» &7Barrier raised!"
+  fuwa_fuwa: "&#FFFACD&lFuwa Fuwa &r&8» &7Rising!"
+  gura_gura: "&#8B4513&lGura Gura &r&8» &7Shockwave released!"
+  tori_tori_falcon: "&#F5DEB3&lTori Tori &r&8» &7Launching into the skies!"
+  kumo_kumo_tarantula: "&#8B0000&lKumo Kumo &r&8» &7Web shot fired!"
+  kumo_kumo_tarantula_miss: "&#8B0000&lKumo Kumo &r&8» &7No target in range."
+  zou_zou_mammoth: "&#8B4513&lZou Zou &r&8» &7Ground stomp!"
+  neko_neko_leopard: "&#FFD700&lNeko Neko &r&8» &7Pouncing!"
+  hebi_hebi_cobra: "&#228B22&lHebi Hebi &r&8» &7Venom strike!"
+  hebi_hebi_cobra_miss: "&#228B22&lHebi Hebi &r&8» &7No target in range."
+  inu_inu_wolf: "&#A9A9A9&lInu Inu &r&8» &7Howling!"
+
+#fruit rolling
+roll-usage:           "&cTry using: /fruit roll (fruit type)"
+roll-give-usage:      "&cTry using: /fruit roll_give (player) (fruit type) (amount)"
+roll-no-rolls:        "&cYou have no %type% rolls remaining."
+roll-already-rolling: "&cYou are already rolling!"
+roll-no-fruits:       "&cNo fruits available for this type."
+roll-won:             "&#EADCFFYou won &f%fruit%&#EADCFF!"
+roll-all-owned-prize: "&#EADCFFYou already own all &f%type% &#EADCFFfruits! &#EADCFF+500 tokens as a consolation prize."
+roll-given:           "&#EADCFFGave &f%amount% %type% &#EADCFFroll(s) to &f%player%&7."
+roll-received:        "&#EADCFFYou received &f%amount% %type% &#EADCFFroll(s)."
+roll-giveall-usage:   "&cTry using: /fruit roll_giveall (fruit type) (amount)"
+roll-giveall-done:    "&#EADCFFGave &f%amount% %type% &#EADCFFroll(s) to &f%count% &#EADCFFonline player(s)."
+roll-title:           "Fruit Roll: %type%"
+roll-candle-name:     "&#99F5C1Your roll:"
+roll-candle-result:   "&#99F5C1Your roll: %fruit%"
+roll-candle-prize:    "&#EADCFF+500 Tokens"
+roll-prize-name:      "&#EADCFF&l+500 Tokens"
+roll-prize-lore:
+  - ""
+  - "&#EADCFFYou own all %type% fruits!"
+  - "&#EADCFF+500 tokens added to your bank."
+roll-invalid-amount:  "Try using: A positive amount"
+roll-invalid-type:    "Try using: A valid (fruit type)"
+
+# Devil Fruit Shard PvP drops
+# %victim% = name of the killed player
+shard-received:        "&d&lSHARD &8» &7You obtained a &dDevil Fruit Shard &7from &f%victim%&7!"
+shard-dropped:         "&d&lSHARD &8» &cInventory full! &7Shard dropped at your feet."
+shard-cooldown-active: ""
+
+# /fruit give_shard (admin)
+give-shard-usage:  "&cTry using: /fruit give_shard <player> <amount>"
+give-shard-given:  "&d&lSHARD &8» &7Gave &d%amount% &7Devil Fruit Shard(s) to &f%player%&7."
+
+# Mana values
+mana:
+  max: 5
+  regen-amount: 1
+  regen-interval-seconds: 10

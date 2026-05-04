@@ -66,20 +66,25 @@ public class FruitRollManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        // Synchronously save roll data BEFORE clearing memory
+        // Snapshot roll data on the main thread, then persist async to avoid tick lag
         if (dbConnected && db != null) {
             EnumMap<FruitType, Integer> map = rolls.get(uuid);
             if (map != null) {
-                try {
-                    db.getCollection("fruit_rolls").updateOne(eq("_id", uuid.toString()),
-                            new Document("$set", new Document()
-                                    .append("paramecia", map.getOrDefault(FruitType.PARAMECIA, 0))
-                                    .append("logia", map.getOrDefault(FruitType.LOGIA, 0))
-                                    .append("zoan", map.getOrDefault(FruitType.ZOAN, 0))),
-                            new UpdateOptions().upsert(true));
-                } catch (Exception e) {
-                    plugin.getLogger().warning("[FruitRollManager] save-on-quit failed for " + uuid + ": " + e.getMessage());
-                }
+                final int paramecia = map.getOrDefault(FruitType.PARAMECIA, 0);
+                final int logia     = map.getOrDefault(FruitType.LOGIA, 0);
+                final int zoan      = map.getOrDefault(FruitType.ZOAN, 0);
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                    try {
+                        db.getCollection("fruit_rolls").updateOne(eq("_id", uuid.toString()),
+                                new Document("$set", new Document()
+                                        .append("paramecia", paramecia)
+                                        .append("logia", logia)
+                                        .append("zoan", zoan)),
+                                new UpdateOptions().upsert(true));
+                    } catch (Exception e) {
+                        plugin.getLogger().warning("[FruitRollManager] save-on-quit failed for " + uuid + ": " + e.getMessage());
+                    }
+                });
             }
         }
 

@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -193,6 +194,11 @@ public class FruitGUIManager implements Listener {
         if (holder instanceof GeneralHolder || holder instanceof TypeHolder) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        clickTimestamps.remove(event.getPlayer().getUniqueId());
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

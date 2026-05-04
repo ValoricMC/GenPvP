@@ -1,0 +1,19 @@
+discord:
+  world: world
+  x: 140.5
+  y: 80
+  z: -131.5
+  yaw: 180
+  pitch: 0
+  skull: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY4NjViYjg4ZjU2Y2UwMTBhOGQ5YWVhYWNlNDRhMmRkY2QzZDYzMTdhZWQ4OTkwYjQxYjRmZmEwMzk4MzZjMyJ9fX0="
+  text: "<#85CDF0><b>DISCORD\n<reset><dark_gray>ɪɴᴛᴇʀᴀᴄᴛɪᴏɴ\n\n<#85CDF0>⏺ <white>Join our discord to get\n<white>updates, win giveaways\n<white>and more!\n\n<#85CDF0>→ <white>ᴄʟɪᴄᴋ ᴍᴇ <#85CDF0>←"
+
+store:
+  world: world
+  x: 130.5
+  y: 80
+  z: -131.5
+  yaw: 90
+  pitch: 0
+  skull: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVmZDY3ZDU2ZmZjNTNmYjM2MGExNzg3OWQ5YjUzMzhkNzMzMmQ4ZjEyOTQ5MWE1ZTE3ZThkNmU4YWVhNmMzYSJ9fX0="
+  text: "<#FFDF71><b>STORE\n<reset><dark_gray>ɪɴᴛᴇʀᴀᴄᴛɪᴏɴ\n\n<#FFDF71>⏺ <white>Purchase items from our\n<white>Store to support the\n<white>server!\n\n<#FFDF71>→ <white>ᴄʟɪᴄᴋ ᴍᴇ <#FFDF71>←"

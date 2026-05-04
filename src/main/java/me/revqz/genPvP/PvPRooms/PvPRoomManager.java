@@ -70,6 +70,29 @@ public class PvPRoomManager {
                 checkRoomState(room2);
             }
         }.runTaskTimer(plugin, 20L, 10L);
+
+        // Separate 20-tick (1 s) counter that always updates the cached inside
+        // count regardless of phase — keeps placeholders (%genpvp_pvproom1_in%
+        // etc.) responsive at all times.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateInsideCount(room1);
+                updateInsideCount(room2);
+            }
+        }.runTaskTimer(plugin, 20L, 20L);
+    }
+
+    /** Counts players physically inside the room and updates the cached count. */
+    private void updateInsideCount(PvPRoomState room) {
+        ProtectRegion region = regionManager.getRegion(room.getRoomIdentifier());
+        if (region == null) { room.setCachedInsideCount(0); return; }
+
+        int count = 0;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (region.contains(p.getLocation())) count++;
+        }
+        room.setCachedInsideCount(count);
     }
 
     /**
@@ -82,7 +105,11 @@ public class PvPRoomManager {
         if (room.getCurrentPhase() != PvPPhase.WAITING) return;
 
         ProtectRegion region = regionManager.getRegion(room.getRoomIdentifier());
-        if (region == null) return;
+        if (region == null) {
+            plugin.getLogger().warning("[PvPRooms] Room region '" + room.getRoomIdentifier()
+                    + "' NOT FOUND in RegionManager. Available regions: " + regionManager.getRegionNames());
+            return;
+        }
 
         // Collect up to 3 players — we only need to know if it's 0, 1, 2, or "more"
         List<Player> inside = new ArrayList<>(3);
@@ -95,6 +122,9 @@ public class PvPRoomManager {
         room.setCachedInsideCount(inside.size());
 
         if (inside.size() == 2) {
+            plugin.getLogger().info("[PvPRooms] 2 players detected in " + room.getRoomIdentifier()
+                    + ": " + inside.get(0).getName() + ", " + inside.get(1).getName()
+                    + " — triggering fight!");
             startFight(room, inside);
         }
     }
@@ -159,6 +189,27 @@ public class PvPRoomManager {
         }
     }
 
+    /**
+     * Called when a participant leaves the room by any non-death means
+     * (teleport via /spawn, /tp, walk-out, etc.).
+     * <p>
+     * During FIGHTING: the leaver forfeits — surviving opponent wins.
+     * During LOOTING: the winner left, so the room resets immediately.
+     */
+    public void handleParticipantLeave(Player leaver) {
+        PvPRoomState room = getRoomByParticipant(leaver.getUniqueId());
+        if (room == null) return;
+
+        if (room.getCurrentPhase() == PvPPhase.FIGHTING) {
+            // Treat as a forfeit — same logic as death/quit
+            handleParticipantDeathOrQuit(leaver);
+        } else if (room.getCurrentPhase() == PvPPhase.LOOTING) {
+            // Winner left — clear their title and reset
+            leaver.sendTitle(" ", " ", 0, 1, 0);
+            resetRoom(room);
+        }
+    }
+
     // ── Loot phase ────────────────────────────────────────────────────────────
 
     private void startLootPhase(PvPRoomState room, Player winner) {
@@ -177,9 +228,19 @@ public class PvPRoomManager {
                     return;
                 }
 
+                // Guard: winner is no longer inside the room (teleported via /spawn, /tp, etc.)
+                ProtectRegion region = regionManager.getRegion(room.getRoomIdentifier());
+                if (region != null && !region.contains(winner.getLocation())) {
+                    winner.sendTitle(" ", " ", 0, 1, 0);
+                    resetRoom(room);
+                    this.cancel();
+                    return;
+                }
+
                 int left = room.getLootingCountdown();
 
                 if (left <= 0) {
+                    winner.sendTitle(" ", " ", 0, 1, 0);
                     resetRoom(room);
                     this.cancel();
                     return;
@@ -206,6 +267,14 @@ public class PvPRoomManager {
         if (room == room1 && lootTask1 != null) { lootTask1.cancel(); lootTask1 = null; }
         if (room == room2 && lootTask2 != null) { lootTask2.cancel(); lootTask2 = null; }
 
+        // Clear titles from all remaining participants before wiping the set
+        for (UUID uid : room.getParticipants()) {
+            Player p = Bukkit.getPlayer(uid);
+            if (p != null && p.isOnline()) {
+                p.sendTitle(" ", " ", 0, 1, 0);
+            }
+        }
+
         room.setCurrentPhase(PvPPhase.WAITING);
         room.clearParticipants();
         room.setLootingCountdown(0);
@@ -217,8 +286,13 @@ public class PvPRoomManager {
 
     /**
      * Fills every block in the gate region with {@code material}.
-     * Gate regions are small by design (a doorway), so a synchronous fill is
-     * negligible. Only changes blocks that are not already the target material.
+     * Gate regions are small by design (a doorway). Every block is unconditionally
+     * set to the target material (no skip-if-same optimisation) to guarantee the
+     * client receives the update.  Physics are enabled so block-change packets
+     * reach all nearby players.
+     *
+     * Runs on the main thread via {@code runTask} to guarantee thread safety even
+     * when called from async context.
      *
      * Logs a warning if the region or world cannot be found so the admin can see
      * exactly why the gate is not sealing.
@@ -226,33 +300,39 @@ public class PvPRoomManager {
     private void setGate(String gateName, Material material) {
         ProtectRegion gate = regionManager.getRegion(gateName);
         if (gate == null) {
-            plugin.getLogger().warning("[PvPRooms] Gate region '" + gateName + "' not found — "
+            plugin.getLogger().severe("[PvPRooms] Gate region '" + gateName + "' NOT FOUND — "
                     + "define it with /region define " + gateName + " PVPROOMGATE1 (or PVPROOMGATE2). "
-                    + "Gate will NOT be sealed.");
+                    + "Gate will NOT be sealed. Available regions: " + regionManager.getRegionNames());
             return;
         }
 
         World world = Bukkit.getWorld(gate.getWorld());
         if (world == null) {
-            plugin.getLogger().warning("[PvPRooms] World '" + gate.getWorld() + "' for gate region '"
+            plugin.getLogger().severe("[PvPRooms] World '" + gate.getWorld() + "' for gate region '"
                     + gateName + "' is not loaded. Gate will NOT be sealed.");
             return;
         }
 
-        int filled = 0;
-        for (int x = gate.getMinX(); x <= gate.getMaxX(); x++) {
-            for (int y = gate.getMinY(); y <= gate.getMaxY(); y++) {
-                for (int z = gate.getMinZ(); z <= gate.getMaxZ(); z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    if (block.getType() != material) {
-                        block.setType(material, false); // false = skip physics, much faster
+        plugin.getLogger().info("[PvPRooms] Setting gate '" + gateName + "' to " + material.name()
+                + " | bounds: (" + gate.getMinX() + "," + gate.getMinY() + "," + gate.getMinZ()
+                + ") -> (" + gate.getMaxX() + "," + gate.getMaxY() + "," + gate.getMaxZ()
+                + ") in world '" + gate.getWorld() + "'");
+
+        // Schedule on main thread to guarantee block changes are thread-safe
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            int filled = 0;
+            for (int x = gate.getMinX(); x <= gate.getMaxX(); x++) {
+                for (int y = gate.getMinY(); y <= gate.getMaxY(); y++) {
+                    for (int z = gate.getMinZ(); z <= gate.getMaxZ(); z++) {
+                        Block block = world.getBlockAt(x, y, z);
+                        block.setType(material); // physics=true ensures block-change packets
                         filled++;
                     }
                 }
             }
-        }
-        plugin.getLogger().info("[PvPRooms] Gate '" + gateName + "' set to " + material.name()
-                + " (" + filled + " block(s) changed).");
+            plugin.getLogger().info("[PvPRooms] Gate '" + gateName + "' fill complete — "
+                    + filled + " block(s) set to " + material.name() + ".");
+        });
     }
 
     // ── Utilities ─────────────────────────────────────────────────────────────

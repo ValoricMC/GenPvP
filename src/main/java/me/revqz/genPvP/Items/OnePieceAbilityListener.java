@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -83,12 +84,13 @@ public class OnePieceAbilityListener implements Listener {
     private static final double GHOST_SIDE_OFFSET    = 1.5;
     private static final double GHOST_TARGET_RADIUS  = 20.0;
 
-    // TextDisplay hologram scale (configurable in source; user requested 0.3, 3.0, 0.3)
-    private static final Vector3f DISPLAY_SCALE = new Vector3f(0.3f, 3.0f, 0.3f);
-    // Vertical gap between hologram lines (blocks). Larger than normal due to Y scale 3.
-    private static final double   LINE_GAP      = 0.6;
+    // TextDisplay hologram scales
+    private static final Vector3f DISPLAY_SCALE  = new Vector3f(1.0f, 1.0f, 1.0f);
+    private static final Vector3f HP_BAR_SCALE   = new Vector3f(0.25f, 0.6f, 0.25f);
+    // Vertical gap between hologram lines (blocks)
+    private static final double   LINE_GAP       = 0.3;
     // Height above skeleton feet for the HP bar
-    private static final double   HP_BAR_Y      = 2.1;
+    private static final double   HP_BAR_Y       = 2.3;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private final GenPvP             plugin;
@@ -101,6 +103,8 @@ public class OnePieceAbilityListener implements Listener {
 
     private final Map<UUID, ItemStack> pendingAxes  = new ConcurrentHashMap<>();
     private final Map<UUID, UUID>      axeArrows    = new ConcurrentHashMap<>();
+    /** arrow UUID → trail particle task (for explicit cancellation on hit/quit/timeout) */
+    private final Map<UUID, BukkitTask> axeTrailTasks = new ConcurrentHashMap<>();
 
     /** skeleton UUID → owner player UUID */
     private final Map<UUID, UUID> ghostSkeletons = new ConcurrentHashMap<>();
@@ -156,7 +160,7 @@ public class OnePieceAbilityListener implements Listener {
         event.setCancelled(true);
 
         if (isRestrictedZone(player.getLocation())) {
-            player.sendActionBar(LEGACY.deserialize(ColorUtil.colorize("&c[OnePiece] Abilities cannot be used in this area.")));
+            player.sendMessage(msg("restricted-zone"));
             return;
         }
 
@@ -188,8 +192,10 @@ public class OnePieceAbilityListener implements Listener {
         for (Entity entity : player.getNearbyEntities(SWIPE_RANGE_BLOCKS, SWIPE_RANGE_BLOCKS, SWIPE_RANGE_BLOCKS)) {
             if (entity.equals(player)) continue;
             if (!(entity instanceof LivingEntity target)) continue;
+            if (target instanceof Player ep && isRestrictedZone(ep.getLocation())) continue;
 
             Vector toTarget = entity.getLocation().toVector().subtract(player.getLocation().toVector());
+            if (toTarget.lengthSquared() > SWIPE_RANGE_BLOCKS * SWIPE_RANGE_BLOCKS) continue;
             Vector flatTo   = new Vector(toTarget.getX(), 0, toTarget.getZ());
             if (flatTo.lengthSquared() == 0) continue;
             flatTo.normalize();
@@ -203,9 +209,9 @@ public class OnePieceAbilityListener implements Listener {
         spawnArcParticles(player.getLocation().add(0, 1, 0), flatFacing, SWIPE_RANGE_BLOCKS);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
 
-        player.sendMessage(ColorUtil.colorize(hits > 0
-                ? "&6[⚔ Luffy Sword] &fSwipe struck &e" + hits + " &ftarget" + (hits == 1 ? "" : "s") + "!"
-                : "&7[⚔ Luffy Sword] &fSwipe missed..."));
+        player.sendMessage(hits > 0
+                ? msg("swipe-hit", "%hits%", String.valueOf(hits))
+                : msg("swipe-miss"));
     }
 
     private void spawnArcParticles(Location origin, Vector flatFacing, double range) {
@@ -235,7 +241,7 @@ public class OnePieceAbilityListener implements Listener {
     private void throwAxe(Player player) {
         if (checkCooldown(player, axeCd, AXE_COOLDOWN_MS)) return;
         if (pendingAxes.containsKey(player.getUniqueId())) {
-            player.sendMessage(ColorUtil.colorize("&c[Pirate Axe] &fYour axe is still in flight!"));
+            player.sendMessage(msg("axe-in-flight"));
             return;
         }
         setCooldown(player, axeCd, AXE_COOLDOWN_MS);
@@ -260,22 +266,27 @@ public class OnePieceAbilityListener implements Listener {
         arrow.setMetadata(META_PIRATE_AXE, new FixedMetadataValue(plugin, player.getUniqueId().toString()));
         axeArrows.put(arrow.getUniqueId(), player.getUniqueId());
 
-        BukkitTask[] trail = new BukkitTask[1];
-        trail[0] = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (arrow.isDead() || !arrow.isValid()) { trail[0].cancel(); return; }
+        BukkitTask trailTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            if (arrow.isDead() || !arrow.isValid()) {
+                BukkitTask self = axeTrailTasks.remove(arrow.getUniqueId());
+                if (self != null) self.cancel();
+                return;
+            }
             arrow.getWorld().spawnParticle(Particle.CRIT, arrow.getLocation(), 3, 0.05, 0.05, 0.05, 0);
         }, 0L, 2L);
+        axeTrailTasks.put(arrow.getUniqueId(), trailTask);
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (axeArrows.remove(arrow.getUniqueId()) != null) {
-                trail[0].cancel();
+                BukkitTask t = axeTrailTasks.remove(arrow.getUniqueId());
+                if (t != null) t.cancel();
                 arrow.remove();
                 returnAxe(player.getUniqueId());
             }
         }, AXE_TIMEOUT_TICKS);
 
         player.playSound(player.getLocation(), Sound.ITEM_TRIDENT_THROW, 1f, 1f);
-        player.sendMessage(ColorUtil.colorize("&e[Pirate Axe] &fAxe thrown!"));
+        player.sendMessage(msg("axe-thrown"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -285,6 +296,10 @@ public class OnePieceAbilityListener implements Listener {
 
         UUID ownerUUID = axeArrows.remove(arrow.getUniqueId());
         if (ownerUUID == null) return;
+
+        // Cancel the trail particle task immediately on hit
+        BukkitTask trail = axeTrailTasks.remove(arrow.getUniqueId());
+        if (trail != null) trail.cancel();
 
         Location hit = arrow.getLocation();
         hit.getWorld().spawnParticle(Particle.CRIT, hit, 12, 0.2, 0.2, 0.2, 0);
@@ -309,7 +324,7 @@ public class OnePieceAbilityListener implements Listener {
         overflow.values().forEach(i -> player.getWorld().dropItemNaturally(player.getLocation(), i));
         player.updateInventory();
         player.playSound(player.getLocation(), Sound.ITEM_TRIDENT_RETURN, 1f, 1.2f);
-        player.sendMessage(ColorUtil.colorize("&a[Pirate Axe] &fAxe returned!"));
+        player.sendMessage(msg("axe-returned"));
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -333,20 +348,22 @@ public class OnePieceAbilityListener implements Listener {
         }, GHOST_DURATION_TICKS);
 
         player.playSound(loc, Sound.ENTITY_SKELETON_AMBIENT, 1f, 0.7f);
-        player.sendMessage(ColorUtil.colorize("&5[Pirate Sword] &fGhost crew summoned for &d"
-                + (GHOST_DURATION_TICKS / 20) + "s&f!"));
+        player.sendMessage(msg("ghost-crew-summoned",
+                "%seconds%", String.valueOf(GHOST_DURATION_TICKS / 20)));
     }
 
     private Skeleton spawnGhost(Location loc, Player owner) {
-        Skeleton sk = (Skeleton) loc.getWorld().spawnEntity(loc, EntityType.SKELETON);
-        sk.setMetadata(META_GHOST_CREW, new FixedMetadataValue(plugin, owner.getUniqueId().toString()));
+        // Use Paper's spawn consumer so metadata is set BEFORE the entity enters
+        // the world — prevents the skeleton's AI from targeting the owner in the
+        // tick between entity creation and metadata assignment.
+        Skeleton sk = loc.getWorld().spawn(loc, Skeleton.class, s -> {
+            s.setMetadata(META_GHOST_CREW, new FixedMetadataValue(plugin, owner.getUniqueId().toString()));
+            s.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,
+                    Integer.MAX_VALUE, 0, false, false, false));
+            s.setCustomNameVisible(false); // name shown via TextDisplay instead
+            s.setCanPickupItems(false);
+        });
 
-        // Fire immunity — skeletons must not burn in sunlight
-        sk.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,
-                Integer.MAX_VALUE, 0, false, false, false));
-
-        sk.setCustomNameVisible(false); // name shown via TextDisplay instead
-        sk.setCanPickupItems(false);
         ghostSkeletons.put(sk.getUniqueId(), owner.getUniqueId());
 
         // Spawn TextDisplay holograms
@@ -379,8 +396,8 @@ public class OnePieceAbilityListener implements Listener {
         }
         ghostNameDisplays.put(sk.getUniqueId(), nameDisplays);
 
-        // HP bar — always at the bottom (closest to head)
-        TextDisplay hpBar = spawnTextDisplay(base.clone().add(0, HP_BAR_Y, 0), "");
+        // HP bar — uses its own uniform scale so segments aren't squashed
+        TextDisplay hpBar = spawnTextDisplay(base.clone().add(0, HP_BAR_Y, 0), "", HP_BAR_SCALE);
         ghostHpBars.put(sk.getUniqueId(), hpBar);
 
         // Initialise HP bar text immediately
@@ -389,13 +406,17 @@ public class OnePieceAbilityListener implements Listener {
     }
 
     private TextDisplay spawnTextDisplay(Location loc, String coloredText) {
+        return spawnTextDisplay(loc, coloredText, DISPLAY_SCALE);
+    }
+
+    private TextDisplay spawnTextDisplay(Location loc, String coloredText, Vector3f scale) {
         return loc.getWorld().spawn(loc, TextDisplay.class, d -> {
             d.text(LEGACY.deserialize(coloredText));
             d.setBillboard(Display.Billboard.CENTER);
             d.setTransformation(new Transformation(
                     new Vector3f(0f, 0f, 0f),   // no translation offset
                     new Quaternionf(),            // no rotation
-                    DISPLAY_SCALE,               // (0.3, 3.0, 0.3) as requested
+                    scale,
                     new Quaternionf()
             ));
             d.setBackgroundColor(Color.fromARGB(0, 0, 0, 0)); // transparent background
@@ -417,6 +438,22 @@ public class OnePieceAbilityListener implements Listener {
                 cleanupHolograms(skUUID);
                 ghostSkeletons.remove(skUUID);
                 continue;
+            }
+
+            // ── Spawn-region boundary enforcement ─────────────────────────
+            // If the skeleton wandered into SPAWN/GENS, pull it back toward
+            // its owner so it never lingers inside restricted zones.
+            if (isRestrictedZone(sk.getLocation())) {
+                UUID ownerUUID = ghostSkeletons.get(skUUID);
+                Player owner = ownerUUID != null ? Bukkit.getPlayer(ownerUUID) : null;
+                if (owner != null && owner.isOnline() && !isRestrictedZone(owner.getLocation())) {
+                    sk.teleport(owner.getLocation());
+                    sk.setTarget(null);
+                } else {
+                    // Owner is also in spawn or offline — despawn the skeleton
+                    removeGhost(sk);
+                    continue;
+                }
             }
 
             Location base = sk.getLocation();
@@ -479,19 +516,31 @@ public class OnePieceAbilityListener implements Listener {
         if (!sk.isDead()) sk.remove();
     }
 
+    /** Prevent ghost crew skeletons from burning in sunlight (or any other combustion source). */
+    @EventHandler(ignoreCancelled = true)
+    public void onGhostBurn(EntityCombustEvent event) {
+        if (!(event.getEntity() instanceof Skeleton sk)) return;
+        if (!sk.hasMetadata(META_GHOST_CREW)) return;
+        event.setCancelled(true);
+    }
+
     @EventHandler
     public void onGhostDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Skeleton sk)) return;
         if (!sk.hasMetadata(META_GHOST_CREW)) return;
+        event.getDrops().clear();
+        event.setDroppedExp(0);
         UUID uuid = sk.getUniqueId();
         ghostSkeletons.remove(uuid);
         cleanupHolograms(uuid);
     }
 
-    /** Clean up a disconnected player's ghosts so they don't linger headless. */
+    /** Clean up a disconnected player's ghosts, in-flight axes, and cooldown state. */
     @EventHandler
     public void onOwnerQuit(PlayerQuitEvent event) {
         UUID ownerUUID = event.getPlayer().getUniqueId();
+
+        // ── Ghost Crew cleanup ────────────────────────────────────────────
         for (Map.Entry<UUID, UUID> entry : new HashMap<>(ghostSkeletons).entrySet()) {
             if (!entry.getValue().equals(ownerUUID)) continue;
             UUID skUUID = entry.getKey();
@@ -502,6 +551,23 @@ public class OnePieceAbilityListener implements Listener {
                 cleanupHolograms(skUUID);
             }
         }
+
+        // ── Pirate Axe cleanup — kill arrow, cancel trail, return item ────
+        for (Map.Entry<UUID, UUID> entry : new HashMap<>(axeArrows).entrySet()) {
+            if (!entry.getValue().equals(ownerUUID)) continue;
+            UUID arrowUUID = entry.getKey();
+            axeArrows.remove(arrowUUID);
+            BukkitTask trail = axeTrailTasks.remove(arrowUUID);
+            if (trail != null) trail.cancel();
+            Entity arrow = Bukkit.getEntity(arrowUUID);
+            if (arrow != null) arrow.remove();
+        }
+        returnAxe(ownerUUID);
+
+        // ── Cooldown cleanup (prevent memory leaks for offline players) ───
+        swordCd.remove(ownerUUID);
+        axeCd.remove(ownerUUID);
+        pirateSwordCd.remove(ownerUUID);
     }
 
     // ── Target guard ──────────────────────────────────────────────────────────
@@ -524,15 +590,32 @@ public class OnePieceAbilityListener implements Listener {
         if (!(event.getEntity() instanceof Skeleton sk)) return;
         if (!sk.hasMetadata(META_GHOST_CREW)) return;
         Entity target = event.getTarget();
-        if (target == null) return;
         String ownerStr = sk.getMetadata(META_GHOST_CREW).get(0).asString();
+
+        // Skeleton lost its target naturally — find a new one next tick
+        if (target == null) {
+            scheduleRetarget(sk, ownerStr);
+            return;
+        }
+
         if (target instanceof Player p && p.getUniqueId().toString().equals(ownerStr)) {
             event.setCancelled(true);
+            scheduleRetarget(sk, ownerStr);
             return;
         }
         if (target instanceof Player p && isRestrictedZone(p.getLocation())) {
             event.setCancelled(true);
+            scheduleRetarget(sk, ownerStr);
         }
+    }
+
+    /** Schedules a 1-tick delayed re-target so the skeleton doesn't stand idle after losing a target. */
+    private void scheduleRetarget(Skeleton sk, String ownerStr) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (sk.isDead() || !ghostSkeletons.containsKey(sk.getUniqueId())) return;
+            Player owner = Bukkit.getPlayer(UUID.fromString(ownerStr));
+            if (owner != null) assignBestTarget(sk, owner);
+        }, 1L);
     }
 
     // ── Cooldown helpers ──────────────────────────────────────────────────────
@@ -541,11 +624,27 @@ public class OnePieceAbilityListener implements Listener {
         Long expiry = map.get(player.getUniqueId());
         if (expiry == null || System.currentTimeMillis() >= expiry) return false;
         long remaining = (expiry - System.currentTimeMillis() + 999) / 1000;
-        player.sendMessage(ColorUtil.colorize("&c[OnePiece] Cooldown: &f" + remaining + "s remaining."));
+        player.sendMessage(msg("cooldown", "%seconds%", String.valueOf(remaining)));
         return true;
     }
 
     private void setCooldown(Player player, Map<UUID, Long> map, long durationMs) {
         map.put(player.getUniqueId(), System.currentTimeMillis() + durationMs);
+    }
+
+    // ── Config message helpers ────────────────────────────────────────────────────
+
+    private String msg(String key) {
+        return ColorUtil.colorize(plugin.getConfig().getString("onepiece.messages." + key,
+                "\u00a7cMessage not configured: onepiece.messages." + key));
+    }
+
+    private String msg(String key, String... pairs) {
+        String raw = plugin.getConfig().getString("onepiece.messages." + key,
+                "\u00a7cMessage not configured: onepiece.messages." + key);
+        for (int i = 0; i + 1 < pairs.length; i += 2) {
+            raw = raw.replace(pairs[i], pairs[i + 1]);
+        }
+        return ColorUtil.colorize(raw);
     }
 }

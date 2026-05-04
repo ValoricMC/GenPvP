@@ -6,7 +6,7 @@ import me.revqz.genPvP.GenPvP;
 import me.revqz.genPvP.util.ColorUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -43,7 +43,9 @@ import java.util.stream.Collectors;
  */
 public class LuffyArmorManager implements Listener {
 
-    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
+    private static final GsonComponentSerializer GSON = GsonComponentSerializer.gson();
+    private static final net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer LEGACY =
+            net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection();
 
     public static final String[] PIECE_IDS = {
             "luffy_helmet",
@@ -119,7 +121,9 @@ public class LuffyArmorManager implements Listener {
         event.setCancelled(true);
 
         victim.playSound(victim.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1.0f, 0.6f);
-        victim.sendActionBar(LEGACY.deserialize(ColorUtil.colorize("&5&l⚡ HAKI BLOCK!")));
+        String hakiMsg = plugin.getConfig().getString("onepiece.messages.haki-block",
+                "&#FFAF89&lHAKI &8\u00bb &7Attack blocked by spirit armor.");
+        victim.sendActionBar(LEGACY.deserialize(ColorUtil.colorize(hakiMsg)));
     }
 
     // ── Full-set: +20% outgoing fruit damage ─────────────────────────────────
@@ -165,6 +169,8 @@ public class LuffyArmorManager implements Listener {
                 player.getInventory().getLeggings(),
                 player.getInventory().getBoots()
         };
+
+
         for (int i = 0; i < PIECE_IDS.length; i++) {
             if (applyLore(player, armor[i], PIECE_IDS[i])) {
                 switch (i) {
@@ -190,22 +196,25 @@ public class LuffyArmorManager implements Listener {
     }
 
     /**
-     * Resolves PAPI placeholders in the template lore for {@code pieceId} and
-     * applies them to {@code item} if and only if the item carries that piece ID
-     * and the resolved lore differs from the current lore.
+     * Reads the lore template from config.yml (onepiece.armor-lore.{pieceId}),
+     * resolves PAPI placeholders, colorizes, and writes to the item.
+     * Config-driven templates bypass the Paper 1.21+ Component serialization
+     * issue where meta.lore() returns empty Components.
      *
      * @return true if the item's lore was actually updated (caller must write back)
      */
     private boolean applyLore(Player player, ItemStack item, String pieceId) {
         if (!registry.hasId(item, pieceId)) return false;
 
-        List<String> templateLore = registry.getTemplateLore(pieceId);
-        if (templateLore == null || templateLore.isEmpty()) return false;
-        if (templateLore.stream().noneMatch(l -> l.contains("%"))) return false;
+        // Read template from config — plain strings with & color codes + PAPI placeholders
+        List<String> templateLines = plugin.getConfig().getStringList("onepiece.armor-lore." + pieceId);
+        if (templateLines == null || templateLines.isEmpty()) return false;
 
-        List<Component> newLore = templateLore.stream()
+        List<Component> newLore = templateLines.stream()
                 .map(line -> PlaceholderAPI.setPlaceholders(player, line))
-                .map(line -> LEGACY.deserialize(line).decoration(TextDecoration.ITALIC, false))
+                .map(line -> LEGACY.deserialize(
+                        me.revqz.genPvP.util.ColorUtil.colorize(line))
+                        .decoration(TextDecoration.ITALIC, false))
                 .collect(Collectors.toList());
 
         ItemMeta meta = item.getItemMeta();

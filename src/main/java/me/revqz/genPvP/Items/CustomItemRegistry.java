@@ -5,7 +5,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.ReplaceOptions;
 import me.revqz.genPvP.GenPvP;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.bukkit.NamespacedKey;
@@ -40,7 +40,7 @@ public class CustomItemRegistry {
     private final MongoDatabase  db;
     private final boolean        dbConnected;
 
-    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
+    private static final GsonComponentSerializer GSON = GsonComponentSerializer.gson();
 
     /** name (lower-case) → raw serialized bytes of the registered template. */
     private final Map<String, byte[]> templates = new ConcurrentHashMap<>();
@@ -66,7 +66,23 @@ public class CustomItemRegistry {
         meta.getPersistentDataContainer().set(pdcKey, PersistentDataType.STRING, key);
         item.setItemMeta(meta);
 
+        // Verify the tag was actually set
+        String verify = item.getItemMeta().getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING);
+        plugin.getLogger().info("[CustomItemRegistry] Registered '" + key + "' | PDC stamp check: " + verify);
+
         byte[] serialized = item.serializeAsBytes();
+
+        // Round-trip verification: ensure PDC survives serialize→deserialize
+        ItemStack roundTrip = ItemStack.deserializeBytes(serialized);
+        String rtCheck = roundTrip.hasItemMeta()
+                ? roundTrip.getItemMeta().getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING)
+                : null;
+        plugin.getLogger().info("[CustomItemRegistry] Round-trip PDC check for '" + key + "': " + rtCheck);
+        if (rtCheck == null) {
+            plugin.getLogger().warning("[CustomItemRegistry] PDC LOST during round-trip for '" + key
+                    + "'! Storing raw item without byte serialization.");
+        }
+
         templates.put(key, serialized);
         cacheLore(key, item);
 
@@ -103,7 +119,18 @@ public class CustomItemRegistry {
 
     public ItemStack getTemplate(String name) {
         byte[] data = templates.get(name.toLowerCase());
-        return data != null ? ItemStack.deserializeBytes(data) : null;
+        if (data == null) return null;
+        ItemStack item = ItemStack.deserializeBytes(data);
+        // Defensive re-stamp: ensure PDC tag survives deserialization across versions
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            String existing = meta.getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING);
+            if (!name.equalsIgnoreCase(existing)) {
+                meta.getPersistentDataContainer().set(pdcKey, PersistentDataType.STRING, name.toLowerCase());
+                item.setItemMeta(meta);
+            }
+        }
+        return item;
     }
 
     public boolean isRegistered(String name) {
@@ -138,9 +165,9 @@ public class CustomItemRegistry {
     }
 
     /**
-     * Returns the lore of the registered template as legacy-string lines
-     * (e.g. "§7Defense: %genpvp_luffy_armor_haki_currentbuff%").
-     * Returns null if the item has no registered template or no lore.
+     * Returns the lore of the registered template as JSON-serialized strings.
+     * Uses GsonComponentSerializer so that modern Paper 1.21+ Components
+     * (which fail legacy §-serialization) round-trip correctly.
      */
     public List<String> getTemplateLore(String name) {
         return templateLoreCache.get(name.toLowerCase());
@@ -157,6 +184,6 @@ public class CustomItemRegistry {
             templateLoreCache.remove(key);
             return;
         }
-        templateLoreCache.put(key, lore.stream().map(LEGACY::serialize).collect(Collectors.toList()));
+        templateLoreCache.put(key, lore.stream().map(GSON::serialize).collect(Collectors.toList()));
     }
 }

@@ -19,9 +19,9 @@ public enum RegionType {
     PVPROOM2(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_MOB_SPAWN, RegionRule.ALLOW_KNOCKBACK,
             RegionRule.ALLOW_WIND_CHARGE, RegionRule.ALLOW_PEARL)),
     PVPROOMGATE1(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_MOB_SPAWN, RegionRule.ALLOW_KNOCKBACK,
-            RegionRule.ALLOW_WIND_CHARGE, RegionRule.ALLOW_PEARL)),
+            RegionRule.ALLOW_PEARL)),
     PVPROOMGATE2(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_MOB_SPAWN, RegionRule.ALLOW_KNOCKBACK,
-            RegionRule.ALLOW_WIND_CHARGE, RegionRule.ALLOW_PEARL)),
+            RegionRule.ALLOW_PEARL)),
     PIT(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_KNOCKBACK, RegionRule.ALLOW_WIND_CHARGE)),
     // PIT intentionally omits ALLOW_PEARL — players cannot pearl out
     SHULKERROOMS(EnumSet.of(RegionRule.ALLOW_INTERACT)),

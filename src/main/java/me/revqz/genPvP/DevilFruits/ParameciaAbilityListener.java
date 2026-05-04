@@ -14,11 +14,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -168,6 +170,7 @@ public class ParameciaAbilityListener implements Listener {
         BukkitTask glideTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (!player.isOnline() || !activeAbility.contains(uuid)) return;
             if (!player.isOnGround()) return;
+            if (isInSpawn(player)) return;  // don't apply ability velocity in spawn
             Vector vel = player.getVelocity();
             double hx = vel.getX();
             double hz = vel.getZ();
@@ -292,6 +295,7 @@ public class ParameciaAbilityListener implements Listener {
         ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
         tp.setItem(potionItem);
         tp.setVelocity(player.getLocation().getDirection().normalize().multiply(1.5));
+        tp.setMetadata("genpvp_doku_doku", new FixedMetadataValue(plugin, true));
 
         player.playSound(player.getLocation(), Sound.ENTITY_WITCH_THROW, 1f, 1f);
         Particle.DustOptions venomDust = new Particle.DustOptions(Color.fromRGB(100, 0, 180), 1.2f);
@@ -340,6 +344,7 @@ public class ParameciaAbilityListener implements Listener {
                         .add(right.clone().multiply(w))
                         .add(0, h, 0)
                         .getBlock();
+                if (isInSpawn(block.getLocation())) continue;
                 if (block.getType() == Material.AIR) {
                     block.setType(Material.GLASS);
                     placed.add(block);
@@ -435,6 +440,7 @@ public class ParameciaAbilityListener implements Listener {
                 for (Entity entity : origin.getWorld().getNearbyEntities(origin, currentRadius + 1, 3, currentRadius + 1)) {
                     if (!(entity instanceof LivingEntity target) || entity.equals(player)) continue;
                     if (hitEntities.contains(target.getUniqueId())) continue;
+                    if (target instanceof Player tp && isInSpawn(tp)) continue;
 
                     double dist = target.getLocation().distance(origin);
                     if (dist <= currentRadius + 0.5) {
@@ -479,12 +485,16 @@ public class ParameciaAbilityListener implements Listener {
 
         // Supa Supa — extra damage with empty main hand
         if (meleeBuffed.contains(uuid)
-                && attacker.getInventory().getItemInMainHand().getType() == Material.AIR) {
+                && attacker.getInventory().getItemInMainHand().getType() == Material.AIR
+                && !(event.getEntity() instanceof Player sp && isInSpawn(sp))) {
             event.setDamage(event.getDamage() + cfgD("supa_supa", "bonus-damage", 2.5));
         }
 
         // Bomu Bomu — first hit triggers a non-block-breaking explosion
-        if (pendingExplosion.remove(uuid)) {
+        if (pendingExplosion.contains(uuid)) {
+            // Don't detonate the bomb on targets inside spawn
+            if (event.getEntity() instanceof Player sp && isInSpawn(sp)) return;
+            pendingExplosion.remove(uuid);
             Location explodeLoc = event.getEntity().getLocation();
             float yield = (float) cfgD("bomu_bomu", "explosion-yield", 1.2);
             explodeLoc.getWorld().createExplosion(explodeLoc, yield, false, false, attacker);
@@ -510,6 +520,17 @@ public class ParameciaAbilityListener implements Listener {
             player.getWorld().spawnParticle(Particle.ITEM_SLIME, player.getLocation().add(0, 0.1, 0), 15, 0.3, 0.1, 0.3, 0.05);
             // Cancel the window-expiry task and release the ability slot
             endAbilityEarly(player.getUniqueId());
+        }
+    }
+
+    /** Doku Doku — prevent splash potion effects on players inside SPAWN. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent event) {
+        if (!event.getEntity().hasMetadata("genpvp_doku_doku")) return;
+        for (LivingEntity affected : event.getAffectedEntities()) {
+            if (affected instanceof Player p && isInSpawn(p)) {
+                event.setIntensity(affected, 0);
+            }
         }
     }
 
@@ -592,7 +613,11 @@ public class ParameciaAbilityListener implements Listener {
     }
 
     private boolean isInSpawn(Player player) {
-        for (ProtectRegion region : regionManager.getRegionsAt(player.getLocation())) {
+        return isInSpawn(player.getLocation());
+    }
+
+    private boolean isInSpawn(Location location) {
+        for (ProtectRegion region : regionManager.getRegionsAt(location)) {
             if (region.getType() == RegionType.SPAWN) return true;
         }
         return false;
