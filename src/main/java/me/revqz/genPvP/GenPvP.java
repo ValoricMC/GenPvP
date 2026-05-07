@@ -73,7 +73,6 @@ public final class GenPvP extends JavaPlugin {
         customItemRegistry = new CustomItemRegistry(this,
                 databaseManager.getDatabase(), databaseManager.isMongoConnected());
 
-        // Cross-server pub/sub framework — disabled by default until configured
         if (getConfig().getBoolean("cross-server.enabled", false)) {
             crossServerMessenger = new CrossServerMessenger(this, databaseManager);
             crossServerMessenger.start();
@@ -90,7 +89,6 @@ public final class GenPvP extends JavaPlugin {
 
         regionManager = new RegionManager(this, databaseManager);
 
-        // Teams
         teamManager = new me.revqz.genPvP.Teams.TeamManager(this, databaseManager);
         getServer().getPluginManager().registerEvents(teamManager, this);
         me.revqz.genPvP.Teams.TeamCommand teamCommand = new me.revqz.genPvP.Teams.TeamCommand(this, teamManager);
@@ -136,7 +134,7 @@ public final class GenPvP extends JavaPlugin {
             kothCmd.setTabCompleter(kc);
         }
 
-        ProtectListener protectListener = new ProtectListener(this, regionManager, blockTimerManager, protectCommand);
+        ProtectListener protectListener = new ProtectListener(this, regionManager, blockTimerManager, protectCommand, customItemRegistry);
         getServer().getPluginManager().registerEvents(protectListener, this);
 
         try {
@@ -157,6 +155,11 @@ public final class GenPvP extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.Gens.GensListener(this, regionManager, protectCommand), this);
+
+        new me.revqz.genPvP.Anvil.AnvilManager(this, regionManager);
+
+        me.revqz.genPvP.PitNetherite.PitNetheriteManager pitNetheriteManager =
+                new me.revqz.genPvP.PitNetherite.PitNetheriteManager(this, regionManager);
 
         getServer().getPluginManager().registerEvents(new LogListener(logManager), this);
         getServer().getPluginManager().registerEvents(new AntiDupeListener(antiDupeManager), this);
@@ -201,6 +204,12 @@ public final class GenPvP extends JavaPlugin {
             payCmd.setExecutor(pc);
             payCmd.setTabCompleter(pc);
         }
+        var balanceCmd = getCommand("balance");
+        if (balanceCmd != null) {
+            me.revqz.genPvP.Bank.BalanceCommand bc = new me.revqz.genPvP.Bank.BalanceCommand(this, bankManager);
+            balanceCmd.setExecutor(bc);
+            balanceCmd.setTabCompleter(bc);
+        }
         var settingsCmd = getCommand("settings");
         if (settingsCmd != null) {
             me.revqz.genPvP.Bank.SettingsCommand sc = new me.revqz.genPvP.Bank.SettingsCommand(this, bankManager);
@@ -240,7 +249,6 @@ public final class GenPvP extends JavaPlugin {
             levelCmd.setTabCompleter(lc);
         }
 
-        // XP sources: register listener (kills + block breaks) and /xp admin command
         me.revqz.genPvP.Prestige.XpListener xpListener = new me.revqz.genPvP.Prestige.XpListener(this, prestigeManager);
         getServer().getPluginManager().registerEvents(xpListener, this);
         var xpCmd = getCommand("xp");
@@ -284,7 +292,7 @@ public final class GenPvP extends JavaPlugin {
         var genpvpCmd = getCommand("genpvp");
         if (genpvpCmd != null) {
             GenPvPCommand genpvpCommand = new GenPvPCommand(this, shopManager, itemShopManager,
-                    autoCompressorListener, customItemRegistry);
+                    autoCompressorListener, customItemRegistry, pitNetheriteManager);
             genpvpCmd.setExecutor(genpvpCommand);
             genpvpCmd.setTabCompleter(genpvpCommand);
         }
@@ -306,12 +314,10 @@ public final class GenPvP extends JavaPlugin {
         getServer().getPluginManager().registerEvents(statsManager, this);
         getServer().getPluginManager().registerEvents(new me.revqz.genPvP.Stats.StatsListener(statsManager), this);
 
-        // Devil Fruits
         devilFruitManager =
                 new me.revqz.genPvP.DevilFruits.DevilFruitManager(this, databaseManager);
         getServer().getPluginManager().registerEvents(devilFruitManager, this);
 
-        // FruitGUIManager is created first so its GeneralMessages.yml (messages + mana) is available
         me.revqz.genPvP.DevilFruits.FruitGUIManager fruitGUIManager =
                 new me.revqz.genPvP.DevilFruits.FruitGUIManager(this, devilFruitManager, regionManager);
         getServer().getPluginManager().registerEvents(fruitGUIManager, this);
@@ -326,7 +332,6 @@ public final class GenPvP extends JavaPlugin {
         fruitSlotManager.setRegionManager(regionManager);
         getServer().getPluginManager().registerEvents(fruitSlotManager, this);
 
-        // Wire equip-change callback: runs on main thread (fireEquipChange guarantees this)
         devilFruitManager.setOnEquipChange(uuid -> {
             org.bukkit.entity.Player p = getServer().getPlayer(uuid);
             if (p != null) fruitSlotManager.updateFruitSlot(p);
@@ -351,7 +356,6 @@ public final class GenPvP extends JavaPlugin {
                         fruitGUIManager, fruitSlotManager);
         getServer().getPluginManager().registerEvents(logiaAbilities, this);
 
-        // Fruit Roll system — rolling slot-machine GUI
         fruitRollManager =
                 new me.revqz.genPvP.DevilFruits.FruitRollManager(this, databaseManager);
         getServer().getPluginManager().registerEvents(fruitRollManager, this);
@@ -361,7 +365,6 @@ public final class GenPvP extends JavaPlugin {
                         this, devilFruitManager, fruitRollManager, fruitGUIManager, bankManager);
         getServer().getPluginManager().registerEvents(fruitRollGUI, this);
 
-        // Devil Fruit Shard — PvP kill-drop economy + physical currency for shops
         me.revqz.genPvP.DevilFruits.DevilFruitShardListener devilFruitShardListener =
                 new me.revqz.genPvP.DevilFruits.DevilFruitShardListener(this, fruitGUIManager.getMessagesConfig());
         getServer().getPluginManager().registerEvents(devilFruitShardListener, this);
@@ -397,7 +400,6 @@ public final class GenPvP extends JavaPlugin {
             dbCmd.setTabCompleter(dbc);
         }
 
-        // Standalone /logia, /paramecia, /zoan commands
         for (String typeName : new String[]{"logia", "paramecia", "zoan"}) {
             var cmd = getCommand(typeName);
             if (cmd != null) {
@@ -414,23 +416,17 @@ public final class GenPvP extends JavaPlugin {
             }
         }
 
-        // Luffy Armor — Haki block (10% per piece) + full-set +20% fruit damage
         LuffyArmorManager luffyArmorManager = new LuffyArmorManager(this, customItemRegistry, devilFruitManager);
         getServer().getPluginManager().registerEvents(luffyArmorManager, this);
 
-        // OnePiece weapon abilities: luffy_sword swipe, pirate_axe throw, pirate_sword ghost crew
         getServer().getPluginManager().registerEvents(
                 new OnePieceAbilityListener(this, customItemRegistry, regionManager), this);
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.Items.BoxSphereListener(this, customItemRegistry, regionManager), this);
 
-        // Head ability events (registration is now under /genpvp head)
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.Items.Heads.HeadAbilityListener(this, customItemRegistry, regionManager, logManager), this);
 
-        // Unified player-data loader — fires at LOW priority (before each manager's
-        // NORMAL handler)
-        // so all caches are populated in one async task / one DB round trip.
         playerDataLoader = new me.revqz.genPvP.Database.PlayerDataLoader(
                 this, databaseManager, bankManager, prestigeManager, statsManager,
                 devilFruitManager, kitManager, fruitRollManager);
@@ -463,25 +459,17 @@ public final class GenPvP extends JavaPlugin {
         nametag = new me.revqz.genPvP.util.Nametag(this);
         getServer().getPluginManager().registerEvents(nametag, this);
 
-        // Spawn displays (discord / store interaction holograms)
         displaysManager = new me.revqz.genPvP.SpawnDisplays.DisplaysManager(this);
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.SpawnDisplays.DisplaysListener(this, displaysManager), this);
         getServer().getScheduler().runTaskLater(this, displaysManager::summon, 1L);
 
-        // Particle circle effect — start on next tick so the world is fully loaded
         getServer().getScheduler().runTaskLater(this, () ->
                 new me.revqz.genPvP.util.ParticleCircleEffect(this).start(), 1L);
 
-        // Double-jump — permission genpvp.doublejump, SPAWN regions only
         getServer().getPluginManager().registerEvents(
                 new me.revqz.genPvP.util.DoubleJumpListener(this, regionManager), this);
 
-        // ── PlugMan reload safety ─────────────────────────────────────────────
-        // PlugMan does NOT fire PlayerJoinEvent for already-online players when
-        // it reloads a plugin.  Schedule a 1-tick delayed task so that after
-        // everything is registered we re-load every online player's data from
-        // MongoDB into the fresh in-memory caches.
         getServer().getScheduler().runTaskLater(this, () -> {
             if (playerDataLoader != null) {
                 playerDataLoader.reloadOnlinePlayers();
@@ -507,14 +495,9 @@ public final class GenPvP extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // ── Cancel ALL Bukkit scheduler tasks FIRST ────────────────────────────
-        // This prevents orphaned repeating tasks (leaderboards, mana regen,
-        // particle effects, PvP room scanners, etc.) from executing against
-        // a closing MongoDB connection during a PlugMan reload.
+
         getServer().getScheduler().cancelTasks(this);
 
-        // Stop HTTP threads — keeps the old classloader from leaking into the
-        // next Plugman reload, which would prevent MongoDB from reconnecting.
         me.revqz.genPvP.Webhook.DiscordWebhook.shutdown();
 
         if (blockTimerManager != null) {
@@ -547,9 +530,7 @@ public final class GenPvP extends JavaPlugin {
         if (teamManager != null) {
             teamManager.shutdown();
         }
-        // Flush all in-memory fruit data to MongoDB BEFORE closing the connection.
-        // The async writes from giveFruit/consumeRoll may still be queued when the
-        // scheduler shuts down — this synchronous pass guarantees persistence.
+        
         if (devilFruitManager != null) {
             devilFruitManager.saveAll();
         }
@@ -561,152 +542,3 @@ public final class GenPvP extends JavaPlugin {
         }
     }
 }
-// GUNS - IN GUNS DIRECTORY @GUNS
-
-// TODO: GUN MODEL NAME: guns/vs_revolver
-// TODO: Add the dependency ItemsAdder to animate the guns
-// TODO: Add a sort of glow infront of the gun when it shots.
-// TODO: Use a texture named items/ammo_box - When right clicked will give you
-// 32 reguler ammo.
-// TODO: Use ammo texture items/ammo - Used to shot
-// TODO: Add a configurable reloading cooldown in config (mag size will be 1)
-// TODO: Add configurable damage to other people.
-// TODO: Because the gun is going to be a flint knock add a configurable
-// velocity for the person who shot it and got shot with it
-// TODO: COMMAND TO GIVE THE GUNS FOR OPS ONLY: /gun give <player>
-// TODO: COMMAND TO GIVE THE AMMO FOR OPS ONLY: /ammo give <player>
-// <box/reguler_ammo> <amount>
-
-// PROTECT - PROTECT STUFF [DONE - SEE src/main/java/me/revqz/genPvP/Protect/]
-
-// TODO: Add FastAsyncWorldEdit as a dependency [DONE]
-// TODO: Add Placeholder API as a dependency [DONE]
-// TODO: Add a configurable clock in config for each block placed by players in
-// @RULE: SURVIVAL ONLY, When block timer == 0 block will be set to air with a
-// sound (make it configurable). [DONE]
-// TODO: Add region defineing e.g pos1 and pos2 in worldedit and then I run
-// command /region define <region name> [DONE]
-// TODO: Add /region bypass (for OPs Only) when run it will make whoever ran it
-// able to bypass region protection. [DONE]
-// SPECFIC REGION RULES:
-// TODO: PEOPLE CANNOT BREAK ANY BLOCK PLACED IN CREATIVE UNLESS ITS IN A REGION
-// WITH RULE BREAK ALLOW [DONE]
-// TODO: Region Spawn rules: People can NOT take damage from anything, Place /
-// break blocks, Spawn Mobs, Recive knockback, Use Flint and steal, In any way
-// kill / hurt people / push them. - Can interact with anvils , Enchant tables,
-// grindstones , crafting tables etc... [DONE]
-// TODO: Region Gens rules: People can NOT take damage from anything, Place ,
-// Spawn Mobs, Recive knockback, Use Flint and steal, In any way kill / hurt
-// people / push them. - People can break blocks [DONE]
-// TODO: Region OPMines: People can fight , Spawn mobs, Recive knockback, No use
-// of flint and steal, Cant break /place blocks. [DONE]
-// TODO: Region OPMinesGens: People can fight , Spawn mobs, Recive knockback, No
-// use of flint and steal, place blocks. - People can break blocks [DONE]
-// TODO: Region Koth: People can fight , Recive knockback, No use of flint and
-// steal, place blocks. - People cant break blocks [DONE]
-// TODO: Region KothCapture: People can fight , Recive knockback, No use of
-// flint and steal, Cant place blocks. - People cant break blocks [DONE]
-// TODO: Region PvProom1: People can fight , Spawn mobs, Recive knockback, No
-// use of flint and steal, [DONE]
-// TODO: Region PvProom2: People can fight , Spawn mobs, Recive knockback, No
-// use of flint and steal, [DONE]
-// TODO: Region PvProomGate1: People can fight , Spawn mobs, Recive knockback,
-// No use of flint and steal, [DONE]
-// TODO: Region PvProomGate2: People can fight , Spawn mobs, Recive knockback,
-// No use of flint and steal, [DONE]
-// TODO: Pit: People can fight , Recive knockback, No use of flint and steal,
-// cant place blocks. - People cant break blocks [DONE]
-
-// GENS: [DONE - SEE src/main/java/me/revqz/genPvP/Gens/GensListener.java]
-// DONE: Blocks in GENS and OPMINESGENS regions regenerate instantly (next tick)
-// via a tick-safe,
-// concurrent-safe runTaskLater scheduler. Drops and XP fire normally. No
-// console output.
-// Regen speed is configurable via gens-regen-ticks in config.yml.
-// FAWE/schematic-placed blocks in these regions are fully supported via
-// WorldEditHook.
-
-// DATABASE: [DONE - SEE src/main/java/me/revqz/genPvP/Database/]
-// DONE: MongoDB connected and verified with a real ping command on startup
-// (DatabaseManager).
-// DONE: Redis → MongoDB pipeline: events enqueue instantly (non-blocking),
-// async writer batches to Redis
-// every 1 s, flush task moves Redis → MongoDB every 5 s. If Redis is down,
-// writes go directly
-// to MongoDB. If both are down, up to 10 000 docs are held in memory and
-// retried.
-// DONE: Logs: joins, leaves, kills/deaths (LogListener), KOTH start/stop/win
-// (KothManager), dupe (AntiDupeManager).
-// Economy and Shop log methods exist (logEconomy / logShop) — wire them up when
-// those systems are built.
-// DONE: Player names stored alongside UUIDs in every document for easy Atlas
-// queries.
-// DONE: Compound indexes on {type, timestamp} and {player, timestamp} plus
-// sparse index on winner.
-// TODO (future): Cross-server support via Redis pub/sub — add a subscriber that
-// forwards log events
-// from other servers into the same genpvp.logs collection.
-
-// ANTIDUPE:
-// TODO: Assign every unstackable item a unique ITEM-ID that means that item
-// will be unique , If a player has 2 items with the same UUID it will send a
-// messege in chat (configurable in config) for people with OP and log in in
-// MongoDB.
-// TODO: Add some sort of detection for stackable items.
-// TODO: USE THE FOLLOWING (BELOW)
-// Atomic Data Structures , Database Auditing, PDC (Persistent Data Container)
-// Verification, PDC Stamping (Stackable), World vs. Memory Sanity Checks
-// Per-Gen Tick Guards
-// If you want more details about each tell me - Add more of your own for null
-// handling and packet detection.
-
-// PVPROOMS: [DONE - SEE src/main/java/me/revqz/genPvP/PvPRooms/]
-// DONE: 2-player trigger on PVPROOM1 / PVPROOM2 — when exactly 2 players are
-// detected the gate
-// region (PVPROOMGATE1 / PVPROOMGATE2) is instantly filled with BARRIER blocks.
-// DONE: Entry prevention — ALL teleport causes (ender pearl, /tp, plugin,
-// chorus fruit …) are
-// intercepted by PvPRoomListener and cancelled for non-participants during
-// FIGHTING / LOOTING.
-// Barrier blocks block physical movement. Ops can still intervene if needed.
-// DONE: Command block — non-participant players inside the room cannot run any
-// command during
-// an active fight or loot phase; operators are exempt.
-// DONE: On participant death or disconnect — loot phase starts (2.5 min = 150
-// s). Winner sees:
-// title "WIN!" (&#4498DB / &#70BAF5 gradient), subtitle "&#4498DB<seconds>
-// Seconds left to loot."
-// Title uses stay=25 ticks so minor server lag never causes a visible gap
-// between updates.
-// Loot task handle is stored; calling resetRoom() cancels it immediately
-// without waiting.
-// DONE: At t=0 (or on winner disconnect) — gate region is cleared to AIR and
-// room returns to WAITING.
-// DONE: Dual-quit / simultaneous death edge case — handled; room resets
-// cleanly.
-// DONE: Placeholders via GenPvPExpansion (merged — fixes silent KOTH
-// placeholder breakage):
-// %genpvp_pvproom1_max%, %genpvp_pvproom1_in%, %genpvp_pvproom2_max%,
-// %genpvp_pvproom2_in%
-
-// DONE: PvPRoom2 works identically to PvPRoom1 — gate sealed with PVPROOMGATE2
-// on fight start, cleared on reset.
-
-// KOTH: [DONE - SEE src/main/java/me/revqz/genPvP/Koth/]
-// DONE: Auto-start every koth.interval seconds (config.yml). /koth start|stop
-// for OPs.
-// DONE: Single-player capture zone (KothCapture region). Timer resets if the
-// capturer leaves or a second player enters.
-// DONE: Configurable capture_time and reward_command (with %player%
-// placeholder).
-// DONE: All messages fully configurable in config.yml under koth.messages —
-// supports single strings AND
-// multi-line YAML lists. Color codes use & prefix. Pre-translated at load time
-// (zero overhead per broadcast).
-// Placeholders: %player% (winner / capturer name), %time% (seconds remaining).
-// DONE: PlaceholderAPI — %genpvp_time_till_next_koth%,
-// %genpvp_time_till_koth_capture%,
-// %genpvp_capturer_koth%, %genpvp_koth_top_winner_name_<1-10>%,
-// %genpvp_koth_top_winner_number_<1-10>%.
-// DONE: MongoDB logging — START, STOP, WIN events with winner UUID + name.
-// Leaderboard aggregated async.

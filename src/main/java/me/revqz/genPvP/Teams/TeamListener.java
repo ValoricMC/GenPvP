@@ -15,13 +15,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
-/**
- * Listens for chat (team chat + search input), GUI interactions,
- * PvP blocking, and kill/death point tracking.
- */
 public class TeamListener implements Listener {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
@@ -35,7 +32,7 @@ public class TeamListener implements Listener {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Chat — handles both search input and team chat toggle
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -43,7 +40,6 @@ public class TeamListener implements Listener {
         Player player = event.getPlayer();
         java.util.UUID uuid = player.getUniqueId();
 
-        // 1. Search input — takes highest priority
         if (teamManager.hasPendingSearch(uuid)) {
             event.setCancelled(true);
             String searchName = PlainTextComponentSerializer.plainText().serialize(event.message()).trim();
@@ -56,7 +52,6 @@ public class TeamListener implements Listener {
                 return;
             }
 
-            // Search through team members
             TeamMember found = null;
             for (TeamMember m : team.getMemberList()) {
                 if (m.getName().equalsIgnoreCase(searchName)) {
@@ -78,7 +73,6 @@ public class TeamListener implements Listener {
                         "&#FC0000" + searchName + " &#A7A7A7was not found in team &#00A4FB" + teamName)));
             }
 
-            // Re-open GUI on the main thread
             Bukkit.getScheduler().runTask(teamManager.getPlugin(), () -> {
                 Team t = teamManager.getTeamByName(teamName);
                 if (t != null) player.openInventory(TeamGUI.buildTeamInfo(t));
@@ -86,7 +80,6 @@ public class TeamListener implements Listener {
             return;
         }
 
-        // 2. Team chat toggle
         if (!teamManager.isTeamChatEnabled(uuid)) return;
 
         Team team = teamManager.getTeam(uuid);
@@ -104,7 +97,7 @@ public class TeamListener implements Listener {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  PvP Protection — block same-team damage when PvP is disabled
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -128,7 +121,7 @@ public class TeamListener implements Listener {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Team Points — kill / death tracking
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -136,17 +129,28 @@ public class TeamListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        // Victim's team loses 1 point
         teamManager.onPlayerDeath(victim.getUniqueId());
 
-        // Killer's team gains 1 point
         if (killer != null) {
             teamManager.onPlayerKill(killer.getUniqueId());
         }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Team Info GUI — clicks
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    @SuppressWarnings("deprecation")
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onTeamGUIDrag(InventoryDragEvent event) {
+        String title = event.getView().getTitle();
+        if (title.contains(TeamGUI.TEAM_GUI_TITLE_CHECK) || title.contains("ᴅɪꜱʙᴀɴᴅɪɴɢ")) {
+            event.setCancelled(true);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @SuppressWarnings("deprecation")
@@ -160,12 +164,11 @@ public class TeamListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
 
-        // Only process clicks in the actual inventory (not player inventory)
         if (slot < 0 || slot > 35) return;
 
         switch (slot) {
             case 27 -> {
-                // Search — close GUI, prompt for chat input
+                
                 Team team = teamManager.getTeam(player.getUniqueId());
                 if (team != null) {
                     teamManager.setPendingSearch(player.getUniqueId(), team.getName());
@@ -176,10 +179,10 @@ public class TeamListener implements Listener {
                 }
             }
             case 28 -> {
-                // Hopper — sort by join date
+                
                 Team team = teamManager.getTeam(player.getUniqueId());
                 if (team == null) {
-                    // If viewing another team's info
+                    
                     for (Team t : getAllTeamsByBruteSearch(title)) {
                         player.openInventory(TeamGUI.buildTeamInfo(t, true));
                         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
@@ -191,11 +194,11 @@ public class TeamListener implements Listener {
                 }
             }
             case 31 -> {
-                // Helmet — refresh
+                
                 player.performCommand("team info");
             }
             case 35 -> {
-                // Sword — PvP toggle (owner only)
+                
                 Team team = teamManager.getTeam(player.getUniqueId());
                 if (team == null) return;
                 if (!team.isOwner(player.getUniqueId())) {
@@ -206,7 +209,7 @@ public class TeamListener implements Listener {
                 }
                 boolean newState = teamManager.togglePvp(team.getName());
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
-                // Refresh the GUI to show updated state
+                
                 player.openInventory(TeamGUI.buildTeamInfo(team));
                 String stateMsg = newState
                         ? ColorUtil.colorize("&#7AFB00Team PvP enabled.")
@@ -235,7 +238,6 @@ public class TeamListener implements Listener {
         }
     }
 
-    /** Brute-force helper to find which team an info GUI belongs to (for viewers of other teams). */
     private java.util.List<Team> getAllTeamsByBruteSearch(String title) {
         java.util.List<Team> results = new java.util.ArrayList<>();
         for (String name : teamManager.getAllTeamNames()) {
@@ -249,7 +251,7 @@ public class TeamListener implements Listener {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Disband Confirmation GUI
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @SuppressWarnings("deprecation")

@@ -12,17 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Admin command for raw XP management.
- *
- * <pre>
- *   /xp add_xp    &lt;player&gt; &lt;amount&gt;
- *   /xp remove_xp &lt;player&gt; &lt;amount&gt;
- *   /xp reset_xp  &lt;player&gt;
- * </pre>
- *
- * All subcommands require OP. Feedback is sent as an actionbar (configurable in config.yml).
- */
 public class XpCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
@@ -114,7 +103,6 @@ public class XpCommand implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    /** Returns the parsed amount, or -1 on failure (message already sent). */
     private double parseAmount(String[] args, Player admin, String sub) {
         if (args.length < 3) {
             admin.sendMessage("§cUsage: /xp " + sub + " <player> <amount>");

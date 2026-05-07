@@ -28,7 +28,7 @@ import java.util.List;
 
 public class FruitSlotManager implements Listener {
 
-    static final int FRUIT_SLOT = 8; // 0-indexed hotbar slot (key 9)
+    static final int FRUIT_SLOT = 8; 
 
     private final GenPvP plugin;
     private final DevilFruitManager fruitManager;
@@ -46,7 +46,6 @@ public class FruitSlotManager implements Listener {
         this.FRUIT_SLOT_KEY = new NamespacedKey(plugin, "fruit_slot_item");
     }
 
-    /** Injected after construction so the slot manager can check SPAWN regions. */
     public void setRegionManager(RegionManager regionManager) {
         this.regionManager = regionManager;
     }
@@ -62,8 +61,6 @@ public class FruitSlotManager implements Listener {
         ItemStack item = (equipped != null) ? buildEquippedItem(equipped) : buildNoFruitItem();
         player.getInventory().setItem(FRUIT_SLOT, item);
     }
-
-    // ── Item builders ─────────────────────────────────────────────────────────
 
     private ItemStack buildNoFruitItem() {
         String name = messagesConfig.getString("no-fruit-name", "&#FDCD4DNo Fruit");
@@ -108,19 +105,17 @@ public class FruitSlotManager implements Listener {
             for (String line : rawLore) lore.add(ColorUtil.colorize(line));
             meta.setLore(lore);
             meta.getPersistentDataContainer().set(FRUIT_SLOT_KEY, PersistentDataType.BYTE, (byte) 1);
-            // Hide weapon/tool attribute tooltips (e.g. "1.6 Attack Speed", "7 Attack Damage")
+            
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);
         }
         return item;
     }
 
-    // ── Events ────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        // 2-tick delay: client inventory is ready, injects are all done at NORMAL priority
+        
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
             updateFruitSlot(player);
@@ -131,7 +126,7 @@ public class FruitSlotManager implements Listener {
                 player.sendMessage("slot " + FRUIT_SLOT + " item=" + matName + " isFruitSlotItem=" + present);
             }
         }, 2L);
-        // 60-tick safety net: catches slow async DB loads (>3 s to MongoDB)
+        
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) updateFruitSlot(player);
         }, 60L);
@@ -139,7 +134,7 @@ public class FruitSlotManager implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        // Restore the slot item after the player inventory is cleared on death
+        
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             Player player = event.getPlayer();
             if (player.isOnline()) updateFruitSlot(player);
@@ -148,7 +143,7 @@ public class FruitSlotManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent event) {
-        // Remove the fruit slot item from drops so it never lands on the ground
+        
         event.getDrops().removeIf(this::isFruitSlotItem);
     }
 
@@ -156,32 +151,27 @@ public class FruitSlotManager implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        // Block any interaction where the fruit slot item is the current item
         if (isFruitSlotItem(event.getCurrentItem())) {
             event.setCancelled(true);
             return;
         }
 
-        // Block placing the fruit slot item from cursor into any slot
         if (isFruitSlotItem(event.getCursor())) {
             event.setCancelled(true);
             return;
         }
 
-        // Block placing anything into the fruit slot
         if (event.getClickedInventory() == player.getInventory()
                 && event.getSlot() == FRUIT_SLOT) {
             event.setCancelled(true);
             return;
         }
 
-        // Block number-key swaps that would target the fruit slot
         if (event.getClick() == ClickType.NUMBER_KEY && event.getHotbarButton() == FRUIT_SLOT) {
             event.setCancelled(true);
             return;
         }
 
-        // Block DOUBLE_CLICK collect-all that would pull the fruit slot item
         if (event.getClick() == ClickType.DOUBLE_CLICK) {
             ItemStack slot8 = player.getInventory().getItem(FRUIT_SLOT);
             ItemStack cursor = event.getCursor();
@@ -221,12 +211,11 @@ public class FruitSlotManager implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (isFruitSlotItem(event.getItemInHand())) {
             event.setCancelled(true);
-            // Immediately revert the block to AIR in case the client rendered it
+            
             event.getBlockPlaced().setType(Material.AIR);
         }
     }
 
-    // Prevent fruit-slot weapons (e.g. IRON_SWORD for Supa Supa) from dealing melee damage
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAttackWithFruitItem(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player attacker)) return;
@@ -249,7 +238,6 @@ public class FruitSlotManager implements Listener {
         }
     }
 
-    // Safety net: if something managed to displace the item, restore it after inventory closes
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;
@@ -260,9 +248,6 @@ public class FruitSlotManager implements Listener {
         }, 1L);
     }
 
-    // Right-click the fruit slot item:
-    //   - no fruit equipped  → open general fruit GUI
-    //   - fruit equipped     → cancel (ParameciaAbilityListener at NORMAL fires next)
     @EventHandler(priority = EventPriority.LOW)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
@@ -280,7 +265,6 @@ public class FruitSlotManager implements Listener {
         }
     }
 
-    // Block /ah sell <amount> when holding the fruit slot item
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String lower = event.getMessage().toLowerCase();

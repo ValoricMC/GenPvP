@@ -28,7 +28,6 @@ public class DevilFruitManager implements Listener {
     private final ConcurrentHashMap<UUID, Long> fruitDisabledUntil = new ConcurrentHashMap<>();
     private final Set<UUID> loadedPlayers = ConcurrentHashMap.newKeySet();
 
-    // Fruits disabled server-wide by an OP via /fruit disable <key>
     private final Set<String> globallyDisabledFruits = ConcurrentHashMap.newKeySet();
 
     private volatile Consumer<UUID> onEquipChange;
@@ -54,8 +53,7 @@ public class DevilFruitManager implements Listener {
     }
 
     public void inject(UUID uuid, Set<String> owned, String equipped, boolean isBlacklisted) {
-        // MERGE instead of replace — avoids race condition where giveFruit adds
-        // a fruit to the old set, then a late inject call replaces it.
+        
         Set<String> existing = ownedFruits.get(uuid);
         if (existing != null) {
             existing.addAll(owned);
@@ -87,9 +85,6 @@ public class DevilFruitManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        // Synchronously save this player's fruit data BEFORE clearing memory.
-        // Async writes from giveFruit may still be queued, so this guarantees
-        // the current in-memory state reaches the database.
         if (dbConnected && db != null) {
             Set<String> owned = ownedFruits.get(uuid);
             if (owned != null && !owned.isEmpty()) {
@@ -115,7 +110,6 @@ public class DevilFruitManager implements Listener {
         loadedPlayers.remove(uuid);
     }
 
-    //api
     public boolean isLoaded(UUID uuid) { return loadedPlayers.contains(uuid); }
     public boolean isBlacklisted(UUID uuid) { return blacklisted.contains(uuid); }
 
@@ -133,14 +127,10 @@ public class DevilFruitManager implements Listener {
         return true;
     }
 
-    // ── Global fruit disable (OP command) ─────────────────────────────────────
-
-    /** Disables the fruit ability server-wide. Returns false if already disabled. */
     public boolean disableFruitKey(String key) {
         return globallyDisabledFruits.add(key.toLowerCase());
     }
 
-    /** Re-enables the fruit ability server-wide. Returns false if it wasn't disabled. */
     public boolean enableFruitKey(String key) {
         return globallyDisabledFruits.remove(key.toLowerCase());
     }
@@ -160,9 +150,6 @@ public class DevilFruitManager implements Listener {
 
     public String getEquippedFruit(UUID uuid) { return equippedFruit.get(uuid); }
 
-    // storage format
-    //   { _id: "uuid", owned: ["mera_mera", "magu_magu"], equipped: "magu_magu" }
-    // fruit_blacklist remains separate: { _id: "uuid" }
     public boolean giveFruit(UUID uuid, DevilFruit fruit) {
         Set<String> owned = ownedFruits.computeIfAbsent(uuid, k -> ConcurrentHashMap.newKeySet());
         if (!owned.add(fruit.getKey())) return false;
@@ -205,10 +192,6 @@ public class DevilFruitManager implements Listener {
         return true;
     }
 
-    /**
-     * sets the equipped fruit directly by key,
-     * used by GUI
-     */
     public void setEquipped(UUID uuid, String key) {
         equippedFruit.put(uuid, key);
         fireEquipChange(uuid);
@@ -226,11 +209,6 @@ public class DevilFruitManager implements Listener {
         }
     }
 
-    /**
-     * Gives a fruit to an offline player directly via MongoDB.
-     * If the player is online their in-memory state is NOT updated; only use this when offline.
-     * Callback fires on the main thread: true = success, false = already owned.
-     */
     public void giveOffline(UUID uuid, DevilFruit fruit, Consumer<Boolean> callback) {
         if (!dbConnected) { plugin.getServer().getScheduler().runTask(plugin, () -> callback.accept(false)); return; }
         final String key = fruit.getKey();
@@ -250,11 +228,6 @@ public class DevilFruitManager implements Listener {
         });
     }
 
-    /**
-     * Removes a fruit from an offline player directly via MongoDB.
-     * If the player is online their in-memory state is NOT updated; only use this when offline.
-     * Callback fires on the main thread: true = success, false = not owned.
-     */
     public void removeOffline(UUID uuid, DevilFruit fruit, Consumer<Boolean> callback) {
         if (!dbConnected) { plugin.getServer().getScheduler().runTask(plugin, () -> callback.accept(false)); return; }
         final String key = fruit.getKey();
@@ -301,10 +274,6 @@ public class DevilFruitManager implements Listener {
         return true;
     }
 
-    /**
-     * Unequips the currently equipped fruit. The hotbar slot will revert
-     * to the "no fruit" paper item via the equip-change callback.
-     */
     public void unequip(UUID uuid) {
         equippedFruit.remove(uuid);
         fireEquipChange(uuid);
@@ -338,7 +307,7 @@ public class DevilFruitManager implements Listener {
                     MongoCollection<Document> coll = db.getCollection("fruit_blacklist");
                     if (bl) {
                         try { coll.insertOne(new Document("_id", uuid.toString())); }
-                        catch (Exception dup) { /* already blacklisted */ }
+                        catch (Exception dup) {  }
                     } else {
                         coll.deleteOne(eq("_id", uuid.toString()));
                     }
@@ -350,7 +319,6 @@ public class DevilFruitManager implements Listener {
         return nowBlacklisted;
     }
 
-    // database load balancer
     public void loadFromDB(UUID uuid) {
         try {
             FruitLoadResult r = loadFruitData(db, uuid);
@@ -360,7 +328,6 @@ public class DevilFruitManager implements Listener {
         }
     }
 
-    /** Loads fruit data from DB — used by PlayerDataLoader. */
     public FruitLoadResult loadFruitData(MongoDatabase database, UUID uuid) {
         Set<String> owned = new HashSet<>();
         String equipped = null;
@@ -374,7 +341,7 @@ public class DevilFruitManager implements Listener {
             }
             equipped = doc.getString("equipped");
         } else {
-            // First-time player — create the document immediately
+            
             coll.insertOne(new Document("_id", uuid.toString())
                     .append("owned", Collections.emptyList()));
         }
@@ -384,13 +351,6 @@ public class DevilFruitManager implements Listener {
 
         return new FruitLoadResult(owned, equipped, bl);
     }
-
-    /**
-     * Synchronously saves ALL in-memory fruit data to MongoDB.
-     * Called during server shutdown to ensure no data is lost when
-     * async tasks are cancelled by the scheduler.
-     */
-    // ── Wipe ──────────────────────────────────────────────────────────────────
 
     public void wipeAllMemory() {
         ownedFruits.clear();

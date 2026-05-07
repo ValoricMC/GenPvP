@@ -11,7 +11,7 @@ softdepend:
 
 commands:
   antidupe:
-    description: Manage anti-dupe flags
+    description: Anti-dupe flags
     usage: /antidupe [reload|status|toggle <flag>|set punish-command <cmd>]
     permission: genpvp.admin
   region:
@@ -21,28 +21,27 @@ commands:
     description: KOTH management
     usage: /koth <start|stop>
   autosmelt:
-    description: Toggle auto-smelting of mined ores
+    description: Autosmelt
     usage: /autosmelt
     permission: genpvp.autosmelt
   bank:
-    description: Check your bank balance
+    description: Bank Balance
     usage: /bank
   shop:
     description: Open the shop
     usage: /shop [menu]
   spawn:
-    description: Teleport to spawn with a countdown
+    description: Spawn teleport
     usage: /spawn
   genpvp:
-    description: Core GenPvP administration command
-    usage: /genpvp <reload | item_give <item> [player] | onepiece set from_hand <name> | head set from_hand <name>>
+    description: Genpvp admin commands
+    usage: /genpvp <reload | item_give <item> [player] | onepiece set from_hand <name> | head set from_hand <name> | force_reset_pit | create_world <name>>
     permission: genpvp.admin
   prestige:
-    description: Prestige and level administration
-    usage: /prestige <subcommand> <player> [amount]
-    permission: genpvp.admin
+    description: Prestige up or manage prestige
+    usage: /prestige [subcommand] [player] [amount]
   level:
-    description: Level administration shorthand
+    description: Level administration
     usage: /level <add_level|remove_level|reset_level|blacklist_level> <player> [amount]
     permission: genpvp.admin
   xp:
@@ -50,14 +49,18 @@ commands:
     usage: /xp <add_xp|remove_xp|reset_xp> <player> [amount]
     permission: genpvp.admin
   withdraw:
-    description: Withdraw money from your bank as physical Money Shards
+    description: Withdraw money from your bank
     usage: /withdraw <amount>
   deposit:
-    description: Deposit Money Shards from your inventory into your bank
+    description: Deposit Shards from your inventory into your bank
     usage: /deposit <amount>
   pay:
     description: Send money to another player
     usage: /pay <player> <amount>
+  balance:
+    description: Check your own or another player's bank balance
+    usage: /balance [player]
+    aliases: [bal]
   options:
     description: Open the player options / settings menu
     usage: /options

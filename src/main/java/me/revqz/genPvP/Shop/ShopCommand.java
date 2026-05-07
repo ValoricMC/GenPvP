@@ -33,7 +33,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             shopManager.openDefault(player);
         } else {
             String id = args[0].toLowerCase();
-            // Try shops2 first; fall back to main shop menus
+            
             if (itemShopManager.hasShop(id)) {
                 itemShopManager.openShop(player, id);
             } else {
@@ -48,7 +48,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
                                       @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
-            // Main menus only — shops2 are intentionally not shown in tab completion
+            
             return shopManager.getMenus().keySet().stream()
                     .filter(k -> k.startsWith(prefix))
                     .toList();

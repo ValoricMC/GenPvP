@@ -9,18 +9,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 public class SellManager {
 
-    /** One configured sellable item. */
     private record SellItem(Material material, int amount, double price) {}
 
     private final GenPvP plugin;
     private final BankManager bankManager;
     private final List<SellItem> sellItems = new ArrayList<>();
 
-    // Message templates (colour-translated at load time)
+    private final Map<UUID, Long> sellCooldown = new ConcurrentHashMap<>();
+    private static final long SELL_COOLDOWN_MS = 500;
+
     private String msgSold;
     private String msgSoldLine;
     private String msgNothing;
@@ -30,8 +34,6 @@ public class SellManager {
         this.bankManager = bankManager;
         reload();
     }
-
-    // ── Config ────────────────────────────────────────────────────────────────
 
     public void reload() {
         sellItems.clear();
@@ -71,16 +73,15 @@ public class SellManager {
                 "&8[&aSell&8] &cYou don't have any sellable items."));
     }
 
-    // ── Sell logic ────────────────────────────────────────────────────────────
-
-    /**
-     * Scans the player's inventory, removes every complete sell-unit of each
-     * configured item, credits the money, and sends a summary.
-     *
-     * Partial units (items that don't fill a complete sell group) are left untouched.
-     */
     public void sellAll(Player player) {
-        if (!bankManager.isLoaded(player.getUniqueId())) {
+        
+        UUID uuid = player.getUniqueId();
+        long now = System.currentTimeMillis();
+        Long last = sellCooldown.get(uuid);
+        if (last != null && now - last < SELL_COOLDOWN_MS) return;
+        sellCooldown.put(uuid, now);
+
+        if (!bankManager.isLoaded(uuid)) {
             player.sendMessage(ColorUtil.colorize("&cYour bank data is still loading, try again in a moment."));
             return;
         }
@@ -90,7 +91,7 @@ public class SellManager {
 
         for (SellItem def : sellItems) {
             int inInventory = countItem(player, def.material());
-            int units       = inInventory / def.amount();  // only complete sell-groups
+            int units       = inInventory / def.amount();  
             if (units == 0) continue;
 
             int    toRemove = units * def.amount();
@@ -115,9 +116,6 @@ public class SellManager {
         for (String line : lines) player.sendMessage(line);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /** Counts how many of a material are in the player's inventory (all slots). */
     private static int countItem(Player player, Material mat) {
         int total = 0;
         for (ItemStack stack : player.getInventory().getContents()) {
@@ -126,11 +124,6 @@ public class SellManager {
         return total;
     }
 
-    /**
-     * Removes exactly {@code toRemove} items of {@code mat} from the player's
-     * inventory, working slot-by-slot. Slots that become empty are set to null.
-     * Never removes more than {@code toRemove}.
-     */
     private static void removeItems(Player player, Material mat, int toRemove) {
         ItemStack[] contents = player.getInventory().getContents();
         for (int i = 0; i < contents.length && toRemove > 0; i++) {
@@ -149,7 +142,6 @@ public class SellManager {
         }
     }
 
-    /** Converts a Material enum name to a readable title-case string. */
     private static String formatName(Material mat) {
         String raw = mat.name().replace('_', ' ').toLowerCase();
         StringBuilder sb = new StringBuilder();

@@ -48,19 +48,11 @@ public class KitManager implements Listener {
     private File              kitsFile;
     private FileConfiguration kitsConfig;
 
-    /** Kits in declaration order. */
     private final Map<String, KitData> kits = new LinkedHashMap<>();
 
-    /** uuid → (kitId → expiry epoch ms) */
     private final Map<UUID, Map<String, Long>> cooldowns = new ConcurrentHashMap<>();
 
-    /**
-     * Players who have disabled the auto-starter-kit on death feature.
-     * Absence from this set means "enabled" (the default).
-     */
     private final Set<UUID> starterOnDeathDisabled = ConcurrentHashMap.newKeySet();
-
-    // ── Constructor ───────────────────────────────────────────────────────────
 
     public KitManager(GenPvP plugin, DatabaseManager dbManager) {
         this.plugin      = plugin;
@@ -69,8 +61,6 @@ public class KitManager implements Listener {
         initFile();
         loadKits();
     }
-
-    // ── File ──────────────────────────────────────────────────────────────────
 
     private void initFile() {
         kitsFile = new File(plugin.getDataFolder(), "kits.yml");
@@ -90,8 +80,6 @@ public class KitManager implements Listener {
             plugin.getLogger().warning("[KitManager] Failed to save kits.yml: " + e.getMessage());
         }
     }
-
-    // ── Load kits ─────────────────────────────────────────────────────────────
 
     private void loadKits() {
         kits.clear();
@@ -144,16 +132,9 @@ public class KitManager implements Listener {
         return map;
     }
 
-    // ── Register ──────────────────────────────────────────────────────────────
-
-    /**
-     * Registers (or updates) a kit from the player's current inventory.
-     * Captures: hotbar + main (slots 0-35), armour (0=boots…3=helmet), offhand.
-     */
     public void registerFromInventory(String kitId, Player player) {
         PlayerInventory inv = player.getInventory();
 
-        // Contents — hotbar (0-8) + main inventory (9-35)
         Map<Integer, String> contents = new LinkedHashMap<>();
         for (int i = 0; i < 36; i++) {
             ItemStack item = inv.getItem(i);
@@ -161,7 +142,6 @@ public class KitManager implements Listener {
                 contents.put(i, itemToBase64(item));
         }
 
-        // Armour — boots=0, leggings=1, chestplate=2, helmet=3
         Map<Integer, String> armor = new LinkedHashMap<>();
         ItemStack[] armorArr = inv.getArmorContents();
         for (int i = 0; i < 4; i++) {
@@ -169,12 +149,10 @@ public class KitManager implements Listener {
                 armor.put(i, itemToBase64(armorArr[i]));
         }
 
-        // Offhand
         String offhand = itemToBase64(inv.getItemInOffHand());
 
         String path = "kits." + kitId;
 
-        // Create default GUI config block for brand-new kits
         if (!kitsConfig.contains(path)) {
             kitsConfig.set(path + ".display-name",        "&b&l" + capitalize(kitId));
             kitsConfig.set(path + ".cooldown",            86400);
@@ -188,26 +166,17 @@ public class KitManager implements Listener {
             kitsConfig.set(path + ".locked-lore",         List.of("", "&cNo permission."));
         }
 
-        // Write contents (clear then re-write)
         kitsConfig.set(path + ".contents", null);
         contents.forEach((slot, b64) -> kitsConfig.set(path + ".contents." + slot, b64));
 
-        // Write armour
         kitsConfig.set(path + ".armor", null);
         armor.forEach((slot, b64) -> kitsConfig.set(path + ".armor." + slot, b64));
 
-        // Write offhand
         kitsConfig.set(path + ".offhand", offhand);
 
         saveKitsConfig();
         reloadKits();
     }
-
-    // TODO: Implement /kit register <name> from_file
-    //       Read kit contents from a manually written YAML file at
-    //       plugins/GenPvP/kits/<name>_import.yml and populate the kit entry.
-
-    // ── GUI ───────────────────────────────────────────────────────────────────
 
     public void openGUI(Player player) {
         player.openInventory(buildGUI(player));
@@ -223,13 +192,11 @@ public class KitManager implements Listener {
                 rows * 9,
                 LEGACY.deserialize(ColorUtil.colorize(rawTitle)));
 
-        // Fill all slots
         ItemStack filler = new ItemStack(fillerMat);
         ItemMeta  fm     = filler.getItemMeta();
         if (fm != null) { fm.setHideTooltip(true); filler.setItemMeta(fm); }
         for (int i = 0; i < rows * 9; i++) inv.setItem(i, filler);
 
-        // Place kit buttons
         for (KitData kit : kits.values()) {
             if (kit.guiSlot() < 0 || kit.guiSlot() >= rows * 9) continue;
             inv.setItem(kit.guiSlot(), buildKitItem(player, kit));
@@ -275,8 +242,6 @@ public class KitManager implements Listener {
         return stack;
     }
 
-    // ── Events ────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onDrag(InventoryDragEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
@@ -288,13 +253,11 @@ public class KitManager implements Listener {
     public void onClick(InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
-        // ── Preview inventory — fully read-only ───────────────────────────────
         if (holder instanceof KitPreviewHolder) {
             event.setCancelled(true);
             return;
         }
 
-        // ── Kit selector GUI ──────────────────────────────────────────────────
         if (!(holder instanceof KitHolder)) return;
         event.setCancelled(true);
 
@@ -302,40 +265,32 @@ public class KitManager implements Listener {
         if (event.getClickedInventory() == null
                 || !event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
+        switch (event.getClick()) {
+            case DOUBLE_CLICK, NUMBER_KEY, DROP, CONTROL_DROP, SWAP_OFFHAND, CREATIVE, UNKNOWN -> {
+                Bukkit.getScheduler().runTask(plugin, player::updateInventory);
+                return;
+            }
+            default -> {}
+        }
+
         int slot = event.getSlot();
         for (KitData kit : kits.values()) {
             if (kit.guiSlot() != slot) continue;
             if (event.getClick() == ClickType.RIGHT) {
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.2f);
-                openPreview(player, kit);         // right-click → preview
+                openPreview(player, kit);         
             } else {
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 player.closeInventory();
-                claimKit(player, kit);            // left-click (or any other) → claim
+                claimKit(player, kit);            
             }
             return;
         }
     }
 
-    // ── Preview ───────────────────────────────────────────────────────────────
-
-    /**
-     * Opens a 4-row read-only inventory showing the kit's contents laid out as:
-     *   Row 1 — hotbar items (kit inventory slots 0-8)
-     *   Row 2 — armour (helmet → boots) + offhand + fillers
-     *   Row 3 — main inventory row 1 (kit inventory slots 9-17)
-     *   Row 4 — main inventory row 2 (kit inventory slots 18-26)
-     */
     public void openPreview(Player player, KitData kit) {
-        // Layout:
-        //   Slots 0-3  : armor (helmet, chestplate, leggings, boots)
-        //   Slots 4-12 : kit hotbar  (contents[0-8]  → preview 4+i)
-        //   Slots 13-39: kit main inv (contents[9-35] → preview 4+i)
-        //   Slot  40   : offhand (if present)
-        // Inventory size is the minimum number of rows needed to fit the last item.
-
-        // Find the last occupied preview slot
-        int lastSlot = 3; // armor always uses slots 0-3
+        
+        int lastSlot = 3; 
         for (int i = 0; i <= 35; i++) {
             ItemStack item = kit.contents().get(i);
             if (item != null && item.getType() != Material.AIR)
@@ -353,14 +308,12 @@ public class KitManager implements Listener {
         Inventory inv = Bukkit.createInventory(new KitPreviewHolder(),
                 size, LEGACY.deserialize(previewTitle));
 
-        // Armor — slots 0-3 (helmet=3, chestplate=2, leggings=1, boots=0)
         int[] armorOrder = {3, 2, 1, 0};
         for (int i = 0; i < 4; i++) {
             ItemStack piece = kit.armor().get(armorOrder[i]);
             if (piece != null) inv.setItem(i, piece.clone());
         }
 
-        // Contents — slots 4 + original slot index
         for (int i = 0; i <= 35; i++) {
             int previewSlot = 4 + i;
             if (previewSlot >= size) break;
@@ -368,14 +321,11 @@ public class KitManager implements Listener {
             if (item != null) inv.setItem(previewSlot, item.clone());
         }
 
-        // Offhand — slot 40 if it fits
         if (hasOffhand && 40 < size)
             inv.setItem(40, kit.offhand().clone());
 
         player.openInventory(inv);
     }
-
-    // ── Claiming ──────────────────────────────────────────────────────────────
 
     private void claimKit(Player player, KitData kit) {
         UUID uuid = player.getUniqueId();
@@ -412,15 +362,12 @@ public class KitManager implements Listener {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
     }
 
-    /** Simulates giving all kit items to a copy of the inventory to verify space. */
     private boolean hasSpace(Player player, KitData kit) {
         PlayerInventory playerInv = player.getInventory();
         List<ItemStack> needsSlot = new ArrayList<>();
 
-        // All content items go into the main inventory
         kit.contents().values().forEach(i -> needsSlot.add(i.clone()));
 
-        // Armour pieces that can't be equipped go into the main inventory
         ItemStack[] wornArmor = playerInv.getArmorContents();
         kit.armor().forEach((slot, piece) -> {
             if (slot >= 0 && slot < 4
@@ -430,13 +377,11 @@ public class KitManager implements Listener {
             }
         });
 
-        // Offhand overflow
         if (kit.offhand() != null && kit.offhand().getType() != Material.AIR
                 && playerInv.getItemInOffHand().getType() != Material.AIR) {
             needsSlot.add(kit.offhand().clone());
         }
 
-        // Simulate on a 36-slot copy
         Inventory sim = Bukkit.createInventory(null, 36);
         sim.setContents(playerInv.getStorageContents());
         for (ItemStack item : needsSlot) {
@@ -448,7 +393,6 @@ public class KitManager implements Listener {
     private void giveKit(Player player, KitData kit) {
         PlayerInventory inv = player.getInventory();
 
-        // Armour — equip if slot is free, otherwise spill to inventory
         ItemStack[] worn = inv.getArmorContents();
         kit.armor().forEach((slot, piece) -> {
             if (slot < 0 || slot >= 4) return;
@@ -460,7 +404,6 @@ public class KitManager implements Listener {
         });
         inv.setArmorContents(worn);
 
-        // Offhand — equip if free, otherwise spill
         if (kit.offhand() != null && kit.offhand().getType() != Material.AIR) {
             if (inv.getItemInOffHand().getType() == Material.AIR) {
                 inv.setItemInOffHand(kit.offhand().clone());
@@ -469,11 +412,8 @@ public class KitManager implements Listener {
             }
         }
 
-        // Contents — add to inventory
         kit.contents().values().forEach(item -> inv.addItem(item.clone()));
     }
-
-    // ── Cooldowns ─────────────────────────────────────────────────────────────
 
     public boolean isOnCooldown(UUID uuid, String kitId) {
         Map<String, Long> map = cooldowns.get(uuid);
@@ -508,8 +448,6 @@ public class KitManager implements Listener {
         return s + "s";
     }
 
-    // ── DB ────────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
@@ -526,12 +464,6 @@ public class KitManager implements Listener {
         starterOnDeathDisabled.remove(uuid);
     }
 
-    /**
-     * Automatically re-gives the starter kit when a player respawns, unless
-     * they have disabled this feature with /kit starter_on_death.
-     * The cooldown is always reset so the kit cannot be claimed again immediately
-     * via /kit.
-     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -542,7 +474,6 @@ public class KitManager implements Listener {
         KitData kit = kits.get("starter");
         if (kit == null) return;
 
-        // 1-tick delay so the server finishes clearing the dead inventory first
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) {
                 giveKit(player, kit);
@@ -551,12 +482,6 @@ public class KitManager implements Listener {
         }, 1L);
     }
 
-    // ── Starter-on-death toggle ───────────────────────────────────────────────
-
-    /**
-     * Toggles whether this player automatically receives the starter kit on
-     * respawn. Persists the preference to MongoDB.
-     */
     public boolean isStarterOnDeathDisabled(UUID uuid) {
         return starterOnDeathDisabled.contains(uuid);
     }
@@ -589,13 +514,6 @@ public class KitManager implements Listener {
         });
     }
 
-    // ── First-join / bypass giving ────────────────────────────────────────────
-
-    /**
-     * Gives the starter kit bypassing permission and cooldown checks.
-     * Used on first join and (internally) by the on-death respawn handler.
-     * Always resets the kit's cooldown afterwards.
-     */
     public void giveStarterKitBypassing(Player player) {
         KitData kit = kits.get("starter");
         if (kit == null) return;
@@ -610,7 +528,7 @@ public class KitManager implements Listener {
     private void loadCooldownsFromDB(UUID uuid) {
         long now = System.currentTimeMillis();
         try {
-            // Document: { _id: uuid, cooldowns: { kitId: expiresMs }, starter_on_death_disabled: bool }
+            
             Document doc = db.getCollection("kit_cooldowns").find(eq("_id", uuid.toString())).first();
             if (doc == null) return;
 
@@ -634,7 +552,7 @@ public class KitManager implements Listener {
     private void asyncSaveCooldown(UUID uuid, String kitId, long expiresAt) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                // $set on a sub-field — creates the document if it doesn't exist
+                
                 db.getCollection("kit_cooldowns").updateOne(
                         eq("_id", uuid.toString()),
                         new Document("$set", new Document("cooldowns." + kitId, expiresAt)),
@@ -645,16 +563,10 @@ public class KitManager implements Listener {
         });
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     public Set<String> getKitIds() { return kits.keySet(); }
 
     public KitData getKit(String id) { return kits.get(id); }
 
-    /**
-     * Resets the cooldown for a specific kit for the named player.
-     * Works for both online and offline players.
-     */
     public void resetCooldown(String playerName, String kitId, CommandSender feedback) {
         if (!kits.containsKey(kitId)) {
             feedback.sendMessage(ColorUtil.colorize("&cUnknown kit: &e" + kitId));
@@ -670,7 +582,6 @@ public class KitManager implements Listener {
 
         UUID uuid = offline.getUniqueId();
 
-        // Remove from in-memory cache if online
         Map<String, Long> map = cooldowns.get(uuid);
         if (map != null) map.remove(kitId);
 
@@ -727,8 +638,6 @@ public class KitManager implements Listener {
     private static Component noItalic(Component c) {
         return c.decoration(TextDecoration.ITALIC, false);
     }
-
-    // ── Inner types ───────────────────────────────────────────────────────────
 
     private static final class KitHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }

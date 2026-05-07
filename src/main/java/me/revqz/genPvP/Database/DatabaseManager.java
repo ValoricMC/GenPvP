@@ -23,27 +23,22 @@ public class DatabaseManager {
 
     private final JavaPlugin plugin;
 
-    // MongoDB
-    private MongoClient mongoClient;
-    private MongoDatabase database;
-    private boolean mongoConnected = false;
+    private volatile MongoClient mongoClient;
+    private volatile MongoDatabase database;
+    private volatile boolean mongoConnected = false;
 
-    // Redis (kept for CrossServerMessenger pub/sub)
-    private JedisPool jedisPool;
-    private boolean redisConnected = false;
+    private volatile JedisPool jedisPool;
+    private volatile boolean redisConnected = false;
 
     public DatabaseManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        // Fire both connections in parallel — cuts startup time roughly in half
-        // compared to the old sequential approach.
-        CompletableFuture<Void> mongoFuture  = CompletableFuture.runAsync(this::connectMongo);
-        CompletableFuture<Void> redisFuture  = CompletableFuture.runAsync(this::connectRedis);
-        CompletableFuture.allOf(mongoFuture, redisFuture).join(); // wait for both before returning
+
+        CompletableFuture.runAsync(this::connectRedis);
+
+        initMongoClient();
     }
 
-    // ── MongoDB ──────────────────────────────────────────────────────────────
-
-    private void connectMongo() {
+    private void initMongoClient() {
         String uri    = plugin.getConfig().getString("mongodb.uri", "mongodb://localhost:27017");
         String dbName = plugin.getConfig().getString("mongodb.database", "genpvp");
 
@@ -62,35 +57,39 @@ public class DatabaseManager {
                             .readTimeout(10, TimeUnit.SECONDS))
                     .build();
 
-            mongoClient = MongoClients.create(settings);
-            database = mongoClient.getDatabase(dbName);
-
-            // Verify connection with a real command
-            database.runCommand(new Document("ping", 1));
-
+            mongoClient = MongoClients.create(settings);   
+            database    = mongoClient.getDatabase(dbName); 
             mongoConnected = true;
-            plugin.getLogger().info("[DatabaseManager] Successfully connected to MongoDB.");
 
-            createIndexes();
+            plugin.getLogger().info("[DatabaseManager] MongoClient created — connection will be established lazily.");
+
+            CompletableFuture.runAsync(this::verifyAndIndex);
 
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "[DatabaseManager] Failed to connect to MongoDB: " + e.getMessage());
+            plugin.getLogger().log(Level.SEVERE, "[DatabaseManager] Failed to create MongoDB client: " + e.getMessage());
         }
     }
 
-    /**
-     * Creates indexes for all collections. MongoDB createIndex is idempotent —
-     * existing indexes are left untouched, so this is safe to call on every startup.
-     */
+    private void verifyAndIndex() {
+        try {
+            database.runCommand(new Document("ping", 1));
+            plugin.getLogger().info("[DatabaseManager] Successfully connected to MongoDB.");
+            createIndexes();
+        } catch (Exception e) {
+            mongoConnected = false;
+            plugin.getLogger().log(Level.SEVERE, "[DatabaseManager] MongoDB verification failed — "
+                    + "operations will fail until next restart: " + e.getMessage());
+        }
+    }
+
     private void createIndexes() {
         try {
-            // logs
+            
             MongoCollection<Document> logs = database.getCollection("logs");
             logs.createIndex(Indexes.compoundIndex(Indexes.ascending("type"), Indexes.descending("timestamp")));
             logs.createIndex(Indexes.compoundIndex(Indexes.ascending("player"), Indexes.descending("timestamp")));
             logs.createIndex(Indexes.ascending("winner"), new IndexOptions().sparse(true));
 
-            // players (merged bank + stats)
             MongoCollection<Document> players = database.getCollection("players");
             players.createIndex(Indexes.descending("balance"));
             players.createIndex(Indexes.descending("shards"));
@@ -98,36 +97,18 @@ public class DatabaseManager {
             players.createIndex(Indexes.descending("kills"));
             players.createIndex(Indexes.descending("deaths"));
 
-            // regions
-            // _id = name, no extra indexes needed
-
-            // protected_blocks — _id = "world:chunkX:chunkZ", no extra indexes needed
-
-            // kit_cooldowns — _id = uuid, cooldowns embedded as sub-document
-            // No extra indexes needed (loaded by _id on join)
-            // Drop stale compound index from the old per-row format (uuid+kit)
-            // that causes E11000 duplicate key errors on new-format documents.
             try {
                 database.getCollection("kit_cooldowns").dropIndex("uuid_1_kit_1");
                 plugin.getLogger().info("[DatabaseManager] Dropped stale index 'uuid_1_kit_1' from kit_cooldowns.");
             } catch (Exception ignored) {
-                // Index doesn't exist — nothing to drop
+                
             }
 
-            // enderchest
             database.getCollection("enderchest").createIndex(
                     Indexes.compoundIndex(Indexes.ascending("uuid"), Indexes.ascending("slot")),
                     new IndexOptions().unique(true));
 
-            // teams — _id = name, no extra indexes
-
-            // team_members
             database.getCollection("team_members").createIndex(Indexes.ascending("team_name"));
-
-            // devil_fruits — _id = uuid, owned stored as array, no extra indexes needed
-            // fruit_blacklist — _id = uuid, no extra indexes
-
-            // custom_items — _id = name, no extra indexes
 
             plugin.getLogger().info("[DatabaseManager] All indexes verified / created.");
 
@@ -135,8 +116,6 @@ public class DatabaseManager {
             plugin.getLogger().warning("[DatabaseManager] Index creation warning: " + e.getMessage());
         }
     }
-
-    // ── Redis ──────────────────────────────────────────────────────────────────
 
     private void connectRedis() {
         String host     = plugin.getConfig().getString("redis.host",     "localhost");
@@ -172,41 +151,46 @@ public class DatabaseManager {
         }
     }
 
-    // ── Lifecycle ──────────────────────────────────────────────────────────────
-
     public void close() {
-        // Mark as disconnected FIRST so in-flight async tasks stop using the client
+        
         mongoConnected = false;
         redisConnected = false;
 
-        if (mongoClient != null) {
-            try {
-                mongoClient.close();
-            } catch (Exception e) {
-                plugin.getLogger().warning("[DatabaseManager] Error closing MongoDB: " + e.getMessage());
-            }
-            plugin.getLogger().info("[DatabaseManager] MongoDB connection closed.");
-        }
-        if (jedisPool != null && !jedisPool.isClosed()) {
-            try {
-                jedisPool.close();
-            } catch (Exception e) {
-                plugin.getLogger().warning("[DatabaseManager] Error closing Redis: " + e.getMessage());
-            }
-            plugin.getLogger().info("[DatabaseManager] Redis connection pool closed.");
-        }
-    }
+        final MongoClient mc = mongoClient;
+        final JedisPool   jp = jedisPool;
+        mongoClient = null;
+        jedisPool   = null;
 
-    // ── Getters ────────────────────────────────────────────────────────────────
+        Thread closer = new Thread(() -> {
+            if (mc != null) {
+                try {
+                    mc.close();
+                } catch (Exception e) {
+                    plugin.getLogger().warning("[DatabaseManager] Error closing MongoDB: " + e.getMessage());
+                }
+            }
+            if (jp != null && !jp.isClosed()) {
+                try {
+                    jp.close();
+                } catch (Exception e) {
+                    plugin.getLogger().warning("[DatabaseManager] Error closing Redis: " + e.getMessage());
+                }
+            }
+            plugin.getLogger().info("[DatabaseManager] Connections closed.");
+        }, "genpvp-db-closer");
+        closer.setDaemon(true);
+        closer.start();
+        
+    }
 
     public MongoDatabase getDatabase()       { return database; }
     public MongoDatabase getDatabase(String name) {
-        return mongoClient == null ? null : mongoClient.getDatabase(name);
+        MongoClient mc = mongoClient;
+        return mc == null ? null : mc.getDatabase(name);
     }
     public JedisPool     getJedisPool()      { return jedisPool; }
     public boolean       isMongoConnected()  { return mongoConnected; }
     public boolean       isRedisConnected()  { return redisConnected; }
 
-    /** Re-create / verify all main-DB indexes. Idempotent — safe to call after a restore. */
     public void ensureIndexes() { createIndexes(); }
 }

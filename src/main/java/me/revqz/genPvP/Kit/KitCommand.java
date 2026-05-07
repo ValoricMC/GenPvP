@@ -26,7 +26,6 @@ public class KitCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
             @NotNull String label, @NotNull String[] args) {
 
-        // /kit — open GUI
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can open the kit menu.");
@@ -36,7 +35,6 @@ public class KitCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /kit preview <name>
         if (args[0].equalsIgnoreCase("preview")) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can preview kits.");
@@ -55,7 +53,6 @@ public class KitCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /kit register <name> <from_inventory|from_file>
         if (args[0].equalsIgnoreCase("register")) {
             if (!sender.isOp()) {
                 sender.sendMessage(ColorUtil.colorize(
@@ -84,8 +81,7 @@ public class KitCommand implements CommandExecutor, TabCompleter {
                                     .replace("%kit%", kitId)));
                 }
                 case "from_file" -> {
-                    // TODO: Implement reading kit contents from a manually written YAML file
-                    //       at plugins/GenPvP/kits/<name>_import.yml
+                    
                     sender.sendMessage(ColorUtil.colorize(
                             "&cFrom-file registration is not yet implemented."));
                 }
@@ -95,7 +91,6 @@ public class KitCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /kit starter_on_death — toggle auto-kit-on-respawn for the executing player
         if (args[0].equalsIgnoreCase("starter_on_death")) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can toggle this setting.");
@@ -105,7 +100,6 @@ public class KitCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /kit reset_cooldown <player> <kit>
         if (args[0].equalsIgnoreCase("reset_cooldown")) {
             if (!sender.isOp()) {
                 sender.sendMessage(ColorUtil.colorize(

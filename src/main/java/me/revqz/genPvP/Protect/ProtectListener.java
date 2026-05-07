@@ -1,5 +1,6 @@
 package me.revqz.genPvP.Protect;
 
+import me.revqz.genPvP.Items.CustomItemRegistry;
 import me.revqz.genPvP.Protect.flags.RegionRule;
 import me.revqz.genPvP.Protect.flags.RegionType;
 import org.bukkit.GameMode;
@@ -43,29 +44,26 @@ public class ProtectListener implements Listener {
     private final RegionManager regionManager;
     private final BlockTimerManager blockTimerManager;
     private final ProtectCommand protectCommand;
+    private final CustomItemRegistry customItemRegistry;
 
-    // Blocks placed by a creative/admin or via FAWE schematic.
-    // ConcurrentHashMap.newKeySet() so WorldEditHook can add from FAWE async threads safely.
     private final Set<Location> creativePlacedBlocks = ConcurrentHashMap.newKeySet();
 
     public Set<Location> getCreativePlacedBlocks() {
         return creativePlacedBlocks;
     }
 
-    // Pending block restorations for survival players — processed once per tick
-    // by a single repeating task instead of scheduling N individual tasks.
     private record RestoreEntry(Player player, Location loc, BlockData data) {}
     private final ConcurrentLinkedQueue<RestoreEntry> restoreQueue = new ConcurrentLinkedQueue<>();
 
     public ProtectListener(JavaPlugin plugin, RegionManager regionManager,
-                           BlockTimerManager blockTimerManager, ProtectCommand protectCommand) {
+                           BlockTimerManager blockTimerManager, ProtectCommand protectCommand,
+                           CustomItemRegistry customItemRegistry) {
         this.plugin = plugin;
         this.regionManager = regionManager;
         this.blockTimerManager = blockTimerManager;
         this.protectCommand = protectCommand;
+        this.customItemRegistry = customItemRegistry;
 
-        // Single 1-tick repeating task drains the queue — avoids creating a new
-        // scheduler task for every cancelled break (spam-clicking would flood the scheduler).
         plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             RestoreEntry entry;
             while ((entry = restoreQueue.poll()) != null) {
@@ -76,22 +74,12 @@ public class ProtectListener implements Listener {
         }, 1L, 1L);
     }
 
-    /**
-     * Queues a block restore packet for a survival player.
-     * The packet is sent on the next tick so it arrives after Paper's own
-     * cancelled-break handling, preventing ghost blocks.
-     * Creative mode is handled natively by Paper — no packet needed.
-     */
     private void restoreBlock(Player player, Location loc, BlockData data) {
         if (player.getGameMode() == GameMode.SURVIVAL) {
             restoreQueue.offer(new RestoreEntry(player, loc, data));
         }
     }
 
-    /**
-     * Returns true if the region rules at {@code loc} deny {@code rule}.
-     * Uses the zero-allocation anyDenies() path — no List created.
-     */
     private boolean isRegionDenying(Location loc, Player bypassPlayer, RegionRule rule) {
         if (bypassPlayer != null && protectCommand.isBypassing(bypassPlayer)) return false;
         return regionManager.anyDenies(loc, rule);
@@ -106,17 +94,9 @@ public class ProtectListener implements Listener {
         }
     }
 
-    /**
-     * Cancels damage when the ATTACKER is standing in a no-PvP region.
-     * This prevents players inside SPAWN / GENS (etc.) from punching out
-     * and hitting players who are standing in a region that allows combat.
-     *
-     * <p>Runs at HIGH priority with ignoreCancelled=true so it only fires
-     * when the victim-side check (above) has not already cancelled the event.
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        // Resolve the actual attacker (handles arrows / projectiles)
+        
         Player attacker = resolveAttacker(event);
         if (attacker == null) return;
 
@@ -140,7 +120,6 @@ public class ProtectListener implements Listener {
         Location blockLoc = event.getBlock().getLocation();
         Material blockType = event.getBlock().getType();
 
-        // Globally block breaking smooth stone slabs unless bypassing
         if (blockType == Material.SMOOTH_STONE_SLAB) {
             if (!protectCommand.isBypassing(player)) {
                 BlockData data = event.getBlock().getBlockData();
@@ -150,7 +129,6 @@ public class ProtectListener implements Listener {
             }
         }
 
-        // ── SHULKERROOMS: only shulker boxes may be broken ──────────────────
         if (!protectCommand.isBypassing(player)
                 && regionManager.insideType(blockLoc, RegionType.SHULKERROOMS)) {
             if (!Tag.SHULKER_BOXES.isTagged(blockType)) {
@@ -161,24 +139,20 @@ public class ProtectListener implements Listener {
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
-            // It IS a shulker box — allow mining and skip remaining deny checks
+            
             return;
         }
 
-        // /region protect snapshot — block was present when an admin ran the command.
-        // Evict from the set whenever the block is actually broken so replacements
-        // placed there are not incorrectly treated as protected.
         if (protectCommand.isProtected(blockLoc)) {
             if (protectCommand.isBypassing(player)) {
-                // Bypass player — always allow, evict from snapshot
+                
                 protectCommand.removeProtected(blockLoc);
-            } else if (regionManager.insideAnyType(blockLoc, RegionType.GENS, RegionType.OPMINESGENS)) {
-                // GENS / OPMINESGENS regions regenerate blocks — allow mining and evict the
-                // snapshot so the regenerated block isn't treated as protected.
-                // GLOBAL and other permissive types do NOT override the protect snapshot.
+            } else if (regionManager.insideAnyType(blockLoc, RegionType.GENS, RegionType.OPMINESGENS)
+                    || regionManager.insideType(blockLoc, RegionType.PITNETHERITE)) {
+                
                 protectCommand.removeProtected(blockLoc);
             } else {
-                // No region overrides protection — block is unbreakable
+                
                 BlockData data = event.getBlock().getBlockData();
                 event.setCancelled(true);
                 restoreBlock(player, blockLoc, data);
@@ -186,9 +160,8 @@ public class ProtectListener implements Listener {
             }
         }
 
-        // Creative/FAWE-placed blocks can only be broken if the region explicitly allows it
         if (creativePlacedBlocks.contains(blockLoc) && !protectCommand.isBypassing(player)) {
-            // inRegionAndAllAllow: true only if there IS a region here AND all of them allow ALLOW_BREAK
+            
             if (!regionManager.inRegionAndAllAllow(blockLoc, RegionRule.ALLOW_BREAK)) {
                 BlockData data = event.getBlock().getBlockData();
                 event.setCancelled(true);
@@ -214,7 +187,21 @@ public class ProtectListener implements Listener {
         Location blockLoc = event.getBlock().getLocation();
         Material placedType = event.getBlock().getType();
 
-        // ── SHULKERROOMS: only shulker boxes may be placed ──────────────────
+        if (!protectCommand.isBypassing(player) && placedType == Material.WATER) {
+            if (!regionManager.insideType(blockLoc, RegionType.GLOBAL)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        if (!protectCommand.isBypassing(player) && placedType == Material.PLAYER_HEAD) {
+            if (customItemRegistry.getItemId(event.getItemInHand()) != null) {
+                event.setCancelled(true);
+                player.sendMessage("§cYou cannot place custom heads.");
+                return;
+            }
+        }
+
         if (!protectCommand.isBypassing(player)
                 && regionManager.insideType(blockLoc, RegionType.SHULKERROOMS)) {
             if (!Tag.SHULKER_BOXES.isTagged(placedType)) {
@@ -223,7 +210,7 @@ public class ProtectListener implements Listener {
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
-            // It IS a shulker box — allow placement and skip remaining deny checks
+            
             return;
         }
 

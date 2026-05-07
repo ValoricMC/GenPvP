@@ -32,43 +32,24 @@ import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * /database optimize mongo
- *
- * One-time migration that converts existing data to the compact storage formats:
- *
- *   devil_fruits   : many docs (one per fruit) → one doc per player
- *                    { _id: uuid, owned: [...], equipped: "..." }
- *
- *   kit_cooldowns  : many docs (one per cooldown) → one doc per player
- *                    { _id: uuid, cooldowns: { kitId: expiresMs, ... } }
- *
- *   protected_blocks: one doc per block → one doc per chunk
- *                    { _id: "world:chunkX:chunkZ", b: [[x,y,z], ...] }
- *
- * Safe to re-run (idempotent). Old legacy documents are removed after migration.
- */
 public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
     private static final Set<String> WIPE_ALLOWED = Set.of("javarev", "revqz");
 
-    // ── Backup constants ──────────────────────────────────────────────────────
-    /** Master DB that holds only the index of all backups. */
     private static final String       BACKUPS_INDEX_DB    = "Backups";
     private static final String       BACKUPS_INDEX_COLL  = "backups_index";
-    /** Each backup gets its own DB named "Backups_<id>" — Compass renders it as a folder. */
+    
     private static final String       BACKUP_DB_PREFIX    = "Backups_";
-    /** Source collections in the main DB that get copied on backup / restored on restore. */
+    
     private static final List<String> BACKUP_COLLECTIONS  = List.of(
             "players", "devil_fruits", "fruit_rolls", "teams", "team_members", "enderchest");
     private static final String       PLAYERDATA_COLL     = "playerdata";
-    /** Max 54 so "Backups_" + id stays under MongoDB's 63-char database-name limit. */
+    
     private static final Pattern      ID_PATTERN          = Pattern.compile("^[A-Za-z0-9_-]{1,54}$");
     private static final DateTimeFormatter ID_FORMAT      =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneOffset.UTC);
     private static final int          INSERT_BATCH_SIZE   = 1000;
 
-    /** In-memory cache of completed backup IDs — drives /database restore tab completion. */
     private final Set<String> knownBackupIds = ConcurrentHashMap.newKeySet();
 
     private final GenPvP            plugin;
@@ -96,8 +77,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         this.fruitRollManager  = fruitRollManager;
         this.log              = plugin.getLogger();
 
-        // Populate the backup-id cache asynchronously so /database restore tab
-        // completion works without blocking the main thread or hitting Mongo on every TAB.
         if (databaseManager.isMongoConnected()) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, this::reloadBackupIds);
         }
@@ -115,25 +94,21 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /database wipe_release confirm
         if (args[0].equalsIgnoreCase("wipe_release")) {
             handleWipeRelease(sender, args);
             return true;
         }
 
-        // /database backup [id]
         if (args[0].equalsIgnoreCase("backup")) {
             handleBackup(sender, args);
             return true;
         }
 
-        // /database restore <id> confirm
         if (args[0].equalsIgnoreCase("restore")) {
             handleRestore(sender, args);
             return true;
         }
 
-        // /database fruit_sync
         if (args[0].equalsIgnoreCase("fruit_sync")) {
             if (running.getAndSet(true)) {
                 sender.sendMessage("§eA database task is already running.");
@@ -155,7 +130,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /database optimize mongo
         if (args.length < 2
                 || !args[0].equalsIgnoreCase("optimize")
                 || !args[1].equalsIgnoreCase("mongo")) {
@@ -192,15 +166,12 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ── Backup ───────────────────────────────────────────────────────────────
-
     private void handleBackup(CommandSender sender, String[] args) {
         if (sender instanceof Player p && !WIPE_ALLOWED.contains(p.getName().toLowerCase())) {
             sender.sendMessage("§cYou do not have permission to run this command.");
             return;
         }
 
-        // Resolve / validate the backup ID
         final String id;
         if (args.length >= 2) {
             String supplied = args[1];
@@ -218,11 +189,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Flush every online player's in-memory state to disk on the main thread
-        // before starting the async backup. Paper's CraftPlayer.saveData() is
-        // synchronous (writes the .dat via NbtIo.writeCompressed before returning),
-        // so once this loop completes every .dat file reflects current state.
-        // Note: causes a brief main-thread freeze proportional to online count.
         int onlineCount = Bukkit.getOnlinePlayers().size();
         long flushStart = System.currentTimeMillis();
         int flushed = 0;
@@ -246,15 +212,13 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                 MongoDatabase backupDb  = databaseManager.getDatabase(BACKUP_DB_PREFIX + id);
                 MongoCollection<Document> index = indexDb.getCollection(BACKUPS_INDEX_COLL);
 
-                // Reject duplicate IDs (either in the index or a leftover orphan DB)
                 if (index.find(eq("_id", id)).first() != null) {
                     backupMsg(sender, "§cBackup id §f" + id + " §calready exists. Aborting.");
                     return;
                 }
-                // Defensive: if a previous failed run left collections behind, drop them.
+                
                 backupDb.drop();
 
-                // Mark in_progress so a partial backup is never restorable
                 index.insertOne(new Document("_id", id)
                         .append("created_at", new Date())
                         .append("created_by", sender.getName())
@@ -262,7 +226,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
                 Document sourceCounts = new Document();
 
-                // Copy each main collection into the per-backup DB
                 for (String coll : BACKUP_COLLECTIONS) {
                     MongoCollection<Document> src = mainDb.getCollection(coll);
                     MongoCollection<Document> dst = backupDb.getCollection(coll);
@@ -282,7 +245,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     backupMsg(sender, "§7  · " + coll + " §8→ " + copied + " doc(s)");
                 }
 
-                // Backup .dat files for every player on disk (entire file, raw bytes)
                 MongoCollection<Document> pdColl = backupDb.getCollection(PLAYERDATA_COLL);
                 File playerDataFolder = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
                 int datCount = 0;
@@ -314,7 +276,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                 }
                 backupMsg(sender, "§7  · playerdata §8→ " + datCount + " .dat file(s)");
 
-                // Mark complete
                 index.updateOne(eq("_id", id),
                         new Document("$set", new Document()
                                 .append("status", "complete")
@@ -330,7 +291,7 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                 backupMsg(sender, "§cBackup failed: " + e.getMessage());
                 log.severe("[Backup] " + e.getMessage());
                 e.printStackTrace();
-                // Clean up the partial backup so it never appears as restorable
+                
                 try {
                     databaseManager.getDatabase(BACKUP_DB_PREFIX + id).drop();
                     databaseManager.getDatabase(BACKUPS_INDEX_DB)
@@ -344,8 +305,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             }
         });
     }
-
-    // ── Restore ──────────────────────────────────────────────────────────────
 
     private void handleRestore(CommandSender sender, String[] args) {
         if (sender instanceof Player p && !WIPE_ALLOWED.contains(p.getName().toLowerCase())) {
@@ -371,7 +330,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Refuse if anyone is online — restore overwrites .dat files and resets caches
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             sender.sendMessage("§cAll players must be offline to restore. Currently online: §f"
                     + Bukkit.getOnlinePlayers().size());
@@ -404,7 +362,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
                 MongoDatabase mainDb = databaseManager.getDatabase();
 
-                // Restore each source collection: drop main, copy from backup
                 for (String coll : BACKUP_COLLECTIONS) {
                     MongoCollection<Document> src = backupDb.getCollection(coll);
                     MongoCollection<Document> dst = mainDb.getCollection(coll);
@@ -423,8 +380,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     backupMsg(sender, "§7  · " + coll + " §8← " + copied + " doc(s)");
                 }
 
-                // Restore .dat files: write backed-up ones, then delete any orphans
-                // (players who joined after the backup was taken) so disk state matches DB.
                 File playerDataFolder = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
                 if (!playerDataFolder.isDirectory()) playerDataFolder.mkdirs();
 
@@ -448,7 +403,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     }
                 }
 
-                // Delete .dat files (and their .dat_old siblings) for UUIDs not present in the backup
                 int orphans = 0;
                 File[] existing = playerDataFolder.listFiles(
                         (dir, name) -> name.endsWith(".dat") || name.endsWith(".dat_old"));
@@ -469,10 +423,8 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                         + (orphans > 0 ? " (§e" + orphans + " orphan(s) removed§7)" : "")
                         + (datFailed > 0 ? " (§c" + datFailed + " failed§7)" : ""));
 
-                // Recreate indexes (drop() removed them)
                 databaseManager.ensureIndexes();
 
-                // Reset in-memory caches — managers will reload from the restored DB on next access
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     bankManager.wipeAllMemory();
                     prestigeManager.wipeAllMemory();
@@ -525,16 +477,13 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§7  /database wipe_release confirm");
     }
 
-    // ── Wipe Release ─────────────────────────────────────────────────────────
-
     private void handleWipeRelease(CommandSender sender, String[] args) {
-        // IGN gate — only javarev or revqz can run this
+        
         if (sender instanceof Player p && !WIPE_ALLOWED.contains(p.getName().toLowerCase())) {
             sender.sendMessage("§cYou do not have permission to run this command.");
             return;
         }
 
-        // Safety confirmation argument
         if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {
             sender.sendMessage("§c§lWARNING §r§c— this will permanently wipe ALL player data:");
             sender.sendMessage("§7  XP · Level · Prestige · Kills · Deaths · Balance · Gold · Shards");
@@ -551,9 +500,8 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         log.warning("[WipeRelease] INITIATED by " + sender.getName());
         sender.sendMessage("§c§l[WIPE] §r§cStarting release wipe — check console for progress.");
 
-        // ── Step 1 (main thread): clear online player inventories + ender chests
         int onlineCount = Bukkit.getOnlinePlayers().size();
-        // Capture UUIDs now (main thread) so the async step can skip them
+        
         Set<UUID> onlineUuids = new HashSet<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
             onlineUuids.add(p.getUniqueId());
@@ -563,7 +511,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         }
         wipeMsg(sender, "Cleared inventories + ender chests for " + onlineCount + " online player(s).");
 
-        // ── Step 2 (main thread): clear all in-memory caches
         bankManager.wipeAllMemory();
         prestigeManager.wipeAllMemory();
         statsManager.wipeAllMemory();
@@ -572,21 +519,20 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         fruitRollManager.wipeAllMemory();
         wipeMsg(sender, "Cleared all in-memory caches.");
 
-        // ── Step 3 (async): offline player .dat files + deleteMany on all collections
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                // Wipe offline player inventory + ender chest in .dat files
+                
                 int offlineCount = wipeOfflinePlayerFiles(sender, onlineUuids);
                 wipeMsg(sender, "Cleared inventories + ender chests for " + offlineCount + " offline player(s).");
 
                 MongoDatabase db = databaseManager.getDatabase();
 
-                wipeCollection(db, "players",      sender);  // xp, level, prestige, kills, deaths, balance, gold, shards
-                wipeCollection(db, "devil_fruits",  sender);  // owned + equipped fruits
-                wipeCollection(db, "fruit_rolls",   sender);  // roll tokens
-                wipeCollection(db, "teams",         sender);  // team documents
-                wipeCollection(db, "team_members",  sender);  // team membership
-                wipeCollection(db, "enderchest",    sender);  // persisted ender chest contents
+                wipeCollection(db, "players",      sender);  
+                wipeCollection(db, "devil_fruits",  sender);  
+                wipeCollection(db, "fruit_rolls",   sender);  
+                wipeCollection(db, "teams",         sender);  
+                wipeCollection(db, "team_members",  sender);  
+                wipeCollection(db, "enderchest",    sender);  
 
                 Bukkit.getScheduler().runTask(plugin, () ->
                     sender.sendMessage("§a§l[WIPE] §r§aRelease wipe complete. All collections cleared."));
@@ -606,13 +552,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         wipeMsg(sender, "Wiped §f" + name + " §7— " + deleted + " document(s) removed.");
     }
 
-    /**
-     * Clears the Inventory and EnderItems NBT tags from every offline player's
-     * .dat file found in the default world's playerdata folder.
-     * Uses Paper/NMS reflection — specific to Mojang-mapped Paper 1.21.
-     *
-     * @return number of .dat files successfully wiped
-     */
     private int wipeOfflinePlayerFiles(CommandSender sender, Set<UUID> skipUuids) {
         File playerDataFolder = new File(
                 Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
@@ -622,7 +561,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                 (dir, name) -> name.endsWith(".dat") && !name.endsWith(".dat_old"));
         if (datFiles == null || datFiles.length == 0) return 0;
 
-        // Resolve reflection handles once — fail fast if NMS is inaccessible
         java.lang.reflect.Method readMethod, writeMethod, putMethod;
         Object unlimitedHeap;
         Class<?> listTagClass, compoundTagClass, tagInterface;
@@ -654,11 +592,11 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             try { uuid = UUID.fromString(uuidStr); }
             catch (IllegalArgumentException ignored) { continue; }
 
-            if (skipUuids.contains(uuid)) continue; // online players already handled
+            if (skipUuids.contains(uuid)) continue; 
 
             try {
                 Object compound = readMethod.invoke(null, datFile.toPath(), unlimitedHeap);
-                // Replace Inventory and EnderItems with fresh empty ListTags
+                
                 putMethod.invoke(compound, "Inventory",  listTagClass.getDeclaredConstructor().newInstance());
                 putMethod.invoke(compound, "EnderItems", listTagClass.getDeclaredConstructor().newInstance());
                 writeMethod.invoke(null, compound, datFile.toPath());
@@ -677,15 +615,10 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§c[WIPE] §7" + text);
     }
 
-    // ── Devil Fruits ─────────────────────────────────────────────────────────
-    // Old: many docs { uuid: "...", fruit_name: "...", equipped: bool }
-    // New: one doc per player { _id: uuid, owned: [...], equipped: "..." }
-
     private void optimizeDevilFruits(MongoDatabase db, CommandSender sender) {
         MongoCollection<Document> coll = db.getCollection("devil_fruits");
         msg(sender, "§7devil_fruits — scanning...");
 
-        // Detect if already in new format (has _id that looks like a UUID and has "owned" array)
         Document sample = coll.find().first();
         if (sample == null) {
             msg(sender, "§e  ~ devil_fruits: empty, nothing to do.");
@@ -697,10 +630,8 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Drop old compound unique index so new-format docs can be inserted
         dropIndex(coll, "uuid_1_fruit_name_1", sender);
 
-        // Group old docs by uuid, collect _id values for batched deletion
         Map<String, List<String>> owned    = new LinkedHashMap<>();
         Map<String, String>       equipped = new LinkedHashMap<>();
         List<Object>              oldIds   = new ArrayList<>();
@@ -720,7 +651,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
         log.info("[DBOptimize] devil_fruits: " + oldCount + " old docs → " + owned.size() + " player docs");
 
-        // Write new format
         for (Map.Entry<String, List<String>> entry : owned.entrySet()) {
             String uuid = entry.getKey();
             Document doc = new Document("_id", uuid)
@@ -733,14 +663,9 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     new com.mongodb.client.model.ReplaceOptions().upsert(true));
         }
 
-        // Batch-delete old docs
         batchDelete(coll, oldIds);
         msg(sender, "§a  ✓ devil_fruits: " + oldCount + " docs → " + owned.size() + " player docs");
     }
-
-    // ── Kit Cooldowns ─────────────────────────────────────────────────────────
-    // Old: many docs { uuid: "...", kit: "...", expires: long }
-    // New: one doc per player { _id: uuid, cooldowns: { kitId: expires, ... } }
 
     private void optimizeKitCooldowns(MongoDatabase db, CommandSender sender) {
         MongoCollection<Document> coll = db.getCollection("kit_cooldowns");
@@ -757,7 +682,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Drop old indexes — uuid+kit compound unique and expires TTL/sort index
         dropIndex(coll, "uuid_1_kit_1", sender);
         dropIndex(coll, "expires_1", sender);
 
@@ -773,7 +697,7 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             Long   expires = doc.getLong("expires");
             if (uuid == null || kit == null || expires == null) continue;
             oldIds.add(doc.get("_id"));
-            if (expires <= now) { oldCount++; continue; } // collect id but skip expired values
+            if (expires <= now) { oldCount++; continue; } 
             playerCooldowns.computeIfAbsent(uuid, k -> new LinkedHashMap<>()).put(kit, expires);
             oldCount++;
         }
@@ -789,14 +713,9 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     new com.mongodb.client.model.ReplaceOptions().upsert(true));
         }
 
-        // Batch-delete old docs
         batchDelete(coll, oldIds);
         msg(sender, "§a  ✓ kit_cooldowns: " + oldCount + " docs → " + playerCooldowns.size() + " player docs (expired purged)");
     }
-
-    // ── Protected Blocks ──────────────────────────────────────────────────────
-    // Old: one doc per block { world: "...", x: int, y: int, z: int }
-    // New: one doc per chunk { _id: "world:chunkX:chunkZ", b: [[x,y,z], ...] }
 
     private void optimizeProtectedBlocks(MongoDatabase db, CommandSender sender) {
         MongoCollection<Document> coll = db.getCollection("protected_blocks");
@@ -807,7 +726,7 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             msg(sender, "§e  ~ protected_blocks: empty, nothing to do.");
             return;
         }
-        // New format has _id = "world:cx:cz" (contains colons)
+        
         Object id = sample.get("_id");
         boolean alreadyNew = id instanceof String s && s.contains(":");
         if (alreadyNew) {
@@ -815,10 +734,8 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Drop old compound unique index — this is what caused the duplicate key error
         dropIndex(coll, "world_1_x_1_y_1_z_1", sender);
 
-        // Group old blocks by chunk, collecting their _id values for batched deletion
         Map<String, List<List<Integer>>> byChunk  = new LinkedHashMap<>();
         List<Object>                     oldIds   = new ArrayList<>();
         int oldCount = 0;
@@ -846,25 +763,18 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
                     new com.mongodb.client.model.ReplaceOptions().upsert(true));
         }
 
-        // Delete old single-block docs in batches to avoid socket timeout
         msg(sender, "§7  → removing " + oldIds.size() + " old block docs in batches...");
         batchDelete(coll, oldIds);
 
         msg(sender, "§a  ✓ protected_blocks: " + oldCount + " block docs → " + byChunk.size() + " chunk docs");
     }
 
-    // ── Fruit Sync ────────────────────────────────────────────────────────────
-    // Scans the players collection for all UUIDs. For every UUID that does NOT
-    // have a document in devil_fruits, creates one: { _id: uuid, owned: [] }
-
     private void syncFruitDocs(MongoDatabase db, CommandSender sender) {
         MongoCollection<Document> players = db.getCollection("players");
         MongoCollection<Document> fruits  = db.getCollection("devil_fruits");
 
-        // Drop legacy indexes that block new-format inserts
         dropIndex(fruits, "uuid_1_fruit_name_1", sender);
 
-        // Collect all known player UUIDs
         Set<String> allUuids = new HashSet<>();
         for (Document doc : players.find()) {
             Object id = doc.get("_id");
@@ -872,14 +782,12 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
         }
         msg(sender, "§7Found " + allUuids.size() + " players in database.");
 
-        // Collect existing devil_fruits UUIDs
         Set<String> existingFruitUuids = new HashSet<>();
         for (Document doc : fruits.find()) {
             Object id = doc.get("_id");
             if (id instanceof String s) existingFruitUuids.add(s);
         }
 
-        // Find missing
         Set<String> missing = new HashSet<>(allUuids);
         missing.removeAll(existingFruitUuids);
 
@@ -890,7 +798,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
         msg(sender, "§e" + missing.size() + " players missing devil_fruits documents — creating...");
 
-        // Batch insert missing documents
         List<Document> toInsert = new ArrayList<>();
         for (String uuid : missing) {
             toInsert.add(new Document("_id", uuid).append("owned", Collections.emptyList()));
@@ -899,8 +806,6 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
 
         msg(sender, "§a✓ Created " + missing.size() + " devil_fruits documents.");
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void batchDelete(MongoCollection<Document> coll, List<Object> ids) {
         if (ids.isEmpty()) return;
@@ -921,7 +826,7 @@ public class DatabaseOptimizeCommand implements CommandExecutor, TabCompleter {
             coll.dropIndex(indexName);
             log.info("[DBOptimize] Dropped index: " + indexName);
         } catch (Exception e) {
-            // Index may not exist (already dropped or never created) — that's fine
+            
             log.info("[DBOptimize] Index not found (skipping drop): " + indexName);
         }
     }

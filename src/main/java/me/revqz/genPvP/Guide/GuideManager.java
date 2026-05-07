@@ -37,7 +37,6 @@ public class GuideManager implements CommandExecutor, Listener {
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
             .character('&').hexColors().build();
 
-    // Map of slot -> command to run
     private final Map<Integer, String> slotCommands = new HashMap<>();
 
     public GuideManager(GenPvP plugin) {
@@ -80,9 +79,6 @@ public class GuideManager implements CommandExecutor, Listener {
         String title = config.getString("title", "&8Server Guide");
         GuideHolder holder = new GuideHolder();
         
-        // 3 rows (3 slots in each row) is generally equivalent to an inventory of 27 slots visually where the middle block is used, 
-        // or the user might just want 3 rows of 9 (27 total) where items are placed based on config.
-        // We will just use 27 slots (3 rows).
         Inventory inv = Bukkit.createInventory(holder, 27, LEGACY.deserialize(title));
         holder.setInventory(inv);
 

@@ -12,33 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-/**
- * Teleports players to the configured spawn point on:
- * <ul>
- *   <li><b>First join</b> — player has never played on this server before.</li>
- *   <li><b>Every join</b> — any time a player connects.</li>
- *   <li><b>Respawn</b>    — after death, overrides the respawn location.</li>
- * </ul>
- *
- * Config (under {@code spawn:} in config.yml):
- * <pre>
- * spawn:
- *   world: "world"
- *   x: 135.5
- *   y: 80.0
- *   z: -126.5
- *   yaw: 180.0
- *   pitch: 0.0
- *   on-first-join: true
- *   on-join:       true
- *   on-respawn:    true
- * </pre>
- */
 public class SpawnHandler implements Listener {
 
     private final GenPvP plugin;
 
-    // Cached spawn location — rebuilt on reload()
     private Location spawnLocation;
     private boolean onFirstJoin;
     private boolean onJoin;
@@ -48,8 +25,6 @@ public class SpawnHandler implements Listener {
         this.plugin = plugin;
         reload();
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public void reload() {
         FileConfiguration cfg = plugin.getConfig();
@@ -75,10 +50,7 @@ public class SpawnHandler implements Listener {
         onRespawn   = cfg.getBoolean("spawn.on-respawn",    true);
     }
 
-    /** Returns the cached spawn {@link Location}, or {@code null} if the world isn't loaded. */
     public Location getSpawnLocation() { return spawnLocation; }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -88,7 +60,7 @@ public class SpawnHandler implements Listener {
         boolean firstJoin = !player.hasPlayedBefore();
 
         if (firstJoin && onFirstJoin) {
-            // Delay by 1 tick so the player fully loads before teleporting
+            
             Bukkit.getScheduler().runTaskLater(plugin,
                     () -> player.teleport(spawnLocation), 1L);
             return;

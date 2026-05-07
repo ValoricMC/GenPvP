@@ -12,11 +12,6 @@ public class ProtectRegion {
     private final int minX, minY, minZ;
     private final int maxX, maxY, maxZ;
 
-    /**
-     * Region priority. Default is 0.0.
-     * When two regions overlap, only the rules of the highest-priority region(s)
-     * at a given location are enforced. Equal-priority regions are all considered.
-     */
     private double priority = 0.0;
 
     public ProtectRegion(String name, RegionType type, String world,
@@ -38,7 +33,6 @@ public class ProtectRegion {
         return containsBlock(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
-    /** Zero-allocation coordinate check used by the chunk-index hot-path. */
     public boolean containsBlock(int x, int y, int z) {
         return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ;
     }

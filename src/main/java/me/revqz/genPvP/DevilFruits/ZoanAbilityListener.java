@@ -43,15 +43,12 @@ public class ZoanAbilityListener implements Listener {
     private final Set<UUID>             activeAbility   = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> endTasks        = new ConcurrentHashMap<>();
 
-    // Tori Tori Falcon: saved chestplate + tagged elytra key
     private final NamespacedKey          FALCON_ELYTRA_KEY;
     private final Map<UUID, ItemStack>   savedChestplate = new ConcurrentHashMap<>();
 
-    // Kumo Kumo Tarantula: shot entity UUID → shooter UUID, plus placed web blocks per shooter
-    private final Map<UUID, UUID>        webShots  = new ConcurrentHashMap<>(); // shot entity → shooter
+    private final Map<UUID, UUID>        webShots  = new ConcurrentHashMap<>(); 
     private final Map<UUID, List<Block>> webBlocks = new ConcurrentHashMap<>();
 
-    // Zou Zou Mammoth / Neko Neko Leopard: shared dash state
     private final Set<UUID>             dashing   = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> dashTasks = new ConcurrentHashMap<>();
 
@@ -66,8 +63,6 @@ public class ZoanAbilityListener implements Listener {
         this.fruitSlotManager  = fruitSlotManager;
         this.FALCON_ELYTRA_KEY = new NamespacedKey(plugin, "falcon_elytra");
     }
-
-    // ── Activation: Sneak + Right-click ──────────────────────────────────────
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
@@ -135,9 +130,6 @@ public class ZoanAbilityListener implements Listener {
         }
     }
 
-    // ── Tori Tori no Mi, Model: Falcon ────────────────────────────────────────
-    // Launch ~10 blocks up; force-equip a tagged Elytra for duration seconds, then restore.
-
     private void activateToriTori(Player player) {
         UUID uuid          = player.getUniqueId();
         int  durationTicks = cfg("tori_tori_falcon", "duration-seconds",   4) * 20;
@@ -146,7 +138,6 @@ public class ZoanAbilityListener implements Listener {
 
         activeAbility.add(uuid);
 
-        // Save whatever is in the chestplate slot, including null
         ItemStack current = player.getInventory().getChestplate();
         savedChestplate.put(uuid, current != null ? current.clone() : null);
 
@@ -166,26 +157,22 @@ public class ZoanAbilityListener implements Listener {
                 25, 0.4, 0.5, 0.4, 0.06);
         player.sendMessage(msg("ability.tori_tori_falcon"));
 
-        // Restore after the active window; scheduleEnd also calls it as a safety net
         plugin.getServer().getScheduler().runTaskLater(plugin,
                 () -> restoreToriChestplate(player, uuid), durationTicks);
         scheduleEnd(uuid, cooldownTicks, () -> restoreToriChestplate(player, uuid));
     }
 
     private void restoreToriChestplate(Player player, UUID uuid) {
-        // Always pull out of the map first — prevents leaks if the player removed the elytra manually
+        
         ItemStack saved = savedChestplate.remove(uuid);
         if (saved == null || !player.isOnline()) return;
-        // Only overwrite if our tagged elytra is still in the slot
+        
         ItemStack chest = player.getInventory().getChestplate();
         if (chest == null || !chest.hasItemMeta()) return;
         ItemMeta m = chest.getItemMeta();
         if (m == null || !m.getPersistentDataContainer().has(FALCON_ELYTRA_KEY, PersistentDataType.BYTE)) return;
         player.getInventory().setChestplate(saved.getType() == Material.AIR ? null : saved);
     }
-
-    // ── Kumo Kumo no Mi, Model: Tarantula ─────────────────────────────────────
-    // Fire a tagged projectile; on block hit, spawn a 3×3 cobweb trap at the hit face.
 
     private void activateKumoKumo(Player player) {
         UUID uuid          = player.getUniqueId();
@@ -219,18 +206,16 @@ public class ZoanAbilityListener implements Listener {
         int cx = impact.getBlockX();
         int cz = impact.getBlockZ();
         int cy = impact.getBlockY();
-        // Scan up from impact until we find a non-solid block to anchor the cube base
+        
         for (int scan = cy; scan <= cy + 4; scan++) {
             if (!world.getBlockAt(cx, scan, cz).getType().isSolid()) { cy = scan; break; }
         }
 
         Location center = new Location(world, cx + 0.5, cy, cz + 0.5);
 
-        // Impact burst
         center.getWorld().playSound(center, Sound.ENTITY_SPIDER_AMBIENT, 1f, 0.8f);
         center.getWorld().spawnParticle(Particle.CLOUD, center, 12, 0.6, 0.2, 0.6, 0.03);
 
-        // Place a 3×3×3 cube of cobwebs — skip solid blocks and liquids only
         List<Block> allPlaced = new ArrayList<>();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = 0; dy <= 2; dy++) {
@@ -260,10 +245,6 @@ public class ZoanAbilityListener implements Listener {
         }, webDuration);
     }
 
-    // ── Zou Zou no Mi, Model: Mammoth ─────────────────────────────────────────
-    // Barrel forward at high speed, dealing damage and pushing enemies sideways.
-    // Unlike Neko Neko, the charge does NOT stop on first hit — it tramples through.
-
     private void activateZouZou(Player player) {
         UUID   uuid          = player.getUniqueId();
         int    cooldownTicks = cfg("zou_zou_mammoth", "cooldown-seconds", 14) * 20;
@@ -281,7 +262,6 @@ public class ZoanAbilityListener implements Listener {
         final Vector chargeDir = dir.normalize().clone();
         player.setVelocity(chargeDir.clone().multiply(dashSpeed).setY(0.25));
 
-        // Activation burst
         player.playSound(player.getLocation(), Sound.ENTITY_RAVAGER_ROAR, 1f, 0.7f);
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.4f);
         player.getWorld().spawnParticle(Particle.EXPLOSION, player.getLocation(), 3, 0.4, 0.1, 0.4, 0);
@@ -303,7 +283,6 @@ public class ZoanAbilityListener implements Listener {
                 }
                 tick++;
 
-                // Re-apply horizontal charge velocity each tick to resist drag
                 Vector vel = player.getVelocity();
                 double hSpeed = Math.sqrt(vel.getX() * vel.getX() + vel.getZ() * vel.getZ());
                 if (hSpeed < dashSpeed * 0.65) {
@@ -311,7 +290,6 @@ public class ZoanAbilityListener implements Listener {
                             .setY(Math.max(vel.getY(), 0)));
                 }
 
-                // Dust + ground debris trail
                 player.getWorld().spawnParticle(Particle.DUST,
                         player.getLocation().add(0, 0.3, 0), 12, 0.5, 0.3, 0.5, 0,
                         new Particle.DustOptions(Color.fromRGB(101, 67, 33), 1.8f));
@@ -319,7 +297,6 @@ public class ZoanAbilityListener implements Listener {
                         player.getLocation().add(0, 0.1, 0), 8, 0.4, 0.1, 0.4, 0.04,
                         Material.DIRT.createBlockData());
 
-                // Wide hitbox — tramples through all enemies in range
                 for (Entity nearby : player.getNearbyEntities(2.2, 2.0, 2.2)) {
                     if (!(nearby instanceof LivingEntity target) || nearby.equals(player)) continue;
                     if (hit.contains(target.getUniqueId())) continue;
@@ -328,13 +305,11 @@ public class ZoanAbilityListener implements Listener {
 
                     target.damage(damage, player);
 
-                    // Push the target sideways away from the charge path
                     Vector pushDir = target.getLocation().toVector()
                             .subtract(player.getLocation().toVector()).setY(0);
                     if (pushDir.lengthSquared() < 1e-6) pushDir = new Vector(1, 0, 0);
                     target.setVelocity(pushDir.normalize().multiply(sideKnockback).setY(knockY));
 
-                    // Impact effects
                     target.getWorld().spawnParticle(Particle.CRIT,
                             target.getLocation().add(0, 1, 0), 18, 0.5, 0.6, 0.5, 0.1);
                     target.getWorld().spawnParticle(Particle.EXPLOSION,
@@ -352,9 +327,6 @@ public class ZoanAbilityListener implements Listener {
             if (dt != null) dt.cancel();
         });
     }
-
-    // ── Neko Neko no Mi, Model: Leopard ──────────────────────────────────────
-    // Rapid forward dash; first collision deals burst damage + disables shield. Stops on hit.
 
     private void activateNekoNeko(Player player) {
         UUID   uuid          = player.getUniqueId();
@@ -396,12 +368,11 @@ public class ZoanAbilityListener implements Listener {
                     hit.add(target.getUniqueId());
 
                     target.damage(burstDamage, player);
-                    target.setCooldown(Material.SHIELD, 100); // ~5 s shield disable
+                    target.setCooldown(Material.SHIELD, 100); 
                     target.getWorld().spawnParticle(Particle.CRIT,
                             target.getLocation().add(0, 1, 0), 12, 0.3, 0.5, 0.3, 0.05);
                     target.playSound(target.getLocation(), Sound.ITEM_SHIELD_BREAK, 1f, 1f);
 
-                    // Stop the dash on first contact
                     dashing.remove(uuid);
                     dashTasks.remove(uuid);
                     endAbilityEarly(uuid);
@@ -419,9 +390,6 @@ public class ZoanAbilityListener implements Listener {
         });
     }
 
-    // ── Hebi Hebi no Mi, Model: King Cobra ────────────────────────────────────
-    // Pull nearest enemy slightly toward the user + apply Poison II.
-
     private void activateHebiHebi(Player player) {
         UUID   uuid           = player.getUniqueId();
         int    cooldownTicks  = cfg("hebi_hebi_cobra", "cooldown-seconds",        12) * 20;
@@ -432,7 +400,6 @@ public class ZoanAbilityListener implements Listener {
 
         activeAbility.add(uuid);
 
-        // Find nearest non-spawn player within range
         Player target  = null;
         double nearest = range;
         for (Entity entity : player.getNearbyEntities(range, range, range)) {
@@ -461,9 +428,6 @@ public class ZoanAbilityListener implements Listener {
 
         scheduleEnd(uuid, cooldownTicks, null);
     }
-
-    // ── Inu Inu no Mi, Model: Wolf ────────────────────────────────────────────
-    // Howl: Speed II for the user + Glowing on all nearby enemies, strips invisibility.
 
     private void activateInuInu(Player player) {
         UUID   uuid          = player.getUniqueId();
@@ -495,19 +459,16 @@ public class ZoanAbilityListener implements Listener {
         scheduleEnd(uuid, cooldownTicks, null);
     }
 
-    // ── Death: Tori Tori chestplate handling ──────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent event) {
         UUID uuid = event.getEntity().getUniqueId();
         if (!savedChestplate.containsKey(uuid)) return;
 
         if (event.getKeepInventory()) {
-            // Chestplate slot is preserved — onRespawn will swap the elytra out
+            
             return;
         }
 
-        // keepInventory off: remove our tagged elytra from drops, add the real chestplate
         ItemStack saved = savedChestplate.remove(uuid);
         event.getDrops().removeIf(i -> {
             if (i == null || !i.hasItemMeta()) return false;
@@ -524,12 +485,10 @@ public class ZoanAbilityListener implements Listener {
         Player player = event.getPlayer();
         UUID   uuid   = player.getUniqueId();
         if (!savedChestplate.containsKey(uuid)) return;
-        // keepInventory=true path: player respawns with elytra still in slot
+        
         plugin.getServer().getScheduler().runTaskLater(plugin,
                 () -> restoreToriChestplate(player, uuid), 1L);
     }
-
-    // ── Cleanup on disconnect ─────────────────────────────────────────────────
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
@@ -543,11 +502,10 @@ public class ZoanAbilityListener implements Listener {
         if (dt != null) dt.cancel();
         dashing.remove(uuid);
 
-        // Restore chestplate before the inventory is serialised to disk
         restoreToriChestplate(player, uuid);
         savedChestplate.remove(uuid);
 
-        webShots.values().removeIf(v -> v.equals(uuid)); // remove any in-flight shots by this player
+        webShots.values().removeIf(v -> v.equals(uuid)); 
 
         List<Block> webs = webBlocks.remove(uuid);
         if (webs != null) webs.forEach(b -> { if (b.getType() == Material.COBWEB) b.setType(Material.AIR); });
@@ -555,8 +513,6 @@ public class ZoanAbilityListener implements Listener {
         activeAbility.remove(uuid);
         abilityCooldown.remove(uuid);
     }
-
-    // ── Scheduling helpers ────────────────────────────────────────────────────
 
     private void scheduleEnd(UUID uuid, long delayTicks, Runnable extraCleanup) {
         BukkitTask existing = endTasks.remove(uuid);
@@ -578,8 +534,6 @@ public class ZoanAbilityListener implements Listener {
         if (task != null) task.cancel();
         activeAbility.remove(uuid);
     }
-
-    // ── Config / message helpers ──────────────────────────────────────────────
 
     private String msg(String key) {
         return ColorUtil.colorize(guiManager.getMessagesConfig().getString(key, "§cMissing: " + key));

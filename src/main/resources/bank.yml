@@ -60,7 +60,7 @@ info:
       - "&#A7A7A7from your inventory into the bank."
       - ""
 
-  # ── Withdraw buttons (red side — amounts taken from bank balance) ───
+  #withdraw buttons
 
   withdraw-1:
     slot: 14

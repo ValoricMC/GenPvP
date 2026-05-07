@@ -31,12 +31,8 @@ public class BlockTimerManager {
         this.decaySound = parsed;
     }
 
-    /**
-     * Starts (or restarts) the decay timer for {@code blockLoc}.
-     * Callers must pass a block-aligned Location (from {@code Block.getLocation()}).
-     */
     public void trackBlock(Location blockLoc) {
-        // Cancel any existing timer for this location before creating a new one
+        
         BukkitTask existing = activeTimers.remove(blockLoc);
         if (existing != null) existing.cancel();
 
@@ -48,7 +44,6 @@ public class BlockTimerManager {
         activeTimers.put(blockLoc, task);
     }
 
-    /** Callers must pass a block-aligned Location (from {@code Block.getLocation()}). */
     public void cancelTimer(Location blockLoc) {
         BukkitTask task = activeTimers.remove(blockLoc);
         if (task != null) task.cancel();

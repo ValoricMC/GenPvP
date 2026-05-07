@@ -38,7 +38,6 @@ public class DisplaysManager {
     final NamespacedKey KEY_DISCORD;
     final NamespacedKey KEY_STORE;
 
-    // Raw config values — stored separately so loadConfig() is safe before worlds load
     private String discordWorld, storeWorld;
     private double discordX, discordY, discordZ, discordYaw, discordPitch;
     private double storeX, storeY, storeZ, storeYaw, storePitch;
@@ -83,10 +82,8 @@ public class DisplaysManager {
         tasks.forEach(BukkitTask::cancel);
         tasks.clear();
 
-        // Kill entities from the previous session by UUID (force-loads their chunks so the scan is reliable)
         killSavedEntities();
 
-        // Fallback PDC scan for any strays not covered by the UUID file
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity.getPersistentDataContainer().has(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN)) {
@@ -102,17 +99,24 @@ public class DisplaysManager {
             return;
         }
 
-        // Item displays at base + Y 2
-        ItemDisplay discord = dw.spawn(loc(dw, discordX, discordY + 2, discordZ, discordYaw, discordPitch), ItemDisplay.class, e -> {
+        ItemDisplay discord = dw.spawn(loc(dw, discordX, discordY + 2, discordZ), ItemDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
-            applyItemDisplay(e, discordSkull);
+            e.setGlowing(true);
+            e.setItemStack(buildSkull(discordSkull));
         });
-        ItemDisplay store = sw.spawn(loc(sw, storeX, storeY + 2, storeZ, storeYaw, storePitch), ItemDisplay.class, e -> {
+        ItemDisplay store = sw.spawn(loc(sw, storeX, storeY + 2, storeZ), ItemDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
-            applyItemDisplay(e, storeSkull);
+            e.setGlowing(true);
+            e.setItemStack(buildSkull(storeSkull));
         });
 
-        // Text displays at base + Y 2.75, riding their item display
+        final double dYaw = discordYaw, dPitch = discordPitch;
+        final double sYaw = storeYaw,   sPitch = storePitch;
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            applyTransformation(discord, dYaw, dPitch);
+            applyTransformation(store,   sYaw, sPitch);
+        });
+
         TextDisplay discordLabel = dw.spawn(loc(dw, discordX, discordY + 2.75, discordZ, discordYaw, discordPitch), TextDisplay.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             applyTextDisplay(e, discordText);
@@ -124,7 +128,6 @@ public class DisplaysManager {
         discord.addPassenger(discordLabel);
         store.addPassenger(storeLabel);
 
-        // Interactions at base - Y 1, linked to their item display by UUID
         Interaction discordInteraction = dw.spawn(loc(dw, discordX, discordY - 1, discordZ), Interaction.class, e -> {
             e.getPersistentDataContainer().set(KEY_SPAWN_ENTITY, PersistentDataType.BOOLEAN, true);
             e.getPersistentDataContainer().set(KEY_DISCORD, PersistentDataType.STRING, discord.getUniqueId().toString());
@@ -139,12 +142,7 @@ public class DisplaysManager {
         });
 
         saveEntityUUIDs(discord, store, discordLabel, storeLabel, discordInteraction, storeInteraction);
-
-        tasks.add(startRotation(discord));
-        tasks.add(startRotation(store));
     }
-
-    // ── UUID persistence helpers ──────────────────────────────────────────────
 
     private static final String ENTITY_FILE = "display_entity_uuids.yml";
 
@@ -180,24 +178,25 @@ public class DisplaysManager {
             if (uuidStr == null || worldName == null) continue;
             World world = Bukkit.getWorld(worldName);
             if (world == null) continue;
-            world.loadChunk(cx, cz); // force entity data into memory
+            world.loadChunk(cx, cz); 
             Entity entity = Bukkit.getEntity(UUID.fromString(uuidStr));
             if (entity != null) entity.remove();
         }
         file.delete();
     }
 
-    private void applyItemDisplay(ItemDisplay e, String skull) {
-        e.setTeleportDuration(20);
-        e.setInterpolationDelay(20);
+    private void applyTransformation(ItemDisplay e, double yaw, double pitch) {
+        if (!e.isValid()) return;
+        float yawRad   = (float) Math.toRadians(yaw);
+        float pitchRad = (float) Math.toRadians(pitch);
+        e.setInterpolationDelay(0);
+        e.setInterpolationDuration(1);
         e.setTransformation(new Transformation(
             new Vector3f(0, 0, 0),
-            new AxisAngle4f(0, 0, 1, 0),
+            new AxisAngle4f(yawRad, 0, 1, 0),
             new Vector3f(3, 3, 3),
-            new AxisAngle4f(0, 0, 1, 0)
+            new AxisAngle4f(pitchRad, 1, 0, 0)
         ));
-        e.setGlowing(true);
-        e.setItemStack(buildSkull(skull));
     }
 
     private void applyTextDisplay(TextDisplay e, String text) {
@@ -211,24 +210,6 @@ public class DisplaysManager {
             new AxisAngle4f(0, 0, 1, 0)
         ));
         e.text(MiniMessage.miniMessage().deserialize(text));
-    }
-
-    private BukkitTask startRotation(ItemDisplay display) {
-        int[] tick = {0};
-        return plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (!display.isValid()) return;
-            tick[0]++;
-            float yawRad   = (float) Math.toRadians(tick[0] * 2.0);
-            float yOffset  = (float) (Math.sin(tick[0] * 2.0 * Math.PI / 180.0) * 0.1);
-            display.setInterpolationDelay(0);
-            display.setInterpolationDuration(1);
-            display.setTransformation(new Transformation(
-                new Vector3f(0, yOffset, 0),
-                new AxisAngle4f(yawRad, 0, 1, 0),
-                new Vector3f(3, 3, 3),
-                new AxisAngle4f(0, 0, 1, 0)
-            ));
-        }, 1L, 1L);
     }
 
     private ItemStack buildSkull(String base64) {

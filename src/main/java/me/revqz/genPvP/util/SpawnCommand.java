@@ -16,39 +16,17 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Handles the {@code /spawn} command with a configurable countdown.
- *
- * <ul>
- *   <li>Counts down from {@code spawn.warp-countdown} seconds (default 5) to 0,
- *       displayed in the player's action bar to one decimal place.</li>
- *   <li>If the player moves more than {@code spawn.move-threshold} blocks on
- *       the XZ plane during the countdown, the warp is cancelled with an
- *       action-bar error message.</li>
- *   <li>Re-running {@code /spawn} mid-countdown restarts the timer.</li>
- *   <li>Thread-safe: pending tasks are tracked in a {@link ConcurrentHashMap}
- *       and all scheduling/cancellation happens on Bukkit's main thread.</li>
- * </ul>
- *
- * Action-bar messages (both configurable via config.yml):
- * <pre>
- *   spawn.messages.countdown  — e.g. "&#4CC2FA&lS … &8» &7 %time%s"
- *   spawn.messages.cancelled  — shown when the player moves
- * </pre>
- */
 public class SpawnCommand implements CommandExecutor {
 
     private static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.legacySection();
 
-    // Interval between countdown ticks — 2 game ticks = 0.1 s, giving 1-decimal precision
     private static final int    TICK_INTERVAL = 2;
-    private static final double TICK_SECONDS  = TICK_INTERVAL / 20.0; // 0.1
+    private static final double TICK_SECONDS  = TICK_INTERVAL / 20.0; 
 
     private final GenPvP     plugin;
     private final SpawnHandler spawnHandler;
 
-    /** One entry per player with an active countdown. Keyed by UUID. */
     private final Map<UUID, BukkitTask> pending = new ConcurrentHashMap<>();
 
     public SpawnCommand(GenPvP plugin, SpawnHandler spawnHandler) {
@@ -60,7 +38,6 @@ public class SpawnCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        // Cancel any warp already in progress for this player
         cancelPending(player.getUniqueId());
 
         Location spawn = spawnHandler.getSpawnLocation();
@@ -78,25 +55,21 @@ public class SpawnCommand implements CommandExecutor {
                 .getString("spawn.messages.cancelled",
                         "&cOops you moved, Warp cancelled!");
 
-        // Snapshot XZ origin — Y intentionally excluded to avoid gravity false-positives
         double originX = player.getLocation().getX();
         double originZ = player.getLocation().getZ();
-        double threshold2 = threshold * threshold; // compare squared distance (no sqrt needed)
+        double threshold2 = threshold * threshold; 
 
-        // remaining[0] counts down on the main thread — safe because the runnable
-        // is a main-thread BukkitRunnable; no cross-thread mutation occurs.
         double[] remaining = {totalSeconds};
 
         BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
-                // Player disconnected — clean up silently
+                
                 if (!player.isOnline()) {
                     pending.remove(player.getUniqueId());
                     return;
                 }
 
-                // Movement check on XZ plane
                 Location loc = player.getLocation();
                 double dx = loc.getX() - originX;
                 double dz = loc.getZ() - originZ;
@@ -108,7 +81,6 @@ public class SpawnCommand implements CommandExecutor {
                     return;
                 }
 
-                // Countdown finished — teleport
                 if (remaining[0] <= 0.0) {
                     player.teleport(spawn);
                     player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.4f, 1.5f);
@@ -118,7 +90,6 @@ public class SpawnCommand implements CommandExecutor {
                     return;
                 }
 
-                // Display current time to 1 decimal place
                 String text = countdownFmt.replace("%time%",
                         String.format("%.1f", remaining[0]));
                 player.sendActionBar(component(text));
@@ -132,23 +103,18 @@ public class SpawnCommand implements CommandExecutor {
         return true;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /** Cancels and removes any pending countdown for {@code id}. */
     private void cancelPending(UUID id) {
         BukkitTask old = pending.remove(id);
         if (old != null) old.cancel();
     }
 
-    /** Cancels all active countdowns — call from {@link GenPvP#onDisable()}. */
     public void shutdown() {
         pending.values().forEach(BukkitTask::cancel);
         pending.clear();
     }
 
-    /** Converts a raw {@code &}-coded string to an Adventure {@link Component}. */
     private static Component component(String raw) {
-        // ColorUtil.colorize handles both &#RRGGBB hex and &legacy codes → §-signs
+        
         return LEGACY.deserialize(me.revqz.genPvP.util.ColorUtil.colorize(raw));
     }
 }

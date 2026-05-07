@@ -37,7 +37,6 @@ public class FruitGUIManager implements Listener {
 
     private FruitSlotManager slotManager;
 
-    // Rate limiting: max 3 clicks per second per player
     private final Map<UUID, ArrayDeque<Long>> clickTimestamps = new HashMap<>();
 
     public FruitGUIManager(GenPvP plugin, DevilFruitManager fruitManager, RegionManager regionManager) {
@@ -51,8 +50,6 @@ public class FruitGUIManager implements Listener {
     public YamlConfiguration getBalanceConfig() { return balanceConfig; }
     public YamlConfiguration getTypeConfig(FruitType type) { return typeConfigs.get(type); }
     public void setSlotManager(FruitSlotManager sm) { this.slotManager = sm; }
-
-    // ── Config loading ────────────────────────────────────────────────────────
 
     private void loadConfigs() {
         File guiFolder = new File(plugin.getDataFolder(), "FruitGUI");
@@ -70,8 +67,6 @@ public class FruitGUIManager implements Listener {
         typeConfigs.put(FruitType.ZOAN,      YamlConfiguration.loadConfiguration(new File(guiFolder, "Zoan.yml")));
     }
 
-    // ── Custom InventoryHolders ───────────────────────────────────────────────
-
     public static class GeneralHolder implements InventoryHolder {
         private Inventory inventory;
         @Override public Inventory getInventory() { return inventory; }
@@ -86,8 +81,6 @@ public class FruitGUIManager implements Listener {
         @Override public Inventory getInventory() { return inventory; }
         void setInventory(Inventory inv)          { this.inventory = inv; }
     }
-
-    // ── Open GUIs ─────────────────────────────────────────────────────────────
 
     public void openGeneral(Player player) {
         GeneralHolder holder = new GeneralHolder();
@@ -128,8 +121,6 @@ public class FruitGUIManager implements Listener {
         player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 0.8f, 1.0f);
     }
 
-    // ── Event Handlers ────────────────────────────────────────────────────────
-
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
@@ -159,7 +150,6 @@ public class FruitGUIManager implements Listener {
             String fruitKey = fruitKeyAtSlot(config, slot);
             if (fruitKey == null) return;
 
-            // Region check: must be in SPAWN
             if (!isInSpawn(player)) {
                 player.sendMessage(ColorUtil.colorize(
                         messagesConfig.getString("wrong-region", "&cCan only switch fruits in spawn.")));
@@ -167,7 +157,6 @@ public class FruitGUIManager implements Listener {
                 return;
             }
 
-            // Ownership check
             if (!fruitManager.getOwnedFruits(player.getUniqueId()).contains(fruitKey)) {
                 player.sendMessage(ColorUtil.colorize(
                         messagesConfig.getString("no-permission", "&cYou do not own this fruit.")));
@@ -175,7 +164,6 @@ public class FruitGUIManager implements Listener {
                 return;
             }
 
-            // Equip
             fruitManager.setEquipped(player.getUniqueId(), fruitKey);
             if (slotManager != null) slotManager.updateFruitSlot(player);
             DevilFruit fruit = DevilFruit.fromKey(fruitKey);
@@ -200,8 +188,6 @@ public class FruitGUIManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         clickTimestamps.remove(event.getPlayer().getUniqueId());
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private boolean checkRateLimit(Player player) {
         long now = System.currentTimeMillis();
@@ -238,21 +224,11 @@ public class FruitGUIManager implements Listener {
         inv.setItem(slot, buildItem(generalConfig, section + "."));
     }
 
-    /**
-     * Builds a fruit item for the type-browse GUI.
-     * <ul>
-     *   <li>Owned → uses {@code devil-equipped-name} / {@code devil-equipped-lore}
-     *       and appends "click to equip".</li>
-     *   <li>Not owned → uses the standard {@code name} / {@code lore}
-     *       and appends "not owned / store link".</li>
-     * </ul>
-     */
     private ItemStack buildFruitItem(YamlConfiguration config, String path,
                                      String fruitKey, Player player) {
         String matName = config.getString(path + "material", "PAPER");
         boolean owned = fruitManager.getOwnedFruits(player.getUniqueId()).contains(fruitKey);
 
-        // Pick name + lore source based on ownership
         String name;
         List<String> rawLore;
         if (owned) {
@@ -263,7 +239,6 @@ public class FruitGUIManager implements Listener {
             rawLore = config.getStringList(path + "lore");
         }
 
-        // Build lore — preserve blank lines as spacers, then append action line
         List<String> lore = new ArrayList<>();
         for (String line : rawLore) {
             lore.add(line.isEmpty() ? "" : ColorUtil.colorize(line));
@@ -288,10 +263,6 @@ public class FruitGUIManager implements Listener {
         return item;
     }
 
-    /**
-     * Fills the outer ring of a 4-row (36-slot) inventory with gray stained glass panes.
-     * Border slots: top row (0-8), bottom row (27-35), left column (9, 18), right column (17, 26).
-     */
     private void fillBorder(Inventory inv) {
         ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = glass.getItemMeta();
@@ -299,10 +270,10 @@ public class FruitGUIManager implements Listener {
             meta.setDisplayName(org.bukkit.ChatColor.RESET + "");
             glass.setItemMeta(meta);
         }
-        // Top and bottom rows
+        
         for (int i = 0; i <= 8; i++)  inv.setItem(i, glass);
         for (int i = 27; i <= 35; i++) inv.setItem(i, glass);
-        // Left and right columns (middle rows)
+        
         inv.setItem(9,  glass);
         inv.setItem(17, glass);
         inv.setItem(18, glass);

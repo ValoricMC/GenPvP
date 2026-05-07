@@ -18,15 +18,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Handles all {@code /fruit} subcommands.
- *
- * <pre>
- *   /fruit give      &lt;player&gt; &lt;fruit&gt;   — admin only, give a fruit (online or offline)
- *   /fruit remove    &lt;player&gt; &lt;fruit&gt;   — admin only, remove a fruit (online or offline)
- *   /fruit equip     &lt;fruit&gt;            — everyone, equip an owned fruit
- * </pre>
- */
 public class FruitCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> OP_SUBCOMMANDS = Arrays.asList(
@@ -56,12 +47,9 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         this.rollGUI      = rollGUI;
     }
 
-    /** Injected after construction — needed for /fruit give_shard. */
     public void setShardListener(DevilFruitShardListener listener) {
         this.shardListener = listener;
     }
-
-    // ── Command ───────────────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
@@ -98,8 +86,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ── Give ──────────────────────────────────────────────────────────────────
-
     private void handleGive(Player admin, String[] args) {
         if (!admin.hasPermission("genpvp.admin")) {
             admin.sendMessage(msg("no-permission"));
@@ -118,12 +104,12 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
 
         Player target = Bukkit.getPlayerExact(args[1]);
         if (target != null) {
-            // Online path — update memory + DB
+            
             if (!fruitManager.giveFruit(target.getUniqueId(), fruit)) {
                 admin.sendMessage(msg("fruit-already-owned"));
                 return;
             }
-            // Auto-equip if the player has nothing currently equipped
+            
             if (fruitManager.getEquippedFruit(target.getUniqueId()) == null) {
                 fruitManager.setEquipped(target.getUniqueId(), fruit.getKey());
             }
@@ -131,7 +117,7 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                     .replace("%fruit%", fruit.getDisplayName())
                     .replace("%player%", target.getName()));
         } else {
-            // Offline path — write directly to DB
+            
             @SuppressWarnings("deprecation")
             OfflinePlayer offline = Bukkit.getOfflinePlayer(args[1]);
             if (!offline.hasPlayedBefore()) {
@@ -152,8 +138,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ── Remove ────────────────────────────────────────────────────────────────
-
     private void handleRemove(Player admin, String[] args) {
         if (!admin.hasPermission("genpvp.admin")) {
             admin.sendMessage(msg("no-permission"));
@@ -172,7 +156,7 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
 
         Player target = Bukkit.getPlayerExact(args[1]);
         if (target != null) {
-            // Online path — update memory + DB
+            
             if (!fruitManager.removeFruit(target.getUniqueId(), fruit)) {
                 admin.sendMessage(msg("fruit-not-owned"));
                 return;
@@ -181,7 +165,7 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                     .replace("%fruit%", fruit.getDisplayName())
                     .replace("%player%", target.getName()));
         } else {
-            // Offline path — write directly to DB
+            
             @SuppressWarnings("deprecation")
             OfflinePlayer offline = Bukkit.getOfflinePlayer(args[1]);
             if (!offline.hasPlayedBefore()) {
@@ -201,8 +185,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
             });
         }
     }
-
-    // ── Equip ─────────────────────────────────────────────────────────────────
 
     private void handleEquip(Player player, String[] args) {
         if (args.length < 2) {
@@ -229,8 +211,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(msg("fruit-equipped").replace("%fruit%", fruit.getDisplayName()));
     }
 
-    // ── Unequip ──────────────────────────────────────────────────────────────
-
     private void handleUnequip(Player player) {
         UUID uuid = player.getUniqueId();
         String equipped = fruitManager.getEquippedFruit(uuid);
@@ -241,8 +221,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         fruitManager.unequip(uuid);
         player.sendMessage(msg("fruit-unequipped"));
     }
-
-    // ── Roll Give (admin) ─────────────────────────────────────────────────────
 
     private void handleRollGive(Player admin, String[] args) {
         if (!admin.hasPermission("genpvp.admin")) {
@@ -290,8 +268,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                 .replace("%type%", type.getDisplayName()));
     }
 
-    // ── Roll Give All (admin) ─────────────────────────────────────────────────
-
     private void handleRollGiveAll(Player admin, String[] args) {
         if (!admin.isOp()) {
             admin.sendMessage(msg("no-permission"));
@@ -336,8 +312,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                 .replace("%count%", String.valueOf(online.size())));
     }
 
-    // ── Give Shard (admin) ────────────────────────────────────────────────────
-
     private void handleGiveShard(Player admin, String[] args) {
         if (!admin.hasPermission("genpvp.admin")) {
             admin.sendMessage(msg("no-permission"));
@@ -370,7 +344,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Give shards in stacks of 64, overflow drops at player's feet
         int remaining = amount;
         while (remaining > 0) {
             int batch = Math.min(remaining, 64);
@@ -378,7 +351,7 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
                     org.bukkit.Material.AMETHYST_SHARD, batch);
             org.bukkit.inventory.meta.ItemMeta meta = shard.getItemMeta();
             if (meta != null) {
-                // Re-use the listener's shard key + config for consistency
+                
                 meta.displayName(noItalic(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
                         .builder().character('&').hexColors().build()
                         .deserialize(plugin.getConfig().getString(
@@ -410,8 +383,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
     private static net.kyori.adventure.text.Component noItalic(net.kyori.adventure.text.Component c) {
         return c.decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
     }
-
-    // ── Disable / Enable (OP) ────────────────────────────────────────────────
 
     private void handleDisable(Player admin, String[] args) {
         if (!admin.isOp()) {
@@ -454,8 +425,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
         }
         admin.sendMessage(msg("fruit-enabled").replace("%fruit%", fruit.getDisplayName()));
     }
-
-    // ── Tab completion ────────────────────────────────────────────────────────
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
@@ -551,8 +520,6 @@ public class FruitCommand implements CommandExecutor, TabCompleter {
 
         return Collections.emptyList();
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private FruitType parseFruitType(String input) {
         if (input == null) return null;

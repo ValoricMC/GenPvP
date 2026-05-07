@@ -18,12 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * Manages per-player roll tokens (one balance per {@link FruitType}).
- * <p>
- * MongoDB collection: {@code fruit_rolls}
- * Document schema:  {@code { _id: "uuid", paramecia: int, logia: int, zoan: int }}
- */
 public class FruitRollManager implements Listener {
 
     private final GenPvP plugin;
@@ -39,8 +33,6 @@ public class FruitRollManager implements Listener {
         this.dbConnected = dbManager.isMongoConnected();
     }
 
-    // ── Inject (used by PlayerDataLoader) ─────────────────────────────────────
-
     public void inject(UUID uuid, int paramecia, int logia, int zoan) {
         EnumMap<FruitType, Integer> map = new EnumMap<>(FruitType.class);
         map.put(FruitType.PARAMECIA, Math.max(0, paramecia));
@@ -50,13 +42,11 @@ public class FruitRollManager implements Listener {
         loadedPlayers.add(uuid);
     }
 
-    // ── Join / Quit ───────────────────────────────────────────────────────────
-
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         if (loadedPlayers.contains(uuid)) return;
-        // Default to 0 rolls; real values will be injected by PlayerDataLoader
+        
         inject(uuid, 0, 0, 0);
         if (!dbConnected) return;
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> loadFromDB(uuid));
@@ -66,7 +56,6 @@ public class FruitRollManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        // Snapshot roll data on the main thread, then persist async to avoid tick lag
         if (dbConnected && db != null) {
             EnumMap<FruitType, Integer> map = rolls.get(uuid);
             if (map != null) {
@@ -92,16 +81,11 @@ public class FruitRollManager implements Listener {
         loadedPlayers.remove(uuid);
     }
 
-    // ── API ───────────────────────────────────────────────────────────────────
-
     public int getRolls(UUID uuid, FruitType type) {
         EnumMap<FruitType, Integer> map = rolls.get(uuid);
         return map != null ? map.getOrDefault(type, 0) : 0;
     }
 
-    /**
-     * Adds roll tokens for a given type. Persists to MongoDB async.
-     */
     public void addRolls(UUID uuid, FruitType type, int amount) {
         if (amount <= 0) return;
         EnumMap<FruitType, Integer> map = rolls.computeIfAbsent(uuid, k -> {
@@ -127,11 +111,6 @@ public class FruitRollManager implements Listener {
         }
     }
 
-    /**
-     * Attempts to consume one roll token.
-     *
-     * @return {@code true} if the player had ≥1 token and it was deducted.
-     */
     public boolean consumeRoll(UUID uuid, FruitType type) {
         EnumMap<FruitType, Integer> map = rolls.get(uuid);
         if (map == null) return false;
@@ -156,9 +135,6 @@ public class FruitRollManager implements Listener {
         return true;
     }
 
-    // ── DB load ───────────────────────────────────────────────────────────────
-
-    /** Loads roll data from MongoDB. Called by PlayerDataLoader. */
     public RollLoadResult loadRollData(MongoDatabase database, UUID uuid) {
         int paramecia = 0, logia = 0, zoan = 0;
         try {
@@ -169,7 +145,7 @@ public class FruitRollManager implements Listener {
                 zoan      = doc.getInteger("zoan", 0);
             }
         } catch (Exception e) {
-            // Handled by caller
+            
         }
         return new RollLoadResult(paramecia, logia, zoan);
     }
@@ -183,12 +159,6 @@ public class FruitRollManager implements Listener {
             plugin.getLogger().warning("[FruitRollManager] loadFromDB failed: " + e.getMessage());
         }
     }
-
-    /**
-     * Synchronously saves ALL in-memory roll data to MongoDB.
-     * Called during server shutdown.
-     */
-    // ── Wipe ──────────────────────────────────────────────────────────────────
 
     public void wipeAllMemory() {
         rolls.clear();

@@ -30,7 +30,6 @@ public class RegionManager {
     private boolean connected = false;
     private JavaPlugin plugin;
 
-    /** Production constructor — connects to MongoDB and loads regions. */
     public RegionManager(JavaPlugin plugin, DatabaseManager dbManager) {
         this.plugin = plugin;
         if (!dbManager.isMongoConnected()) {
@@ -39,13 +38,10 @@ public class RegionManager {
         }
         db        = dbManager.getDatabase();
         connected = true;
-        loadFromMongo(); // blocking, intentional: regions must be ready before players join
+        loadFromMongo(); 
     }
 
-    /** Test constructor — in-memory only, no database. */
     RegionManager() {}
-
-    // ── MongoDB ──────────────────────────────────────────────────────────────
 
     private void loadFromMongo() {
         int loaded = 0, failed = 0;
@@ -78,8 +74,6 @@ public class RegionManager {
         plugin.getLogger().info("[RegionManager] Loaded " + loaded + " region(s)" +
                 (failed > 0 ? ", " + failed + " failed to parse." : "."));
     }
-
-    // ── Chunk-index internals ─────────────────────────────────────────────────
 
     private static long chunkKey(int cx, int cz) {
         return ((long) cx << 32) | (cz & 0xFFFFFFFFL);
@@ -120,8 +114,6 @@ public class RegionManager {
                 worldMap.get(chunkKey(loc.getBlockX() >> 4, loc.getBlockZ() >> 4));
         return list != null ? list : Collections.emptyList();
     }
-
-    // ── Public API ────────────────────────────────────────────────────────────
 
     public void defineRegion(String name, RegionType type, String world,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -248,7 +240,6 @@ public class RegionManager {
         return false;
     }
 
-    /** Returns true if {@code loc} is inside at least one region of the given type. */
     public boolean insideType(Location loc, RegionType type) {
         for (ProtectRegion r : candidates(loc)) {
             if (r.contains(loc) && r.getType() == type) return true;

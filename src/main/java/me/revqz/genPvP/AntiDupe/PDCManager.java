@@ -9,10 +9,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
-/**
- * Stamps unstackable items with a unique PDC UUID so they can be tracked
- * across server restarts and player sessions.
- */
 public class PDCManager {
 
     private final NamespacedKey keyItemUUID;
@@ -21,10 +17,6 @@ public class PDCManager {
         this.keyItemUUID = new NamespacedKey(plugin, "item_uuid");
     }
 
-    /**
-     * Returns the UUID for this item, assigning a new one if it has none.
-     * Returns null if the item has no meta (shouldn't happen on real items).
-     */
     public String getOrAssignUUID(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return null;
         ItemMeta meta = item.getItemMeta();
@@ -39,17 +31,12 @@ public class PDCManager {
         return newId;
     }
 
-    /**
-     * Returns the UUID only if the item is already stamped, without assigning one.
-     * Use this when you want to check without modifying the item.
-     */
     public String getIfStamped(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return null;
         return item.getItemMeta().getPersistentDataContainer()
                 .get(keyItemUUID, PersistentDataType.STRING);
     }
 
-    /** Returns true if this item already has a UUID stamp. */
     public boolean isStamped(ItemStack item) {
         return getIfStamped(item) != null;
     }

@@ -36,7 +36,6 @@ public class ManaManager implements Listener {
         }, intervalTicks, intervalTicks);
     }
 
-    /** Milliseconds until the next mana regen tick fires. */
     public long getMillisUntilRegen() {
         return Math.max(0, nextRegenAt - System.currentTimeMillis());
     }
@@ -49,11 +48,6 @@ public class ManaManager implements Listener {
         return mana.getOrDefault(uuid, getMax());
     }
 
-    /**
-     * Attempts to deduct {@code cost} mana from the player.
-     *
-     * @return {@code true} if the player had enough mana and it was deducted.
-     */
     public boolean spend(UUID uuid, int cost) {
         int current = mana.getOrDefault(uuid, getMax());
         if (current < cost) return false;

@@ -2,7 +2,7 @@ gui:
   title: Kits
   rows: 3
   filler-material: GRAY_STAINED_GLASS_PANE
-  # Title prefix for the kit preview inventory (%kit% = kit display name)
+  # title prefix
   preview-title: 'Kits Menu Preview: '
 
 messages:

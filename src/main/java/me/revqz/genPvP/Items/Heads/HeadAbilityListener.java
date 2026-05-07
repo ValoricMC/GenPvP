@@ -1,11 +1,15 @@
 package me.revqz.genPvP.Items.Heads;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.revqz.genPvP.Database.LogManager;
 import me.revqz.genPvP.GenPvP;
 import me.revqz.genPvP.Items.CustomItemRegistry;
 import me.revqz.genPvP.Protect.RegionManager;
 import me.revqz.genPvP.Protect.flags.RegionType;
 import me.revqz.genPvP.util.ColorUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -26,6 +30,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.NamespacedKey;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -33,8 +38,12 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class HeadAbilityListener implements Listener {
+
+    private static final String[] HEAD_IDS = {"luffy_head", "zoro_head", "nami_head", "sanji_head"};
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
     private static final double FEATHER_FALLING_MULT = 0.52;
     private static final long   SMOKE_DURATION_MS    = 5_000L;
@@ -48,25 +57,19 @@ public class HeadAbilityListener implements Listener {
     private final LogManager         logManager;
     private final NamespacedKey      namiSpeedKey;
 
-    // playerUUID → (abilityKey → cooldown-end epoch ms)
     private final Map<UUID, Map<String, Long>> cooldowns = new ConcurrentHashMap<>();
 
-    // Sanji double-jump tracking
     private final Set<UUID>        sanji_flight       = ConcurrentHashMap.newKeySet();
-    private final Set<UUID>        sanji_airborne     = ConcurrentHashMap.newKeySet(); // became airborne after onJump
-    private final Map<UUID, Vector> sanji_lastHorizVel = new ConcurrentHashMap<>();   // cached XZ velocity for double-jump
+    private final Set<UUID>        sanji_airborne     = ConcurrentHashMap.newKeySet(); 
+    private final Map<UUID, Vector> sanji_lastHorizVel = new ConcurrentHashMap<>();   
 
-    // Nami smoke spheres
     private record SmokeEntry(UUID deployer, long expiryMs) {}
     private final Map<Location, SmokeEntry> smokeSpheres = new ConcurrentHashMap<>();
 
-    // Nami snowball tracking: snowball UUID → shooter UUID
     private final Map<UUID, UUID> namiSnowballs = new ConcurrentHashMap<>();
 
-    // Ifrit Jambe: attacker UUID → ability-end epoch ms
     private final Map<UUID, Long> ifritActive = new ConcurrentHashMap<>();
 
-    // Ifrit fire on victim: victim UUID → fire-end epoch ms
     private final Map<UUID, Long> ifritFire = new ConcurrentHashMap<>();
 
     public HeadAbilityListener(GenPvP plugin, CustomItemRegistry registry,
@@ -79,9 +82,51 @@ public class HeadAbilityListener implements Listener {
 
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickPassives,    20L, 40L);
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickSmokeSpheres, 10L, 10L);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            for (Player p : Bukkit.getOnlinePlayers()) refreshHeadLore(p);
+        }, 20L, 20L);
     }
 
-    // ── Message helpers ───────────────────────────────────────────────────────
+    private void refreshHeadLore(Player player) {
+        ItemStack helmet = player.getInventory().getHelmet();
+        if (helmet != null && !helmet.getType().isAir()) {
+            for (String headId : HEAD_IDS) {
+                if (applyHeadLore(player, helmet, headId)) {
+                    player.getInventory().setHelmet(helmet);
+                    break;
+                }
+            }
+        }
+        for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            ItemStack item = player.getInventory().getItem(slot);
+            if (item == null || item.getType().isAir()) continue;
+            for (String headId : HEAD_IDS) {
+                if (applyHeadLore(player, item, headId)) {
+                    player.getInventory().setItem(slot, item);
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean applyHeadLore(Player player, ItemStack item, String headId) {
+        if (!registry.hasId(item, headId)) return false;
+        List<String> templateLines = plugin.getConfig().getStringList("heads.lore." + headId);
+        if (templateLines == null || templateLines.isEmpty()) return false;
+
+        boolean hasPapi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        List<Component> newLore = templateLines.stream()
+                .map(line -> hasPapi ? PlaceholderAPI.setPlaceholders(player, line) : line)
+                .map(line -> LEGACY.deserialize(ColorUtil.colorize(line))
+                        .decoration(TextDecoration.ITALIC, false))
+                .collect(Collectors.toList());
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || newLore.equals(meta.lore())) return false;
+        meta.lore(newLore);
+        item.setItemMeta(meta);
+        return true;
+    }
 
     private String msg(String key) {
         return ColorUtil.colorize(plugin.getConfig().getString("heads.messages." + key,
@@ -97,8 +142,6 @@ public class HeadAbilityListener implements Listener {
         return ColorUtil.colorize(raw);
     }
 
-    // ── Region helpers ────────────────────────────────────────────────────────
-
     private boolean isRestrictedZone(Location loc) {
         return regionManager.insideAnyType(loc, RegionType.SPAWN, RegionType.GENS);
     }
@@ -112,8 +155,6 @@ public class HeadAbilityListener implements Listener {
         }
         return false;
     }
-
-    // ── Item helpers ──────────────────────────────────────────────────────────
 
     private boolean isWearing(Player player, String id) {
         return registry.hasId(player.getInventory().getHelmet(), id);
@@ -154,8 +195,6 @@ public class HeadAbilityListener implements Listener {
         return id != null && id.contains("sword");
     }
 
-    // ── Passive tick ──────────────────────────────────────────────────────────
-
     private void tickPassives() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             boolean luffy = isWearing(player, "luffy_head");
@@ -185,8 +224,6 @@ public class HeadAbilityListener implements Listener {
         }
     }
 
-    // ── Fall damage ───────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFallDamage(EntityDamageEvent event) {
         if (event.getCause() != EntityDamageEvent.DamageCause.FALL) return;
@@ -198,8 +235,6 @@ public class HeadAbilityListener implements Listener {
             event.setDamage(event.getDamage() * FEATHER_FALLING_MULT);
         }
     }
-
-    // ── Ifrit fire damage bypasses armor ─────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFireTickDamage(EntityDamageEvent event) {
@@ -223,8 +258,6 @@ public class HeadAbilityListener implements Listener {
         }
     }
 
-    // ── Right-click dispatch ──────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
@@ -239,14 +272,13 @@ public class HeadAbilityListener implements Listener {
         if (!hasHead) return;
 
         if (isRestrictedZone(player.getLocation())) {
-            // Allow consumable items (food, potions, etc.) to be used normally
+            
             ItemStack hand = player.getInventory().getItemInMainHand();
             if (hand != null && hand.getType().isEdible()) return;
             if (hand != null && (hand.getType() == Material.POTION
                     || hand.getType() == Material.SPLASH_POTION
                     || hand.getType() == Material.LINGERING_POTION)) return;
 
-            // Allow interactable blocks (ender chest, crafting table, etc.)
             if (action == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null
                     && isInteractable(event.getClickedBlock().getType())) return;
 
@@ -271,7 +303,6 @@ public class HeadAbilityListener implements Listener {
         }
     }
 
-    /** Returns true for blocks that have a right-click interaction (containers, doors, etc.). */
     private boolean isInteractable(Material mat) {
         if (mat == null) return false;
         return switch (mat) {
@@ -287,8 +318,6 @@ public class HeadAbilityListener implements Listener {
                     || mat.name().endsWith("SHULKER_BOX");
         };
     }
-
-    // ── Melee passives & Ifrit Jambe ──────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMeleeHit(EntityDamageByEntityEvent event) {
@@ -321,8 +350,6 @@ public class HeadAbilityListener implements Listener {
         }
     }
 
-    // ── Nami snowball hit ─────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSnowballHit(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Snowball sb)) return;
@@ -337,7 +364,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  LUFFY — GEAR 3
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     private void doGear3(Player player) {
@@ -372,7 +399,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  ZORO — PURGATORY ONIGIRI
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     private void doPurgatoryOnigiri(Player player) {
@@ -429,7 +456,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  NAMI — MIRAGE TEMPO
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     private void doMirageTempo(Player player) {
@@ -481,7 +508,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  NAMI — WEATHER TRAPS
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     private void doWeatherTraps(Player player) {
@@ -496,7 +523,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  SANJI — SKY WALK (double jump)
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -517,15 +544,11 @@ public class HeadAbilityListener implements Listener {
         UUID   uuid   = player.getUniqueId();
         if (!sanji_flight.contains(uuid)) return;
 
-        // PlayerJumpEvent fires while still grounded; wait until the player is
-        // actually airborne before we start watching for landing.
         if (!sanji_airborne.contains(uuid)) {
             if (!player.isOnGround()) sanji_airborne.add(uuid);
             return;
         }
 
-        // Keep the horizontal velocity cache current so the double-jump carries
-        // whatever direction the player is actively moving at press time.
         Vector v = player.getVelocity();
         if (v.getX() != 0 || v.getZ() != 0)
             sanji_lastHorizVel.put(uuid, new Vector(v.getX(), 0, v.getZ()));
@@ -556,7 +579,7 @@ public class HeadAbilityListener implements Listener {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  SANJI — IFRIT JAMBE
+    
     // ══════════════════════════════════════════════════════════════════════════
 
     private void doIfritJambe(Player player) {
@@ -572,10 +595,8 @@ public class HeadAbilityListener implements Listener {
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) player.sendMessage(msg("sanji-ifrit-end"));
-        }, IFRIT_DURATION_MS / 50); // ms → ticks (1 tick = 50 ms)
+        }, IFRIT_DURATION_MS / 50); 
     }
-
-    // ── Cleanup on quit ───────────────────────────────────────────────────────
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {

@@ -32,7 +32,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
             @NotNull String label, @NotNull String[] args) {
 
-        // /bank — opens the GUI
         if (args.length == 0) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("Only players can use /bank.");
@@ -48,7 +47,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
 
         String sub = args[0].toLowerCase();
 
-        // All subcommands require OP
         if (!sender.isOp()) {
             sender.sendMessage(ColorUtil.colorize("&cYou do not have permission to use this command."));
             return true;
@@ -56,7 +54,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
 
         switch (sub) {
 
-            // ── Money ─────────────────────────────────────────────────────────
             case "give_money" -> {
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtil.colorize("&cUsage: /bank give_money <player> <amount>"));
@@ -99,7 +96,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ColorUtil.colorize("&aWiped money balance of &e" + displayName(t) + "&a."));
             }
 
-            // ── Shards ────────────────────────────────────────────────────────
             case "give_shards" -> {
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtil.colorize("&cUsage: /bank give_shards <player> <amount>"));
@@ -142,7 +138,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ColorUtil.colorize("&aWiped shards of &e" + displayName(t) + "&a."));
             }
 
-            // ── Gold ──────────────────────────────────────────────────────────
             case "give_gold" -> {
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtil.colorize("&cUsage: /bank give_gold <player> <amount>"));
@@ -185,7 +180,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ColorUtil.colorize("&aWiped gold of &e" + displayName(t) + "&a."));
             }
 
-            // ── Give item (physical money shards) ────────────────────────────
             case "give_item" -> {
                 if (args.length < 3) {
                     sender.sendMessage(ColorUtil.colorize("&cUsage: /bank give_item <player> <amount>"));
@@ -212,7 +206,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
                         "&aYou received &e" + amt + " &aMoney Shard" + (amt == 1 ? "" : "s") + "&a."));
             }
 
-            // ── Disable ───────────────────────────────────────────────────────
             case "disable" -> {
                 if (args.length < 2) {
                     sender.sendMessage(ColorUtil.colorize("&cUsage: /bank disable <player>"));
@@ -266,8 +259,6 @@ public class BankCommand implements CommandExecutor, TabCompleter {
 
         return Collections.emptyList();
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private double parseAmount(CommandSender sender, String raw) {
         try {

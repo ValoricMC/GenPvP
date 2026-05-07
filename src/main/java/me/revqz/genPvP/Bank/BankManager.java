@@ -20,13 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * Manages three per-player currencies: money (balance), shards, and gold.
- *
- * All three share one MongoDB document in the "players" collection.
- * Balances are loaded async on join, held in memory while online, and written
- * async on every change. Leaderboards for all three refresh every 5 minutes.
- */
 public class BankManager implements Listener {
 
     private final GenPvP plugin;
@@ -40,8 +33,6 @@ public class BankManager implements Listener {
     private final Set<UUID> receivePaymentsDisabled = ConcurrentHashMap.newKeySet();
     private final Set<UUID> loadedPlayers           = ConcurrentHashMap.newKeySet();
 
-    // ConcurrentHashMap so the async leaderboard task can write while the main
-    // thread reads for placeholder lookups — no ConcurrentModificationException.
     private final Map<Integer, LeaderboardEntry> moneyTopCache  = new ConcurrentHashMap<>();
     private final Map<Integer, LeaderboardEntry> shardsTopCache = new ConcurrentHashMap<>();
     private final Map<Integer, LeaderboardEntry> goldTopCache   = new ConcurrentHashMap<>();
@@ -58,8 +49,6 @@ public class BankManager implements Listener {
         }
         startLeaderboardTask();
     }
-
-    // ── Player lifecycle ──────────────────────────────────────────────────────
 
     public void inject(UUID uuid, double balance, double shardsVal, double goldVal,
                        boolean disabled, boolean receivePayments) {
@@ -101,12 +90,8 @@ public class BankManager implements Listener {
         loadedPlayers.remove(uuid);
     }
 
-    // ── Status checks ─────────────────────────────────────────────────────────
-
     public boolean isDisabled(UUID uuid) { return disabledAccounts.contains(uuid); }
     public boolean isLoaded(UUID uuid)   { return loadedPlayers.contains(uuid); }
-
-    // ── Money API ─────────────────────────────────────────────────────────────
 
     public double getBalance(UUID uuid) { return balances.getOrDefault(uuid, 0.0); }
 
@@ -120,7 +105,7 @@ public class BankManager implements Listener {
     public boolean removeBalance(UUID uuid, String playerName, double amount) {
         if (disabledAccounts.contains(uuid)) return false;
         AtomicBoolean success = new AtomicBoolean(false);
-        // compute() is atomic on ConcurrentHashMap — no TOCTOU between check and deduct.
+        
         balances.compute(uuid, (k, cur) -> {
             double c = cur != null ? cur : 0.0;
             if (c >= amount) { success.set(true); return c - amount; }
@@ -154,8 +139,6 @@ public class BankManager implements Listener {
         balances.put(uuid, 0.0);
         if (dbConnected) asyncSave(uuid, playerName, "balance", 0.0);
     }
-
-    // ── Shards API ────────────────────────────────────────────────────────────
 
     public double getShards(UUID uuid) { return shards.getOrDefault(uuid, 0.0); }
 
@@ -203,8 +186,6 @@ public class BankManager implements Listener {
         if (dbConnected) asyncSave(uuid, playerName, "shards", 0.0);
     }
 
-    // ── Gold API ──────────────────────────────────────────────────────────────
-
     public double getGold(UUID uuid) { return gold.getOrDefault(uuid, 0.0); }
 
     public boolean addGold(UUID uuid, String playerName, double amount) {
@@ -251,8 +232,6 @@ public class BankManager implements Listener {
         if (dbConnected) asyncSave(uuid, playerName, "gold", 0.0);
     }
 
-    // ── Disable toggle ────────────────────────────────────────────────────────
-
     public boolean toggleDisabled(UUID uuid, String playerName) {
         boolean disabled;
         if (disabledAccounts.contains(uuid)) {
@@ -277,8 +256,6 @@ public class BankManager implements Listener {
         });
         return disabled;
     }
-
-    // ── Receive payments toggle ───────────────────────────────────────────────
 
     public boolean isReceivePaymentsDisabled(UUID uuid) {
         return receivePaymentsDisabled.contains(uuid);
@@ -307,8 +284,6 @@ public class BankManager implements Listener {
         return nowDisabled;
     }
 
-    // ── Database ──────────────────────────────────────────────────────────────
-
     private record PlayerData(double balance, boolean disabled, double shards, double gold,
                               boolean receivePayments) {}
 
@@ -317,7 +292,6 @@ public class BankManager implements Listener {
             MongoCollection<Document> players = db.getCollection("players");
             String uuidStr = uuid.toString();
 
-            // Upsert: create if missing, always update player_name
             players.updateOne(
                     eq("_id", uuidStr),
                     new Document("$set", new Document("player_name", playerName))
@@ -335,8 +309,7 @@ public class BankManager implements Listener {
 
             Document doc = players.find(eq("_id", uuidStr)).first();
             if (doc != null) {
-                // getDouble() can return null if the field is absent; default to 0.0 to
-                // avoid NullPointerException when auto-unboxing to primitive double.
+                
                 Double bal    = doc.getDouble("balance");
                 Double sh     = doc.getDouble("shards");
                 Double go     = doc.getDouble("gold");
@@ -380,8 +353,6 @@ public class BankManager implements Listener {
         });
     }
 
-    // ── Leaderboard ───────────────────────────────────────────────────────────
-
     private void startLeaderboardTask() {
         new BukkitRunnable() {
             @Override public void run() { updateAllLeaderboards(); }
@@ -423,8 +394,6 @@ public class BankManager implements Listener {
     public LeaderboardEntry getTopShardsEntry(int rank) { return shardsTopCache.getOrDefault(rank, new LeaderboardEntry("None", 0)); }
     public LeaderboardEntry getTopGoldEntry(int rank)   { return goldTopCache.getOrDefault(rank,   new LeaderboardEntry("None", 0)); }
 
-    // ── Formatting ────────────────────────────────────────────────────────────
-
     public static String formatBalance(double balance) {
         if (balance >= 1_000_000_000) return compact(balance / 1_000_000_000) + "b";
         if (balance >= 1_000_000)     return compact(balance / 1_000_000)     + "m";
@@ -437,8 +406,6 @@ public class BankManager implements Listener {
         return String.format("%.2f", value).replaceAll("0+$", "").replaceAll("\\.$", "");
     }
 
-    // ── Wipe ──────────────────────────────────────────────────────────────────
-
     public void wipeAllMemory() {
         balances.clear();
         shards.clear();
@@ -450,8 +417,6 @@ public class BankManager implements Listener {
         shardsTopCache.clear();
         goldTopCache.clear();
     }
-
-    // ── Inner record ──────────────────────────────────────────────────────────
 
     public record LeaderboardEntry(String name, double balance) {}
 }

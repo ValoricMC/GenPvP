@@ -36,7 +36,6 @@ public class LogiaAbilityListener implements Listener {
     private final Set<UUID>             activeAbility   = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> endTasks        = new ConcurrentHashMap<>();
 
-    // Hie Hie: iced blocks per shooter so we can restore on quit
     private final Map<UUID, Map<Block, Material>> icedBlocks = new ConcurrentHashMap<>();
 
     public LogiaAbilityListener(GenPvP plugin, DevilFruitManager fruitManager,
@@ -49,8 +48,6 @@ public class LogiaAbilityListener implements Listener {
         this.guiManager       = guiManager;
         this.fruitSlotManager = fruitSlotManager;
     }
-
-    // ── Activation gate ───────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
@@ -115,10 +112,6 @@ public class LogiaAbilityListener implements Listener {
         }
     }
 
-    // ── Goro Goro no Mi ───────────────────────────────────────────────────────
-    // Raycast up to raycast-distance blocks, teleport to the hit block's surface,
-    // strike that point with a lightning effect, then deal AoE damage to nearby enemies.
-
     private void activateGoroGoro(Player player) {
         UUID   uuid          = player.getUniqueId();
         int    cooldownTicks = cfg("goro_goro", "cooldown-seconds", 12) * 20;
@@ -128,7 +121,6 @@ public class LogiaAbilityListener implements Listener {
 
         activeAbility.add(uuid);
 
-        // Raycast from eye position in look direction
         RayTraceResult result = player.getWorld().rayTraceBlocks(
                 player.getEyeLocation(),
                 player.getLocation().getDirection(),
@@ -144,25 +136,21 @@ public class LogiaAbilityListener implements Listener {
         }
 
         Block hitBlock = result.getHitBlock();
-        // Land on top of the hit block
+        
         Location landLoc = hitBlock.getLocation().add(0.5, 1.0, 0.5);
         landLoc.setYaw(player.getLocation().getYaw());
         landLoc.setPitch(player.getLocation().getPitch());
 
-        // Never teleport into or strike spawn
         if (isInSpawn(landLoc)) {
             player.sendMessage(msg("ability.goro_goro_miss"));
             scheduleEnd(uuid, cooldownTicks, null);
             return;
         }
 
-        // Teleport
         player.teleport(landLoc);
 
-        // Lightning effect only (no block fires, no uncontrolled block damage)
         player.getWorld().strikeLightningEffect(landLoc);
 
-        // Manual AoE damage — checks spawn safety per target
         for (Entity nearby : player.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius)) {
             if (!(nearby instanceof LivingEntity target)) continue;
             if (target.equals(player)) continue;
@@ -174,11 +162,6 @@ public class LogiaAbilityListener implements Listener {
         player.sendMessage(msg("ability.goro_goro"));
         scheduleEnd(uuid, cooldownTicks, null);
     }
-
-    // ── Hie Hie no Mi ─────────────────────────────────────────────────────────
-    // Replace the top-surface solid block in a radius×radius grid around the player
-    // with Frosted Ice (scheduled restoration prevents any permanent or flooding effects).
-    // Apply Slowness IV + Mining Fatigue I to enemies caught in the radius.
 
     private void activateHieHie(Player player) {
         UUID   uuid          = player.getUniqueId();
@@ -205,18 +188,15 @@ public class LogiaAbilityListener implements Listener {
                 int bx = bx(cx, dx);
                 int bz = bz(cz, dz);
 
-                // Scan down up to 5 blocks from the player's Y to find the surface
                 for (int by = cy; by >= cy - 5; by--) {
                     Block b = world.getBlockAt(bx, by, bz);
                     Material type = b.getType();
 
                     if (!type.isSolid()) continue;
 
-                    // Skip if already ice of any kind
                     if (type == Material.FROSTED_ICE || type == Material.ICE
                             || type == Material.PACKED_ICE || type == Material.BLUE_ICE) break;
 
-                    // Never modify blocks inside a spawn region
                     if (isInSpawn(b.getLocation())) break;
 
                     placed.put(b, type);
@@ -226,10 +206,8 @@ public class LogiaAbilityListener implements Listener {
             }
         }
 
-        // Store for cleanup on quit
         if (!placed.isEmpty()) icedBlocks.put(uuid, placed);
 
-        // Effects on nearby enemies
         for (Entity nearby : player.getNearbyEntities(radius, radius, radius)) {
             if (!(nearby instanceof Player target)) continue;
             if (target.equals(player)) continue;
@@ -240,7 +218,6 @@ public class LogiaAbilityListener implements Listener {
                     new PotionEffect(PotionEffectType.MINING_FATIGUE, fatigueTicks, fatigueAmp, false, true));
         }
 
-        // Schedule restoration — ensures no permanent block changes and prevents melt-to-water flooding
         final Map<Block, Material> toRestore = new HashMap<>(placed);
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             restoreIce(toRestore);
@@ -257,7 +234,7 @@ public class LogiaAbilityListener implements Listener {
     private void restoreIce(Map<Block, Material> blocks) {
         for (Map.Entry<Block, Material> entry : blocks.entrySet()) {
             Block b = entry.getKey();
-            // Restore if it's still frosted ice OR if it melted to water (prevents flooding)
+            
             Material current = b.getType();
             if (current == Material.FROSTED_ICE || current == Material.WATER) {
                 b.setType(entry.getValue());
@@ -265,13 +242,8 @@ public class LogiaAbilityListener implements Listener {
         }
     }
 
-    // tiny helpers to avoid repeated arithmetic in loops
     private static int bx(int cx, int dx) { return cx + dx; }
     private static int bz(int cz, int dz) { return cz + dz; }
-
-    // ── Yami Yami no Mi ───────────────────────────────────────────────────────
-    // Pull all entities within radius violently toward the player's exact location,
-    // and inflict Blindness on each pulled entity.
 
     private void activateYamiYami(Player player) {
         UUID   uuid          = player.getUniqueId();
@@ -289,7 +261,6 @@ public class LogiaAbilityListener implements Listener {
             if (target.equals(player)) continue;
             if (target instanceof Player tp && isInSpawn(tp)) continue;
 
-            // Vector from entity → player, scaled by pull strength
             Vector pull = playerLoc.toVector()
                     .subtract(nearby.getLocation().toVector())
                     .normalize()
@@ -300,7 +271,6 @@ public class LogiaAbilityListener implements Listener {
                     new PotionEffect(PotionEffectType.BLINDNESS, blindTicks, 0, false, true));
         }
 
-        // Visual + sound burst
         player.playSound(playerLoc, Sound.ENTITY_WITHER_AMBIENT, 1f, 0.3f);
         player.playSound(playerLoc, Sound.AMBIENT_SOUL_SAND_VALLEY_MOOD, 0.7f, 0.5f);
         playerLoc.getWorld().spawnParticle(Particle.DUST,
@@ -310,8 +280,6 @@ public class LogiaAbilityListener implements Listener {
         player.sendMessage(msg("ability.yami_yami"));
         scheduleEnd(uuid, cooldownTicks, null);
     }
-
-    // ── Cleanup on disconnect ─────────────────────────────────────────────────
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
@@ -323,12 +291,9 @@ public class LogiaAbilityListener implements Listener {
         activeAbility.remove(uuid);
         abilityCooldown.remove(uuid);
 
-        // Restore any remaining ice blocks immediately
         Map<Block, Material> remaining = icedBlocks.remove(uuid);
         if (remaining != null) restoreIce(remaining);
     }
-
-    // ── Scheduling helpers ────────────────────────────────────────────────────
 
     private void scheduleEnd(UUID uuid, long delayTicks, Runnable extraCleanup) {
         BukkitTask existing = endTasks.remove(uuid);
@@ -344,8 +309,6 @@ public class LogiaAbilityListener implements Listener {
 
         endTasks.put(uuid, task);
     }
-
-    // ── Region / config / message helpers ─────────────────────────────────────
 
     private boolean isInSpawn(Player player) {
         return isInSpawn(player.getLocation());

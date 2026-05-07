@@ -15,6 +15,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.*;
 
@@ -23,32 +24,17 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-/**
- * Loads shops2.yml and serves lightweight item shops via /itemshop [shop].
- *
- * Lore is auto-generated from name / subtitle / rarity / price — no manual
- * lore editing needed in the config.
- *
- * Layout (36 slots, 4 rows):
- *   Row 1 (0-8)  : glass border
- *   Row 2 (9-17) : col 9=glass, slots 10-16=items, col 17=glass
- *   Row 3 (18-26): col 18=glass, slots 19-25=items, col 26=glass
- *   Row 4 (27-35): glass border
- */
 public class ItemShopManager implements Listener, CommandExecutor, TabCompleter {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
             .character('&').hexColors().build();
 
-    /** All slots that make up the glass border in a 4-row inventory. */
     private static final Set<Integer> BORDER = Set.of(
             0,1,2,3,4,5,6,7,8,
             9, 17,
             18, 26,
             27,28,29,30,31,32,33,34,35
     );
-
-    // ── Internal data classes ─────────────────────────────────────────────────
 
     private record Entry(
             int slot,
@@ -58,7 +44,7 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
             String rarity,
             double price,
             Map<Enchantment, Integer> enchants,
-            List<String> customLore   // empty = use auto-generated lore
+            List<String> customLore   
     ) {}
 
     private record Shop(
@@ -69,25 +55,21 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
             List<Entry> items
     ) {}
 
-    // ── State ─────────────────────────────────────────────────────────────────
-
     private final GenPvP      plugin;
     private final BankManager bankManager;
 
-    // ConcurrentHashMap so event handlers can read while load() rebuilds the map.
     private final Map<String, Shop>   shops    = new ConcurrentHashMap<>();
     private final Map<String, String> rarities = new ConcurrentHashMap<>();
     private volatile String defaultShop = "";
 
-    /** Set after construction — provides physical devil-shard counting/removal. */
     private volatile DevilFruitShardListener devilShardListener;
 
-    /** Players with an item shop open. */
     private final Set<UUID>         openMenus  = ConcurrentHashMap.newKeySet();
-    /** uuid → which shop they have open. */
+    
+    private final Map<UUID, Long>   actionCooldown = new ConcurrentHashMap<>();
+    private static final long       ACTION_COOLDOWN_MS = 300;
+    
     private final Map<UUID, String> openShopId = new ConcurrentHashMap<>();
-
-    // ── Init ──────────────────────────────────────────────────────────────────
 
     public ItemShopManager(GenPvP plugin, BankManager bankManager) {
         this.plugin       = plugin;
@@ -97,14 +79,12 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
 
     public void reload() { load(); }
 
-    /** Injected after construction to avoid circular dependency. */
     public void setDevilShardListener(DevilFruitShardListener listener) {
         this.devilShardListener = listener;
     }
 
     private void load() {
-        // Build into temporary maps first, then swap — prevents a brief window where
-        // event handlers see an empty shops map while reloading.
+        
         Map<String, Shop>   freshShops   = new ConcurrentHashMap<>();
         Map<String, String> freshRarities = new ConcurrentHashMap<>();
 
@@ -112,18 +92,16 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         if (!file.exists()) plugin.saveResource("shops2.yml", false);
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 
-        // Rarity colours
         ConfigurationSection rarSec = cfg.getConfigurationSection("rarities");
         if (rarSec != null) {
             rarSec.getKeys(false).forEach(k ->
                     freshRarities.put(k.toUpperCase(), rarSec.getString(k, "&f")));
         }
 
-        // Shops
         ConfigurationSection shopsSec = cfg.getConfigurationSection("shops");
         if (shopsSec == null) {
             plugin.getLogger().warning("[ItemShop] No 'shops' section in shops2.yml");
-            // Swap even on early return so stale shops are cleared
+            
             shops.clear(); shops.putAll(freshShops);
             rarities.clear(); rarities.putAll(freshRarities);
             return;
@@ -180,15 +158,12 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
             newDefault = freshShops.keySet().iterator().next();
         }
 
-        // Atomic swap — event handlers never see an empty map mid-reload
         shops.clear();   shops.putAll(freshShops);
         rarities.clear(); rarities.putAll(freshRarities);
         defaultShop = newDefault;
 
         plugin.getLogger().info("[ItemShop] Loaded " + shops.size() + " shop(s) from shops2.yml.");
     }
-
-    // ── Public API ────────────────────────────────────────────────────────────
 
     public boolean hasShop(String id) {
         return shops.containsKey(id);
@@ -205,8 +180,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         openShopId.put(player.getUniqueId(), id);
         player.openInventory(buildInventory(shop));
     }
-
-    // ── Command ───────────────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -240,16 +213,12 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         return List.of();
     }
 
-    // ── GUI ───────────────────────────────────────────────────────────────────
-
     private Inventory buildInventory(Shop shop) {
         Inventory inv = Bukkit.createInventory(null, 36, LEGACY.deserialize(hex(shop.title())));
 
-        // Glass border
         ItemStack glass = borderPane();
         BORDER.forEach(s -> inv.setItem(s, glass));
 
-        // Items
         for (Entry e : shop.items()) {
             if (BORDER.contains(e.slot()) || e.slot() < 0 || e.slot() >= 36) continue;
             inv.setItem(e.slot(), buildDisplayItem(e, shop.currencyLabel()));
@@ -263,6 +232,8 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (!openMenus.contains(player.getUniqueId())) return;
         event.setCancelled(true);
+        
+        Bukkit.getScheduler().runTask(plugin, player::updateInventory);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -272,12 +243,25 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         if (!openMenus.contains(uuid)) return;
 
         event.setCancelled(true);
+
+        switch (event.getClick()) {
+            case DOUBLE_CLICK, NUMBER_KEY, DROP, CONTROL_DROP, SWAP_OFFHAND, CREATIVE, UNKNOWN -> {
+                Bukkit.getScheduler().runTask(plugin, player::updateInventory);
+                return;
+            }
+            default -> {}
+        }
+
         if (event.getClickedInventory() == null
                 || !event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
+        long now = System.currentTimeMillis();
+        Long last = actionCooldown.put(uuid, now);
+        if (last != null && now - last < ACTION_COOLDOWN_MS) return;
+
         int  slot    = event.getSlot();
         String shopId = openShopId.get(uuid);
-        if (shopId == null) return;   // menu was closed between rate-limit check and here
+        if (shopId == null) return;   
         Shop shop   = shops.get(shopId);
         if (shop == null) return;
 
@@ -292,9 +276,15 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         UUID uuid = event.getPlayer().getUniqueId();
         openMenus.remove(uuid);
         openShopId.remove(uuid);
+        actionCooldown.remove(uuid);
+        
+        if (event.getPlayer() instanceof Player player) {
+            ItemStack cursor = player.getItemOnCursor();
+            if (cursor != null && !cursor.getType().isAir()) {
+                player.setItemOnCursor(null);
+            }
+        }
     }
-
-    // ── Purchase ──────────────────────────────────────────────────────────────
 
     private void handlePurchase(Player player, UUID uuid, Shop shop, Entry e) {
         if (!bankManager.isLoaded(uuid)) {
@@ -329,7 +319,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
             return;
         }
 
-        // Give a clean item (no shop lore)
         ItemStack give = buildGiveItem(e);
         player.getInventory().addItem(give).values()
                 .forEach(lo -> player.getWorld().dropItemNaturally(player.getLocation(), lo));
@@ -341,9 +330,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.6f, 1.2f);
     }
 
-    // ── Item builders ─────────────────────────────────────────────────────────
-
-    /** Item shown in the GUI — has the custom name, generated lore, and hidden enchants. */
     private ItemStack buildDisplayItem(Entry e, String currencyLabel) {
         ItemStack stack = new ItemStack(e.material());
         ItemMeta  meta  = stack.getItemMeta();
@@ -358,17 +344,10 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         return stack;
     }
 
-    /**
-     * Item actually given to the player — vanilla look, no shop lore.
-     * Enchanted books get their enchantments stored via EnchantmentStorageMeta
-     * so they show correctly (e.g. "Unbreaking III") instead of a blank book.
-     */
     private ItemStack buildGiveItem(Entry e) {
         ItemStack stack = new ItemStack(e.material());
         if (e.enchants().isEmpty()) return stack;
 
-        // For enchanted books, use the typed editMeta overload to guarantee
-        // we get EnchantmentStorageMeta and stored enchants persist correctly.
         if (e.material() == Material.ENCHANTED_BOOK) {
             stack.editMeta(EnchantmentStorageMeta.class, book -> {
                 e.enchants().forEach((ench, lvl) -> book.addStoredEnchant(ench, lvl, true));
@@ -383,7 +362,7 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
     }
 
     private List<Component> buildLore(Entry e, String currencyLabel) {
-        // Custom lore — supports "" for blank lines and %price% / %currency% placeholders
+        
         if (!e.customLore().isEmpty()) {
             String rarityColor = rarities.getOrDefault(e.rarity().toUpperCase(), "&f");
             List<Component> lore = new ArrayList<>();
@@ -401,7 +380,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
             return lore;
         }
 
-        // Auto-generated fallback
         List<Component> lore = new ArrayList<>();
 
         if (!e.subtitle().isBlank()) {
@@ -429,8 +407,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     private static ItemStack borderPane() {
         ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta  meta  = stack.getItemMeta();
@@ -442,7 +418,6 @@ public class ItemShopManager implements Listener, CommandExecutor, TabCompleter 
         return c.decoration(TextDecoration.ITALIC, false);
     }
 
-    /** Normalise bare #RRGGBB hex codes to &#RRGGBB so the legacy serializer handles them. */
     private static final Pattern HEX_PATTERN = Pattern.compile("(?<!&)#([0-9A-Fa-f]{6})");
     private static String hex(String s) {
         return HEX_PATTERN.matcher(s).replaceAll("&#$1");

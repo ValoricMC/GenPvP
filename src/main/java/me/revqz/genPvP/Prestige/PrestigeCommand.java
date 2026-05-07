@@ -14,29 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Player + admin command for the prestige system.
- *
- * <h3>Player usage (no permission required)</h3>
- * <pre>
- *   /prestige              — prestige up (requires max level)
- * </pre>
- *
- * <h3>Admin usage (OP only)</h3>
- * <pre>
- *   /prestige add_prestige       &lt;player&gt; &lt;amount&gt;
- *   /prestige remove_prestige    &lt;player&gt; &lt;amount&gt;
- *   /prestige reset_prestige     &lt;player&gt;
- *   /prestige blacklist_prestige &lt;player&gt;
- *
- *   /prestige add_level          &lt;player&gt; &lt;amount&gt;
- *   /prestige remove_level       &lt;player&gt; &lt;amount&gt;
- *   /prestige reset_level        &lt;player&gt;
- *   /prestige blacklist_level    &lt;player&gt;
- *
- *   /prestige blacklist_xp       &lt;player&gt;
- * </pre>
- */
 public class PrestigeCommand implements CommandExecutor, TabCompleter {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
@@ -62,13 +39,11 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // ── No args: self-prestige for any player ────────────────────────────
         if (args.length == 0) {
             handleSelfPrestige(player);
             return true;
         }
 
-        // ── Admin subcommands (OP only) ──────────────────────────────────────
         if (!player.isOp()) {
             player.sendMessage(ColorUtil.colorize("&cNo permission."));
             return true;
@@ -89,7 +64,7 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (sub) {
-            // ── Prestige subcommands ─────────────────────────────────────────
+            
             case "add_prestige" -> {
                 int amount = parseAmount(args, player);
                 if (amount <= 0) return true;
@@ -111,7 +86,6 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
                 prestigeManager.sendPrestigeBlacklistToggle(player, target.getName(), bl);
             }
 
-            // ── Level subcommands ────────────────────────────────────────────
             case "add_level" -> {
                 int amount = parseAmount(args, player);
                 if (amount <= 0) return true;
@@ -133,7 +107,6 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
                 prestigeManager.sendLevelBlacklistToggle(player, target.getName(), bl);
             }
 
-            // ── XP blacklist subcommand ──────────────────────────────────────
             case "blacklist_xp" -> {
                 boolean bl = prestigeManager.toggleXpBlacklist(target.getUniqueId(), target.getName());
                 prestigeManager.sendXpBlacklistToggle(player, target.getName(), bl);
@@ -144,50 +117,39 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ── Self-prestige logic ──────────────────────────────────────────────────
-
-    /**
-     * Attempts to prestige the player. Requires level == levelsPerPrestige.
-     * Resets level to 0 and XP to 0, increments prestige by 1.
-     */
     private void handleSelfPrestige(Player player) {
         java.util.UUID uuid = player.getUniqueId();
 
-        // Check if data is loaded
         if (!prestigeManager.isLoaded(uuid)) {
             player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(
                     "&cYour data is still loading, please wait.")));
             return;
         }
 
-        // Check if blacklisted
         if (prestigeManager.isPrestigeBlacklisted(uuid)) {
             player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(
-                    "&cYou are blacklisted from prestiging.")));
+                    prestigeManager.getMsgBlacklistedFromPrestige())));
             return;
         }
 
-        // Check if level requirement is met
         int currentLevel = prestigeManager.getLevel(uuid);
         int required = prestigeManager.getLevelsPerPrestige();
         if (currentLevel < required) {
-            player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(
-                    "&cYou need to reach level &e" + required + " &cbefore you can prestige. "
-                    + "(Current: &e" + currentLevel + "&c)")));
+            String msg = prestigeManager.getMsgNotEnoughLevel()
+                    .replace("%required%", String.valueOf(required))
+                    .replace("%current%", String.valueOf(currentLevel));
+            player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(msg)));
             return;
         }
 
-        // Perform the prestige
         int oldPrestige = prestigeManager.getPrestige(uuid);
         prestigeManager.prestigeUp(uuid, player.getName());
         int newPrestige = prestigeManager.getPrestige(uuid);
 
-        player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(
-                "&a&l✦ PRESTIGE UP! &aYou are now prestige &e&l" + newPrestige + "&a! "
-                + "&7(Level and XP have been reset)")));
+        String msg = prestigeManager.getMsgPrestigeUp()
+                .replace("%prestige%", String.valueOf(newPrestige));
+        player.sendMessage(LEGACY.deserialize(ColorUtil.colorize(msg)));
     }
-
-    // ── Tab completion ───────────────────────────────────────────────────────
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
@@ -209,7 +171,7 @@ public class PrestigeCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 3) {
             String sub = args[0].toLowerCase();
-            // Only show amount hint for commands that need an amount
+            
             if (sub.equals("add_prestige") || sub.equals("remove_prestige")
                     || sub.equals("add_level") || sub.equals("remove_level")) {
                 return Arrays.asList("1", "5", "10");

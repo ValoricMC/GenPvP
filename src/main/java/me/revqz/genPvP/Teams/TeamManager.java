@@ -44,8 +44,6 @@ public class TeamManager implements Listener {
         }
     }
 
-    // ── Bulk Load ─────────────────────────────────────────────────────────────
-
     private void loadAll() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -83,8 +81,6 @@ public class TeamManager implements Listener {
         });
     }
 
-    // ── Queries ────────────────────────────────────────────────────────────────
-
     public Team getTeam(UUID playerUUID) {
         String name = playerTeam.get(playerUUID);
         return name == null ? null : teamsByName.get(name);
@@ -102,8 +98,6 @@ public class TeamManager implements Listener {
                 .limit(limit)
                 .toList();
     }
-
-    // ── Mutations ──────────────────────────────────────────────────────────────
 
     public boolean createTeam(Player player, String name) {
         if (teamsByName.containsKey(name))              return false;
@@ -191,8 +185,6 @@ public class TeamManager implements Listener {
         });
     }
 
-    // ── PvP ───────────────────────────────────────────────────────────────────
-
     public boolean togglePvp(String teamName) {
         Team team = teamsByName.get(teamName);
         if (team == null) return false;
@@ -220,8 +212,6 @@ public class TeamManager implements Listener {
         return team != null && !team.isPvpEnabled();
     }
 
-    // ── Points ────────────────────────────────────────────────────────────────
-
     public void addPoints(String teamName, int amount) {
         Team team = teamsByName.get(teamName);
         if (team == null) return;
@@ -248,8 +238,6 @@ public class TeamManager implements Listener {
         if (teamName != null) addPoints(teamName, -1);
     }
 
-    // ── Invites ────────────────────────────────────────────────────────────────
-
     public void invitePlayer(UUID targetUUID, String teamName, String inviterName) {
         long expiresAt = System.currentTimeMillis() + TeamInvite.INVITE_DURATION_MS;
         pendingInvites.put(targetUUID, new TeamInvite(teamName, inviterName, expiresAt));
@@ -273,8 +261,6 @@ public class TeamManager implements Listener {
 
     public void clearInvite(UUID targetUUID) { pendingInvites.remove(targetUUID); }
 
-    // ── Team Chat ──────────────────────────────────────────────────────────────
-
     public boolean isTeamChatEnabled(UUID uuid) { return teamChatEnabled.contains(uuid); }
 
     public boolean toggleTeamChat(UUID uuid) {
@@ -282,14 +268,10 @@ public class TeamManager implements Listener {
         else { teamChatEnabled.add(uuid); return true; }
     }
 
-    // ── Search ─────────────────────────────────────────────────────────────────
-
     public void setPendingSearch(UUID uuid, String teamName) { pendingSearch.put(uuid, teamName); }
     public String getPendingSearch(UUID uuid) { return pendingSearch.get(uuid); }
     public boolean hasPendingSearch(UUID uuid) { return pendingSearch.containsKey(uuid); }
     public void clearPendingSearch(UUID uuid) { pendingSearch.remove(uuid); }
-
-    // ── Disband Confirmation ───────────────────────────────────────────────────
 
     public void setPendingDisband(UUID uuid, String teamName) {
         pendingDisband.put(uuid, teamName);
@@ -310,8 +292,6 @@ public class TeamManager implements Listener {
         pendingDisband.remove(uuid);
         pendingDisbandTime.remove(uuid);
     }
-
-    // ── Events ─────────────────────────────────────────────────────────────────
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -340,8 +320,6 @@ public class TeamManager implements Listener {
         teamChatEnabled.remove(uuid);
     }
 
-    // ── Helpers ─────────────────────────────────────────────────────────────────
-
     private void insertMember(UUID uuid, String name, String teamName,
                               TeamRole role, long joinedAt) {
         db.getCollection("team_members").updateOne(
@@ -363,9 +341,7 @@ public class TeamManager implements Listener {
         });
     }
 
-    public void shutdown() { /* all mutations are written immediately */ }
-
-    // ── Wipe ──────────────────────────────────────────────────────────────────
+    public void shutdown() {  }
 
     public void wipeAllMemory() {
         teamsByName.clear();

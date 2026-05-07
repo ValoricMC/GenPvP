@@ -55,18 +55,7 @@ public class WithdrawCommand implements CommandExecutor {
             return true;
         }
 
-        double cost    = amount * shardManager.getValuePerShard();
-        double balance = bankManager.getBalance(player.getUniqueId());
-
-        if (balance < cost) {
-            player.sendMessage(ColorUtil.colorize(
-                    msg(cfg, "withdraw.messages.insufficient-funds",
-                            "&cInsufficient funds. &7Need &e$%need% &7| Have &e$%balance%&7.")
-                    .replace("%need%",    BankManager.formatBalance(cost))
-                    .replace("%balance%", BankManager.formatBalance(balance))
-                    .replace("%amount%",  String.valueOf(amount))));
-            return true;
-        }
+        double cost = amount * shardManager.getValuePerShard();
 
         if (shardManager.availableCapacity(player) < amount) {
             player.sendMessage(ColorUtil.colorize(
@@ -76,7 +65,16 @@ public class WithdrawCommand implements CommandExecutor {
             return true;
         }
 
-        bankManager.removeBalance(player.getUniqueId(), player.getName(), cost);
+        if (!bankManager.removeBalance(player.getUniqueId(), player.getName(), cost)) {
+            player.sendMessage(ColorUtil.colorize(
+                    msg(cfg, "withdraw.messages.insufficient-funds",
+                            "&cInsufficient funds. &7Need &e$%need% &7| Have &e$%balance%&7.")
+                    .replace("%need%",    BankManager.formatBalance(cost))
+                    .replace("%balance%", BankManager.formatBalance(
+                            bankManager.getBalance(player.getUniqueId())))
+                    .replace("%amount%",  String.valueOf(amount))));
+            return true;
+        }
         shardManager.giveShards(player, amount);
 
         player.sendMessage(ColorUtil.colorize(

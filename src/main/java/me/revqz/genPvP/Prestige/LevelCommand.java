@@ -12,18 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Admin command for level management (dedicated /level command).
- *
- * <pre>
- *   /level add_level       &lt;player&gt; &lt;amount&gt;
- *   /level remove_level    &lt;player&gt; &lt;amount&gt;
- *   /level reset_level     &lt;player&gt;
- *   /level blacklist_level &lt;player&gt;
- * </pre>
- *
- * All subcommands require OP. Delegates to {@link PrestigeManager}.
- */
 public class LevelCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(

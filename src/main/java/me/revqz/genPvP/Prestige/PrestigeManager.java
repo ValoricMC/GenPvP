@@ -52,6 +52,7 @@ public class PrestigeManager implements Listener {
     private String msgBlacklistedFromPrestige, msgBlacklistedFromLeveling;
     private String msgXpAdded, msgXpRemoved, msgXpReset;
     private String msgXpBlacklisted, msgXpUnblacklisted, msgBlacklistedFromXp;
+    private String msgNotEnoughLevel, msgPrestigeUp;
 
     public PrestigeManager(GenPvP plugin, DatabaseManager dbManager) {
         this.plugin      = plugin;
@@ -103,9 +104,11 @@ public class PrestigeManager implements Listener {
                 "&a%player% &7has been &aunblacklisted &7from gaining XP.");
         msgBlacklistedFromXp = cfg.getString("prestige.messages.blacklisted-from-xp",
                 "&cYou are blacklisted from gaining XP.");
+        msgNotEnoughLevel = cfg.getString("prestige.messages.not-enough-level",
+                "&#FFB685&lPRESTIGE &8» &cYou need level &7%required% &cbefore you can prestige. (Current: &7%current%&c)");
+        msgPrestigeUp = cfg.getString("prestige.messages.prestige-up",
+                "&a&l✦ PRESTIGE UP! &aYou are now prestige &e&l%prestige%&a! &7(Level and XP have been reset)");
     }
-
-    // ── Player lifecycle ──────────────────────────────────────────────────────
 
     public void inject(UUID uuid, int prestige, int level, double xp,
                        boolean pBl, boolean lBl, boolean xpBl) {
@@ -152,8 +155,6 @@ public class PrestigeManager implements Listener {
         xpBlacklist.remove(uuid);
     }
 
-    // ── Getters ───────────────────────────────────────────────────────────────
-
     public int getPrestige(UUID uuid) { return prestigeCache.getOrDefault(uuid, 0); }
     public int getLevel(UUID uuid)    { return levelCache.getOrDefault(uuid, 0); }
     public double getXp(UUID uuid)    { return xpCache.getOrDefault(uuid, 0.0); }
@@ -163,8 +164,9 @@ public class PrestigeManager implements Listener {
     public boolean isPrestigeBlacklisted(UUID uuid) { return prestigeBlacklist.contains(uuid); }
     public boolean isLevelBlacklisted(UUID uuid)    { return levelBlacklist.contains(uuid); }
     public boolean isXpBlacklisted(UUID uuid)       { return xpBlacklist.contains(uuid); }
-
-    // ── Progress helpers ──────────────────────────────────────────────────────
+    public String getMsgNotEnoughLevel()  { return msgNotEnoughLevel; }
+    public String getMsgPrestigeUp()      { return msgPrestigeUp; }
+    public String getMsgBlacklistedFromPrestige() { return msgBlacklistedFromPrestige; }
 
     public int getLevelPercentage(UUID uuid) {
         int level = getLevel(uuid);
@@ -184,8 +186,6 @@ public class PrestigeManager implements Listener {
         }
         return sb.toString();
     }
-
-    // ── XP / Level mutations ─────────────────────────────────────────────────
 
     public void addXp(UUID uuid, String playerName, double amount) {
         if (amount <= 0) return;
@@ -220,8 +220,6 @@ public class PrestigeManager implements Listener {
         if (dbConnected) asyncSave(uuid, playerName);
     }
 
-    // ── Admin: Prestige mutations ────────────────────────────────────────────
-
     public int addPrestige(UUID uuid, String playerName, int amount) {
         int next = prestigeCache.merge(uuid, Math.max(0, amount), Integer::sum);
         prestigeNotified.remove(uuid);
@@ -255,8 +253,6 @@ public class PrestigeManager implements Listener {
         if (dbConnected) asyncSaveBlacklists(uuid, playerName);
         return nowBlacklisted;
     }
-
-    // ── Admin: Level mutations ───────────────────────────────────────────────
 
     public int addLevel(UUID uuid, String playerName, int amount) {
         int current = levelCache.getOrDefault(uuid, 0);
@@ -298,8 +294,6 @@ public class PrestigeManager implements Listener {
         if (dbConnected) asyncSaveBlacklists(uuid, playerName);
         return nowBlacklisted;
     }
-
-    // ── Admin: XP mutations ──────────────────────────────────────────────────
 
     public double addXpAdmin(UUID uuid, String playerName, double amount) {
         if (amount <= 0) return getXp(uuid);
@@ -347,8 +341,6 @@ public class PrestigeManager implements Listener {
         return nowBlacklisted;
     }
 
-    // ── Legacy setters ──────────────────────────────────────────────────────
-
     public void setPrestige(UUID uuid, String playerName, int level) {
         prestigeCache.put(uuid, Math.max(0, level));
         prestigeNotified.remove(uuid);
@@ -384,8 +376,6 @@ public class PrestigeManager implements Listener {
         }
     }
 
-    // ── Prestige-ready notification ──────────────────────────────────────────
-
     private void sendPrestigeReady(UUID uuid) {
         if (prestigeNotified.contains(uuid)) return;
         if (prestigeBlacklist.contains(uuid)) return;
@@ -404,8 +394,6 @@ public class PrestigeManager implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 2.0f);
         });
     }
-
-    // ── Message helpers ──────────────────────────────────────────────────────
 
     public void sendPrestigeAdded(Player admin, String targetName, int amount, int total) {
         sendActionBar(admin, msgPrestigeAdded.replace("%player%", targetName)
@@ -461,8 +449,6 @@ public class PrestigeManager implements Listener {
         Component comp = LEGACY.deserialize(ColorUtil.colorize(message));
         player.sendActionBar(comp);
     }
-
-    // ── Database ──────────────────────────────────────────────────────────────
 
     private void loadOrCreate(UUID uuid, String name) {
         try {
@@ -552,8 +538,6 @@ public class PrestigeManager implements Listener {
         levelBlacklist.remove(uuid);
         xpBlacklist.remove(uuid);
     }
-
-    // ── Wipe ──────────────────────────────────────────────────────────────────
 
     public void wipeAllMemory() {
         prestigeCache.clear();

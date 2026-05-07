@@ -6,23 +6,10 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-/**
- * Loads shop messages from config.yml and sends them as action-bar messages.
- * All messages support &-color codes and &#RRGGBB hex colors.
- *
- * Placeholders resolved before calling send():
- *   %item%       — item display name (color-stripped)
- *   %amount%     — quantity purchased
- *   %price%      — formatted total price
- *   %currency%   — currency type string
- *   %need%       — formatted amount needed
- *   %have%       — formatted amount the player currently has
- */
 public class ShopMessages {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
-    // ── Message keys ──────────────────────────────────────────────────────────
     private String purchase;
     private String insufficientFunds;
     private String bankDisabled;
@@ -37,7 +24,6 @@ public class ShopMessages {
         reload(config);
     }
 
-    /** Re-reads all values from the live config. Call after /genpvp reload. */
     public void reload(FileConfiguration config) {
         purchase          = get(config, "shop.messages.purchase",
                 "&aPurchased &e%amount%x %item% &afor &e%price% %currency%&a.");
@@ -58,8 +44,6 @@ public class ShopMessages {
         requiresItem      = get(config, "shop.messages.requires-item",
                 "&cYou need a &e%item% &cto unlock this upgrade.");
     }
-
-    // ── Senders ───────────────────────────────────────────────────────────────
 
     public void sendPurchase(Player player, int qty, String itemName, String price, String currency) {
         send(player, purchase
@@ -90,14 +74,10 @@ public class ShopMessages {
         send(player, requiresItem.replace("%item%", itemLabel));
     }
 
-    // ── Core send — action bar ────────────────────────────────────────────────
-
     private static void send(Player player, String message) {
         Component comp = LEGACY.deserialize(ColorUtil.colorize(message));
         player.sendActionBar(comp);
     }
-
-    // ── Helper ────────────────────────────────────────────────────────────────
 
     private static String get(FileConfiguration cfg, String path, String fallback) {
         return cfg.isString(path) ? cfg.getString(path) : fallback;

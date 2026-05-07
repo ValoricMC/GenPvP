@@ -38,36 +38,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * Manages the /options GUI and five per-player toggles:
- *
- *  • Global Chat        — hide chat messages sent by other players
- *  • Scoreboard         — show / hide the sidebar scoreboard
- *  • Kit on Death       — auto-receive starter kit on respawn
- *  • Sounds             — mute / unmute all plugin-triggered sounds
- *  • Receive Payments   — accept / reject /pay money from other players
- *
- * Preferences for Chat, Scoreboard, and Sounds are persisted in MongoDB
- * ("player_options" collection). Kit-on-Death persistence is delegated
- * to KitManager (already in kit_cooldowns). Receive-Payments persistence
- * is delegated to BankManager (already in players collection).
- */
 public class OptionsManager implements Listener, CommandExecutor {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
-    /** All 36 slots that form the border of a 4-row (36-slot) inventory. */
     private static final Set<Integer> BORDER;
     static {
         Set<Integer> b = new HashSet<>();
-        for (int i =  0; i <  9; i++) b.add(i);   // top row
-        for (int i = 27; i < 36; i++) b.add(i);   // bottom row
-        b.add(9);  b.add(17);                       // row-2 sides
-        b.add(18); b.add(26);                       // row-3 sides
+        for (int i =  0; i <  9; i++) b.add(i);   
+        for (int i = 27; i < 36; i++) b.add(i);   
+        b.add(9);  b.add(17);                       
+        b.add(18); b.add(26);                       
         BORDER = Collections.unmodifiableSet(b);
     }
 
-    private static final int SIZE = 36; // 4 rows
+    private static final int SIZE = 36; 
 
     private final GenPvP           plugin;
     private final MongoDatabase    db;
@@ -76,11 +61,10 @@ public class OptionsManager implements Listener, CommandExecutor {
     private final ScoreboardManager scoreboardManager;
     private me.revqz.genPvP.Bank.BankManager bankManager;
 
-    /** UUIDs of players who have opted out of seeing other players' chat. */
     private final Set<UUID> chatDisabled      = ConcurrentHashMap.newKeySet();
-    /** UUIDs of players who have hidden their scoreboard. */
+    
     private final Set<UUID> scoreboardHidden  = ConcurrentHashMap.newKeySet();
-    /** UUIDs of players who have muted all plugin sounds. */
+    
     private final Set<UUID> soundsMuted       = ConcurrentHashMap.newKeySet();
 
     public OptionsManager(GenPvP plugin, DatabaseManager dbManager,
@@ -92,12 +76,9 @@ public class OptionsManager implements Listener, CommandExecutor {
         this.scoreboardManager = scoreboardManager;
     }
 
-    /** Injected after construction so receive-payments can be toggled from the options menu. */
     public void setBankManager(me.revqz.genPvP.Bank.BankManager bankManager) {
         this.bankManager = bankManager;
     }
-
-    // ── /options command ──────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
@@ -109,8 +90,6 @@ public class OptionsManager implements Listener, CommandExecutor {
         openMenu(player);
         return true;
     }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
@@ -128,11 +107,6 @@ public class OptionsManager implements Listener, CommandExecutor {
         soundsMuted.remove(uuid);
     }
 
-    /**
-     * Filters chat: players who have disabled Global Chat do not receive
-     * messages typed by other players. Plugin-sent messages (sendMessage)
-     * are unaffected — only this AsyncChatEvent path is filtered.
-     */
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncChatEvent event) {
         if (chatDisabled.isEmpty()) return;
@@ -154,7 +128,7 @@ public class OptionsManager implements Listener, CommandExecutor {
         if (!(event.getInventory().getHolder() instanceof OptionsHolder)) return;
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        // Only handle clicks on the top (Options) inventory
+        
         if (event.getClickedInventory() == null
                 || !event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
@@ -181,27 +155,23 @@ public class OptionsManager implements Listener, CommandExecutor {
         } else if (slot == paymentSlot && bankManager != null) {
             bankManager.toggleReceivePayments(player.getUniqueId());
         } else {
-            return; // clicked an empty inner slot — no sound
+            return; 
         }
 
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         refreshMenu(player);
     }
 
-    // ── Menu building ─────────────────────────────────────────────────────────
-
     public void openMenu(Player player) {
         String titleRaw = plugin.getConfig().getString("options.title", "Settings");
         Inventory inv = Bukkit.createInventory(new OptionsHolder(), SIZE,
                 LEGACY.deserialize(ColorUtil.colorize(titleRaw)));
 
-        // Border filler
         String fillerMatName = plugin.getConfig().getString(
                 "options.filler-material", "GRAY_STAINED_GLASS_PANE");
         ItemStack filler = buildFiller(parseMat(fillerMatName));
         for (int i : BORDER) inv.setItem(i, filler);
 
-        // Setting items
         ConfigurationSection cfg = plugin.getConfig().getConfigurationSection("options");
         if (cfg != null) {
             UUID uuid = player.getUniqueId();
@@ -217,10 +187,6 @@ public class OptionsManager implements Listener, CommandExecutor {
         player.openInventory(inv);
     }
 
-    /**
-     * Updates only the three setting items in the already-open menu.
-     * Call after every toggle so the icon reflects the new state instantly.
-     */
     private void refreshMenu(Player player) {
         if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof OptionsHolder)) return;
         Inventory inv = player.getOpenInventory().getTopInventory();
@@ -253,8 +219,6 @@ public class OptionsManager implements Listener, CommandExecutor {
 
         inv.setItem(slot, buildItem(mat, name, lore));
     }
-
-    // ── Toggles ───────────────────────────────────────────────────────────────
 
     private void toggleChat(Player player) {
         UUID uuid = player.getUniqueId();
@@ -297,21 +261,9 @@ public class OptionsManager implements Listener, CommandExecutor {
         asyncSave(uuid, "sounds_muted", nowMuted);
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
-
-    /**
-     * Returns {@code true} if the player has opted to mute all plugin sounds.
-     * Call this before every {@code player.playSound()} throughout the plugin:
-     * <pre>{@code
-     *   if (!optionsManager.isSoundMuted(player.getUniqueId()))
-     *       player.playSound(player.getLocation(), sound, vol, pitch);
-     * }</pre>
-     */
     public boolean isSoundMuted(UUID uuid) {
         return soundsMuted.contains(uuid);
     }
-
-    // ── Persistence ───────────────────────────────────────────────────────────
 
     private void loadPrefs(UUID uuid) {
         try {
@@ -321,12 +273,12 @@ public class OptionsManager implements Listener, CommandExecutor {
 
             if (doc.getBoolean("chat_disabled", false)) {
                 chatDisabled.add(uuid);
-                // No visual change needed — filter kicks in at chat time
+                
             }
 
             if (doc.getBoolean("scoreboard_disabled", false)) {
                 scoreboardHidden.add(uuid);
-                // Hide on main thread (scoreboard was already set up by ScoreboardManager.onJoin)
+                
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) scoreboardManager.hideBoard(player);
@@ -335,7 +287,7 @@ public class OptionsManager implements Listener, CommandExecutor {
 
             if (doc.getBoolean("sounds_muted", false)) {
                 soundsMuted.add(uuid);
-                // No immediate side-effect needed — checked at each playSound call site
+                
             }
         } catch (Exception e) {
             plugin.getLogger().warning(
@@ -358,13 +310,11 @@ public class OptionsManager implements Listener, CommandExecutor {
         });
     }
 
-    // ── Item builders ─────────────────────────────────────────────────────────
-
     private ItemStack buildFiller(Material mat) {
         ItemStack stack = new ItemStack(mat);
         ItemMeta  meta  = stack.getItemMeta();
         if (meta != null) {
-            // "&r" resets all formatting — displays as an empty/blank name
+            
             meta.displayName(noItalic(LEGACY.deserialize(ColorUtil.colorize("&r"))));
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES,
                               ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
@@ -392,8 +342,6 @@ public class OptionsManager implements Listener, CommandExecutor {
         stack.setItemMeta(meta);
         return stack;
     }
-
-    // ── Utilities ─────────────────────────────────────────────────────────────
 
     private static Material parseMat(String name) {
         if (name == null) return Material.STONE;

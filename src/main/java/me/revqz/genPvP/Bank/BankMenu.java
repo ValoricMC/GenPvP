@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BankMenu implements Listener {
 
-    /** Handles & codes and &#RRGGBB hex directly — no ColorUtil pre-processing needed. */
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
             .character('&').hexColors().build();
 
@@ -40,7 +39,6 @@ public class BankMenu implements Listener {
     private final Map<UUID, Long>  lastClickMs  = new ConcurrentHashMap<>();
     private static final long      CLICK_COOLDOWN_MS = 200;
 
-    // ── Config ────────────────────────────────────────────────────────────────
     private FileConfiguration cfg;
 
     private int rows;
@@ -51,8 +49,6 @@ public class BankMenu implements Listener {
     private int amtW1, amtW2, amtW3;
     private boolean autoFill;
     private List<Integer> fillerSlots;
-
-    // ── Init ──────────────────────────────────────────────────────────────────
 
     public BankMenu(GenPvP plugin, BankManager bankManager, MoneyShardManager shardManager) {
         this.plugin       = plugin;
@@ -95,8 +91,6 @@ public class BankMenu implements Listener {
         }
     }
 
-    // ── Open ──────────────────────────────────────────────────────────────────
-
     public void open(Player player) {
         if (!bankManager.isLoaded(player.getUniqueId())) {
             player.sendMessage(LEGACY.deserialize(msg("messages.loading", "&7Loading your bank data...")));
@@ -110,14 +104,11 @@ public class BankMenu implements Listener {
         player.openInventory(buildInventory(player));
     }
 
-    // ── Build inventory ───────────────────────────────────────────────────────
-
     private Inventory buildInventory(Player player) {
         int  size  = rows * 9;
         UUID uuid  = player.getUniqueId();
         Inventory inv = Bukkit.createInventory(null, size, LEGACY.deserialize(cfg.getString("gui.title", "&8Bank")));
 
-        // Functional items first so auto-fill knows which slots are taken
         if (slotInfo >= 0 && slotInfo < size) inv.setItem(slotInfo, buildInfoHead(player, uuid));
 
         setButton(inv, slotD1,   "info.deposit-1",   amtD1, size);
@@ -129,7 +120,6 @@ public class BankMenu implements Listener {
         setButton(inv, slotW3,   "info.withdraw-3",  amtW3, size);
         setButton(inv, slotWAll, "info.withdraw-all", -1,  size);
 
-        // Fillers
         Material fillerMat  = parseMat(cfg.getString("gui.filler.material", "GRAY_STAINED_GLASS_PANE"));
         String   fillerName = cfg.getString("gui.filler.name", "&r");
         ItemStack filler    = buildFiller(fillerMat, fillerName);
@@ -150,8 +140,6 @@ public class BankMenu implements Listener {
     private void setButton(Inventory inv, int slot, String cfgPath, int amount, int size) {
         if (slot >= 0 && slot < size) inv.setItem(slot, buildButton(cfgPath, amount));
     }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onDrag(InventoryDragEvent event) {
@@ -201,8 +189,6 @@ public class BankMenu implements Listener {
         openMenus.remove(uuid);
         lastClickMs.remove(uuid);
     }
-
-    // ── Actions ───────────────────────────────────────────────────────────────
 
     private void handleDeposit(Player player, UUID uuid, int amount) {
         int held = shardManager.countShards(player);
@@ -256,17 +242,7 @@ public class BankMenu implements Listener {
     }
 
     private void handleWithdraw(Player player, UUID uuid, int amount) {
-        double cost    = amount * shardManager.getValuePerShard();
-        double balance = bankManager.getBalance(uuid);
-
-        if (balance < cost) {
-            player.sendMessage(LEGACY.deserialize(
-                    msg("messages.withdraw-not-enough-funds", "&cInsufficient funds.")
-                    .replace("%need%",    BankManager.formatBalance(cost))
-                    .replace("%balance%", BankManager.formatBalance(balance))));
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.6f, 0.9f);
-            return;
-        }
+        double cost = amount * shardManager.getValuePerShard();
 
         int capacity = shardManager.availableCapacity(player);
         if (capacity < amount) {
@@ -343,9 +319,6 @@ public class BankMenu implements Listener {
         refreshInfo(player, uuid);
     }
 
-    // ── Refresh ───────────────────────────────────────────────────────────────
-
-    /** Updates only the player-head info slot after a transaction. */
     private void refreshInfo(Player player, UUID uuid) {
         Inventory top  = player.getOpenInventory().getTopInventory();
         int       size = rows * 9;
@@ -353,8 +326,6 @@ public class BankMenu implements Listener {
             top.setItem(slotInfo, buildInfoHead(player, uuid));
         }
     }
-
-    // ── Item builders ─────────────────────────────────────────────────────────
 
     private ItemStack buildInfoHead(Player player, UUID uuid) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
@@ -385,10 +356,6 @@ public class BankMenu implements Listener {
         return skull;
     }
 
-    /**
-     * Builds a deposit or withdraw button from bank.yml.
-     * @param amount  the configured shard amount for this button; -1 = "all" buttons (no fixed amount)
-     */
     private ItemStack buildButton(String cfgPath, int amount) {
         Material  mat   = parseMat(cfg.getString(cfgPath + ".material", "STONE"));
         ItemStack stack = new ItemStack(mat);
@@ -423,8 +390,6 @@ public class BankMenu implements Listener {
         stack.setItemMeta(meta);
         return stack;
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private String msg(String path, String fallback) {
         return cfg.isString(path) ? cfg.getString(path) : fallback;

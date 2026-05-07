@@ -55,6 +55,12 @@ public class DepositCommand implements CommandExecutor {
             return true;
         }
 
+        if (bankManager.isDisabled(player.getUniqueId())) {
+            player.sendMessage(msg(cfg, "deposit.messages.account-disabled",
+                    "&cYour bank account is disabled."));
+            return true;
+        }
+
         int held = shardManager.countShards(player);
         if (held < amount) {
             player.sendMessage(ColorUtil.colorize(
@@ -66,17 +72,11 @@ public class DepositCommand implements CommandExecutor {
             return true;
         }
 
-        if (bankManager.isDisabled(player.getUniqueId())) {
-            player.sendMessage(msg(cfg, "deposit.messages.account-disabled",
-                    "&cYour bank account is disabled."));
-            return true;
-        }
-
         shardManager.removeShards(player, amount);
         double gained = amount * shardManager.getValuePerShard();
         boolean credited = bankManager.addBalance(player.getUniqueId(), player.getName(), gained);
         if (!credited) {
-            // addBalance failed (e.g. account became disabled between checks) — refund shards
+            
             shardManager.giveShards(player, amount);
             player.sendMessage(msg(cfg, "deposit.messages.account-disabled",
                     "&cYour bank account is disabled."));

@@ -23,24 +23,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Handles the Devil Fruit Shard drop mechanic on PvP kills.
- *
- * <h3>Behaviour</h3>
- * <ul>
- *   <li>When a player kills another player, there is a configurable chance
- *       (default 10%) to receive a PDC-stamped {@link Material#AMETHYST_SHARD}.</li>
- *   <li>A per-victim cooldown (default 3 hours) prevents farming the same
- *       player repeatedly.</li>
- *   <li>If the killer's inventory is full the shard is dropped naturally at
- *       their feet and a separate message is sent.</li>
- * </ul>
- *
- * <h3>Concurrency</h3>
- * All maps use {@link ConcurrentHashMap} defensively, even though Bukkit events
- * fire on the main thread.  {@link #onQuit} clears killer-side entries to
- * prevent unbounded memory growth.
- */
 public class DevilFruitShardListener implements Listener {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.builder()
@@ -49,24 +31,16 @@ public class DevilFruitShardListener implements Listener {
     private final GenPvP plugin;
     private final NamespacedKey SHARD_KEY;
 
-    // ── Config values (hot-reloadable) ───────────────────────────────────────
     private double dropChance;
     private long   cooldownMs;
     private String itemName;
     private List<String> itemLore;
 
-    // ── Messages (from FruitGUI/GeneralMessages.yml) ─────────────────────────
     private String msgReceived;
     private String msgDropped;
     private String msgCooldown;
 
-    /**
-     * Killer UUID → (Victim UUID → timestamp of last shard drop).
-     * Entries for offline killers are removed in {@link #onQuit}.
-     */
     private final Map<UUID, Map<UUID, Long>> cooldowns = new ConcurrentHashMap<>();
-
-    // ── Init ──────────────────────────────────────────────────────────────────
 
     public DevilFruitShardListener(GenPvP plugin, YamlConfiguration messagesConfig) {
         this.plugin    = plugin;
@@ -74,7 +48,6 @@ public class DevilFruitShardListener implements Listener {
         reload(messagesConfig);
     }
 
-    /** Re-reads config + messages.  Call after /genpvp reload. */
     public void reload(YamlConfiguration messagesConfig) {
         var cfg = plugin.getConfig();
         dropChance = cfg.getDouble("devil-fruit-shard.drop-chance", 0.10);
@@ -97,25 +70,21 @@ public class DevilFruitShardListener implements Listener {
         msgCooldown = messagesConfig.getString("shard-cooldown-active", "");
     }
 
-    // ── Events ────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        // Only PvP kills — skip environment / self kills
         if (killer == null || killer.equals(victim)) return;
 
         UUID killerUuid = killer.getUniqueId();
         UUID victimUuid = victim.getUniqueId();
 
-        // ── Cooldown check ───────────────────────────────────────────────────
         Map<UUID, Long> victimCooldowns = cooldowns.get(killerUuid);
         if (victimCooldowns != null) {
             Long lastDrop = victimCooldowns.get(victimUuid);
             if (lastDrop != null && System.currentTimeMillis() - lastDrop < cooldownMs) {
-                // Still on cooldown — optionally notify
+                
                 if (msgCooldown != null && !msgCooldown.isEmpty()) {
                     killer.sendMessage(LEGACY.deserialize(ColorUtil.colorize(
                             msgCooldown.replace("%victim%", victim.getName()))));
@@ -124,23 +93,19 @@ public class DevilFruitShardListener implements Listener {
             }
         }
 
-        // ── Drop chance ──────────────────────────────────────────────────────
         if (ThreadLocalRandom.current().nextDouble() >= dropChance) return;
 
-        // ── Record cooldown ──────────────────────────────────────────────────
         cooldowns.computeIfAbsent(killerUuid, k -> new ConcurrentHashMap<>())
                  .put(victimUuid, System.currentTimeMillis());
 
-        // ── Create the shard ─────────────────────────────────────────────────
         ItemStack shard = createShard();
 
-        // ── Give to killer ───────────────────────────────────────────────────
         Map<Integer, ItemStack> overflow = killer.getInventory().addItem(shard);
         if (overflow.isEmpty()) {
-            // Shard fitted into inventory
+            
             sendMessage(killer, msgReceived.replace("%victim%", victim.getName()));
         } else {
-            // Inventory full — drop at killer's feet
+            
             overflow.values().forEach(leftover ->
                     killer.getWorld().dropItemNaturally(killer.getLocation(), leftover));
             sendMessage(killer, msgDropped);
@@ -149,18 +114,11 @@ public class DevilFruitShardListener implements Listener {
         killer.playSound(killer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.4f);
     }
 
-    /**
-     * Cleans up cooldown entries when the killer goes offline.
-     * Victim-side entries expire naturally via timestamp check.
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         cooldowns.remove(event.getPlayer().getUniqueId());
     }
 
-    /**
-     * Opens the devil fruit shop when a player right-clicks with a shard.
-     */
     @EventHandler
     public void onInteract(org.bukkit.event.player.PlayerInteractEvent event) {
         if (event.getAction().name().contains("RIGHT_CLICK")) {
@@ -172,12 +130,8 @@ public class DevilFruitShardListener implements Listener {
         }
     }
 
-    // ── Public API (used by ShopManager for currency checks) ──────────────────
-
-    /** Returns the {@link NamespacedKey} used to stamp devil fruit shards. */
     public NamespacedKey getShardKey() { return SHARD_KEY; }
 
-    /** Returns true only if the stack is a server-issued devil fruit shard. */
     public boolean isDevilShard(ItemStack stack) {
         if (stack == null || stack.getType() != Material.AMETHYST_SHARD) return false;
         ItemMeta meta = stack.getItemMeta();
@@ -185,7 +139,6 @@ public class DevilFruitShardListener implements Listener {
                 && meta.getPersistentDataContainer().has(SHARD_KEY, PersistentDataType.BYTE);
     }
 
-    /** Counts all legitimate devil fruit shards in the player's storage inventory. */
     public int countShards(Player player) {
         int total = 0;
         for (ItemStack stack : player.getInventory().getStorageContents()) {
@@ -194,10 +147,6 @@ public class DevilFruitShardListener implements Listener {
         return total;
     }
 
-    /**
-     * Removes exactly {@code amount} legitimate devil fruit shards from inventory.
-     * Caller must verify sufficient quantity first.
-     */
     public void removeShards(Player player, int amount) {
         ItemStack[] contents  = player.getInventory().getStorageContents();
         int         remaining = amount;
@@ -215,9 +164,6 @@ public class DevilFruitShardListener implements Listener {
         player.getInventory().setStorageContents(contents);
     }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
-
-    /** Creates a single PDC-stamped devil fruit shard item. */
     private ItemStack createShard() {
         ItemStack stack = new ItemStack(Material.AMETHYST_SHARD, 1);
         ItemMeta  meta  = stack.getItemMeta();

@@ -13,11 +13,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PayCommand implements CommandExecutor, TabCompleter {
 
     private final GenPvP      plugin;
     private final BankManager bankManager;
+
+    private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    private static final long COOLDOWN_MS = 1000;
 
     public PayCommand(GenPvP plugin, BankManager bankManager) {
         this.plugin      = plugin;
@@ -66,6 +72,15 @@ public class PayCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        long now = System.currentTimeMillis();
+        Long last = cooldowns.get(payer.getUniqueId());
+        if (last != null && now - last < COOLDOWN_MS) {
+            payer.sendMessage(ColorUtil.colorize(
+                    cfg.getString("pay.messages.cooldown", "&cPlease wait before sending another payment.")));
+            return true;
+        }
+        cooldowns.put(payer.getUniqueId(), now);
+
         if (!bankManager.isLoaded(payer.getUniqueId())) {
             payer.sendMessage(ColorUtil.colorize(
                     cfg.getString("pay.messages.loading", "&7Your bank data is still loading, try again in a moment.")));
@@ -97,9 +112,6 @@ public class PayCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // removeBalance is atomic (ConcurrentHashMap.compute) — no separate balance check
-        // needed. Removing the pre-check eliminates the TOCTOU race that allowed a player
-        // to double-spend by sending /pay commands faster than they processed.
         boolean removed = bankManager.removeBalance(payer.getUniqueId(), payer.getName(), amount);
         if (!removed) {
             payer.sendMessage(ColorUtil.colorize(

@@ -14,28 +14,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-/**
- * Handles all player join, leave, kill, and death broadcast messages.
- *
- * <p>All messages are configurable under {@code chat:} in config.yml.
- * Set a message to an empty string to suppress it entirely.
- *
- * <pre>
- * chat:
- *   join:       "&7[&a+&f] &f%player% &fhas joined!"
- *   join-first: "&7[&a+&7] &f%player% &7has joined for the first time, Welcome him!"
- *   leave:      ""          # empty = no leave message shown
- *   kill:       "&7[&c☠&7] &f%killer% &7has slain &f%victim%&7!"
- *   death:      "&7[&c☠&7] &f%player% &7has died!"
- * </pre>
- */
 public class ChatListener implements Listener {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
     private final GenPvP plugin;
 
-    // Cached config strings — rebuilt on reload()
     private String joinMsg;
     private String joinFirstMsg;
     private String leaveMsg;
@@ -56,11 +40,9 @@ public class ChatListener implements Listener {
         deathMsg     = cfg.getString("chat.death",      "&7[&c\u2620&7] &f%player% &7has died!");
     }
 
-    // ── Join ──────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event) {
-        // Suppress Bukkit's default join message
+        
         event.joinMessage(null);
 
         Player player    = event.getPlayer();
@@ -68,7 +50,7 @@ public class ChatListener implements Listener {
 
         if (firstJoin) {
             broadcast(joinFirstMsg.replace("%player%", player.getName()));
-            // Soft chime for everyone online to notice a new face
+            
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.playSound(online.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 0.4f, 1.5f);
             }
@@ -77,11 +59,9 @@ public class ChatListener implements Listener {
         }
     }
 
-    // ── Leave ─────────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(PlayerQuitEvent event) {
-        // Suppress Bukkit's default quit message
+        
         event.quitMessage(null);
 
         if (!leaveMsg.isBlank()) {
@@ -89,15 +69,9 @@ public class ChatListener implements Listener {
         }
     }
 
-    // ── Kill / Death ──────────────────────────────────────────────────────────
-
-    /**
-     * Runs at HIGH priority so we override the default death message before
-     * MONITOR listeners (e.g. LogListener) read the already-nulled value.
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
-        // Suppress vanilla death message
+        
         event.deathMessage(null);
 
         Player victim = event.getEntity();
@@ -115,8 +89,6 @@ public class ChatListener implements Listener {
             }
         }
     }
-
-    // ── Helper ────────────────────────────────────────────────────────────────
 
     private static void broadcast(String raw) {
         Component msg = LEGACY.deserialize(ColorUtil.colorize(raw));

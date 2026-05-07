@@ -56,32 +56,25 @@ public class Team {
         members.remove(uuid);
     }
 
-    /** Returns all member UUIDs (including the owner). */
     public Set<UUID> getMemberUUIDs() {
         return Collections.unmodifiableSet(members.keySet());
     }
 
-    /** Returns all members as an ordered list (insertion order). */
     public List<TeamMember> getMemberList() {
         return new ArrayList<>(members.values());
     }
 
-    /** Returns members sorted by join date (oldest first). */
     public List<TeamMember> getMembersSortedByJoinDate() {
         List<TeamMember> sorted = new ArrayList<>(members.values());
         sorted.sort(Comparator.comparingLong(TeamMember::getJoinedAt));
         return sorted;
     }
 
-    // ── PvP ───────────────────────────────────────────────────────────────────
-
     public boolean isPvpEnabled() { return pvpEnabled; }
 
     public void setPvpEnabled(boolean pvpEnabled) { this.pvpEnabled = pvpEnabled; }
 
     public void togglePvp() { this.pvpEnabled = !this.pvpEnabled; }
-
-    // ── Points ────────────────────────────────────────────────────────────────
 
     public int getPoints() { return points; }
 

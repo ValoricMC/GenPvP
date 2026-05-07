@@ -12,26 +12,6 @@ import redis.clients.jedis.JedisPubSub;
 
 import java.util.logging.Level;
 
-/**
- * Cross-server log forwarding framework via Redis pub/sub.
- *
- * ── Architecture ────────────────────────────────────────────────────────────
- *
- *   Server A (this)                   Server B (remote)
- *   ─────────────                     ─────────────────
- *   publish(json)                     publish(json)
- *        │                                   │
- *        └──────────┐          ┌─────────────┘
- *                   ▼          ▼
- *              Redis channel "genpvp:cross:events"
- *                        │
- *                        ▼
- *             CrossServerSubscriber.onMessage()
- *             (runs on a dedicated daemon thread)
- *                        │
- *                        ▼  (only if originServer != this server's ID)
- *             MongoDB logs ← remote events written here
- */
 public class CrossServerMessenger {
 
     private final GenPvP plugin;
@@ -50,8 +30,6 @@ public class CrossServerMessenger {
         this.serverId        = plugin.getConfig().getString("cross-server.server-id", "server-1");
         this.channel         = plugin.getConfig().getString("cross-server.channel", "genpvp:cross:events");
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public void start() {
         if (running) return;
@@ -75,8 +53,6 @@ public class CrossServerMessenger {
         plugin.getLogger().info("[CrossServer] Subscriber shut down.");
     }
 
-    // ── Subscriber loop ───────────────────────────────────────────────────────
-
     private void subscribeLoop() {
         JedisPool pool = databaseManager.getJedisPool();
         if (pool == null) return;
@@ -96,8 +72,6 @@ public class CrossServerMessenger {
         }
     }
 
-    // ── Publisher ─────────────────────────────────────────────────────────────
-
     public void publish(JsonObject json) {
         if (!running || !databaseManager.isRedisConnected()) return;
 
@@ -113,8 +87,6 @@ public class CrossServerMessenger {
         }
     }
 
-    // ── Inner subscriber ──────────────────────────────────────────────────────
-
     private class CrossServerSubscriber extends JedisPubSub {
 
         @Override
@@ -123,7 +95,7 @@ public class CrossServerMessenger {
                 JsonObject json = JsonParser.parseString(message).getAsJsonObject();
 
                 String origin = getString(json, "originServer");
-                if (serverId.equals(origin)) return; // skip own events
+                if (serverId.equals(origin)) return; 
 
                 if (!databaseManager.isMongoConnected()) {
                     plugin.getLogger().warning("[CrossServer] MongoDB unavailable — dropping remote event from " + origin);
@@ -147,8 +119,6 @@ public class CrossServerMessenger {
             plugin.getLogger().info("[CrossServer] Unsubscribed from channel: " + channel);
         }
     }
-
-    // ── MongoDB insert ───────────────────────────────────────────────────────
 
     private void insertToMongo(JsonObject json, String originServer) {
         try {
@@ -178,8 +148,6 @@ public class CrossServerMessenger {
             plugin.getLogger().warning("[CrossServer] Failed to insert remote event into MongoDB: " + e.getMessage());
         }
     }
-
-    // ── JSON helpers ──────────────────────────────────────────────────────────
 
     private static String getString(JsonObject json, String key) {
         JsonElement el = json.get(key);

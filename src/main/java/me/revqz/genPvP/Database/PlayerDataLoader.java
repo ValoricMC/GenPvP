@@ -25,16 +25,6 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.setOnInsert;
 
-/**
- * Loads ALL per-player data in one async task on join:
- *
- *   1. One find() on the merged "players" collection — covers 100% of
- *      the data that BankManager, PrestigeManager, and StatsManager need.
- *   2. Upsert with $setOnInsert for new players — only one round trip.
- *   3. Injects results directly into each manager's in-memory cache.
- *
- * Net result: 1 async task + 1-2 round trips.
- */
 public class PlayerDataLoader implements Listener {
 
     private final GenPvP             plugin;
@@ -70,23 +60,15 @@ public class PlayerDataLoader implements Listener {
 
         if (db == null) return;
 
-        // Synchronous: block individual managers from spawning their own tasks
         injectDefaults(uuid);
 
-        // Async: load real values and overwrite
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> load(uuid, name));
     }
 
-    /**
-     * Called after a PlugMan reload to re-load data for every player that is
-     * already online.  PlugMan does NOT fire PlayerJoinEvent for existing
-     * players, so without this their caches would stay empty (0 balance, etc.).
-     */
     public void reloadOnlinePlayers() {
         var online = plugin.getServer().getOnlinePlayers();
         if (online.isEmpty()) return;
 
-        // Inject safe defaults immediately so placeholders never return null
         for (var p : online) injectDefaults(p.getUniqueId());
 
         if (db == null) {
@@ -94,7 +76,6 @@ public class PlayerDataLoader implements Listener {
             return;
         }
 
-        // Async: load real values from MongoDB and overwrite the defaults
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             int count = 0;
             for (var p : online) {
@@ -115,8 +96,6 @@ public class PlayerDataLoader implements Listener {
             MongoCollection<Document> players = db.getCollection("players");
             String uuidStr = uuid.toString();
 
-            // Upsert: create player doc if it doesn't exist (defaults via $setOnInsert).
-            // getUpsertedId() != null means this was an INSERT — i.e., a brand-new player.
             UpdateResult upsertResult = players.updateOne(
                     eq("_id", uuidStr),
                     combine(
@@ -139,7 +118,6 @@ public class PlayerDataLoader implements Listener {
 
             boolean isNewPlayer = upsertResult.getUpsertedId() != null;
 
-            // Now read the full document
             Document doc = players.find(eq("_id", uuidStr)).first();
             if (doc != null) {
                 try {
@@ -152,18 +130,16 @@ public class PlayerDataLoader implements Listener {
                 injectDefaults(uuid);
             }
 
-            // Load fruit data independently — never skip this even if injectAll failed
             loadFruitData(uuid);
 
-            // First-join reward: give starter kit + 50 money on the main thread,
-            // AFTER injectAll so the bank balance is already initialised in memory.
             if (isNewPlayer) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     Player player = plugin.getServer().getPlayer(uuid);
                     if (player == null || !player.isOnline()) return;
                     bankManager.addBalance(uuid, name, 50);
                     kitManager.giveStarterKitBypassing(player);
-                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "fruit roll_give " + name + " paramecia 1");
+                    
+                    rollManager.addRolls(uuid, me.revqz.genPvP.DevilFruits.FruitType.PARAMECIA, 1);
                 });
             }
 
@@ -173,16 +149,11 @@ public class PlayerDataLoader implements Listener {
         }
     }
 
-    /**
-     * Same as {@link #load} but skips the first-join reward. Used during
-     * PlugMan reloads where players are already online.
-     */
     private void loadReload(UUID uuid, String name) {
         try {
             MongoCollection<Document> players = db.getCollection("players");
             String uuidStr = uuid.toString();
 
-            // Read the full document (no upsert needed — player already exists)
             Document doc = players.find(eq("_id", uuidStr)).first();
             if (doc != null) {
                 try {
@@ -195,7 +166,6 @@ public class PlayerDataLoader implements Listener {
                 injectDefaults(uuid);
             }
 
-            // Load fruit data independently
             loadFruitData(uuid);
 
         } catch (Exception e) {
@@ -210,17 +180,16 @@ public class PlayerDataLoader implements Listener {
             fruitManager.inject(uuid, result.owned(), result.equipped(), result.blacklisted());
         } catch (Exception e) {
             plugin.getLogger().warning("[PlayerDataLoader] Failed to load fruit data for " + uuid + ": " + e.getMessage());
-            // Do NOT overwrite with empty — leave whatever was already loaded intact
+            
         }
 
-        // Load roll tokens in the same async batch
         try {
             me.revqz.genPvP.DevilFruits.FruitRollManager.RollLoadResult rollResult =
                     rollManager.loadRollData(db, uuid);
             rollManager.inject(uuid, rollResult.paramecia(), rollResult.logia(), rollResult.zoan());
         } catch (Exception e) {
             plugin.getLogger().warning("[PlayerDataLoader] Failed to load roll data for " + uuid + ": " + e.getMessage());
-            // Do NOT overwrite with 0 — leave whatever was already loaded intact
+            
         }
     }
 

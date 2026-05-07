@@ -42,7 +42,31 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
     private final Map<UUID, Location> pos2 = new HashMap<>();
     private final Set<UUID> bypassing = new HashSet<>();
 
-    private final Set<Location> protectedBlocks = ConcurrentHashMap.newKeySet();
+    private final ConcurrentHashMap<String, Set<Long>> protectedBlocks = new ConcurrentHashMap<>();
+
+    private volatile boolean blocksLoaded = false;
+
+    private static long packBlock(int x, int y, int z) {
+        return ((long) x & 0x3FFFFFFL) << 38
+             | ((long) z & 0x3FFFFFFL) << 12
+             | ((long) y & 0xFFFL);
+    }
+
+    private boolean addPacked(String world, int x, int y, int z) {
+        return protectedBlocks
+                .computeIfAbsent(world, k -> ConcurrentHashMap.newKeySet())
+                .add(packBlock(x, y, z));
+    }
+
+    private boolean containsPacked(String world, int x, int y, int z) {
+        Set<Long> s = protectedBlocks.get(world);
+        return s != null && s.contains(packBlock(x, y, z));
+    }
+
+    private void removePacked(String world, int x, int y, int z) {
+        Set<Long> s = protectedBlocks.get(world);
+        if (s != null) s.remove(packBlock(x, y, z));
+    }
 
     public ProtectCommand(JavaPlugin plugin, RegionManager regionManager, DatabaseManager dbManager) {
         this.plugin        = plugin;
@@ -50,20 +74,31 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
         this.db            = dbManager.isMongoConnected() ? dbManager.getDatabase() : null;
         this.dbConnected   = dbManager.isMongoConnected();
 
-        if (dbConnected) loadProtectedBlocks();
+        if (dbConnected) {
+            org.bukkit.Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                loadProtectedBlocks();
+                blocksLoaded = true;
+            });
+        }
     }
-
-    // ── DB persistence ────────────────────────────────────────────────────────
-
-    // ── Protected blocks storage format ──────────────────────────────────────
-    // One document per chunk: { _id: "world:chunkX:chunkZ", b: [[x,y,z], ...] }
-    // This cuts document count by ~256x vs one-doc-per-block.
 
     private static String chunkKey(String world, int x, int z) {
         return world + ":" + (x >> 4) + ":" + (z >> 4);
     }
 
+    private static int packLocal(int blockX, int blockY, int blockZ) {
+        return ((blockX & 0xF) << 16) | ((blockZ & 0xF) << 12) | (blockY & 0xFFF);
+    }
+
+    private static int unpackX(long packed) { return (int)(packed >> 38); }
+    private static int unpackY(long packed) { return ((int)(packed & 0xFFFL) << 20) >> 20; }
+    private static int unpackZ(long packed) {
+        return ((int)((packed >> 12) & 0x3FFFFFFL) << 6) >> 6;
+    }
+
     private void loadProtectedBlocks() {
+        long t0 = System.currentTimeMillis();
+        boolean needsResync = false;
         try {
             MongoCollection<Document> coll = db.getCollection("protected_blocks");
             int loaded = 0;
@@ -72,33 +107,106 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
                 if (id == null) continue;
                 String[] parts = id.split(":", 3);
                 if (parts.length != 3) continue;
-                World world = Bukkit.getWorld(parts[0]);
-                if (world == null) continue;
+                String worldName = parts[0];
+                int chunkX, chunkZ;
+                try {
+                    chunkX = Integer.parseInt(parts[1]);
+                    chunkZ = Integer.parseInt(parts[2]);
+                } catch (NumberFormatException e) { continue; }
+
                 List<?> blocks = doc.get("b", List.class);
-                if (blocks == null) continue;
-                for (Object entry : blocks) {
-                    if (!(entry instanceof List<?> coords) || coords.size() < 3) continue;
-                    int bx = ((Number) coords.get(0)).intValue();
-                    int by = ((Number) coords.get(1)).intValue();
-                    int bz = ((Number) coords.get(2)).intValue();
-                    protectedBlocks.add(new Location(world, bx, by, bz));
-                    loaded++;
+                if (blocks == null || blocks.isEmpty()) continue;
+
+                Set<Long> worldSet = protectedBlocks.computeIfAbsent(
+                        worldName, k -> ConcurrentHashMap.newKeySet());
+
+                Object first = blocks.get(0);
+                if (first instanceof Number) {
+                    
+                    for (Object entry : blocks) {
+                        if (!(entry instanceof Number n)) continue;
+                        int p = n.intValue();
+                        int bx = (chunkX << 4) | ((p >>> 16) & 0xF);
+                        int bz = (chunkZ << 4) | ((p >>> 12) & 0xF);
+                        int by = (p << 20) >> 20; 
+                        worldSet.add(packBlock(bx, by, bz));
+                        loaded++;
+                    }
+                } else {
+                    // -- v1 legacy: [[x,y,z], ...]
+                    needsResync = true;
+                    for (Object entry : blocks) {
+                        if (!(entry instanceof List<?> coords) || coords.size() < 3) continue;
+                        int bx = ((Number) coords.get(0)).intValue();
+                        int by = ((Number) coords.get(1)).intValue();
+                        int bz = ((Number) coords.get(2)).intValue();
+                        worldSet.add(packBlock(bx, by, bz));
+                        loaded++;
+                    }
                 }
             }
-            plugin.getLogger().info("[ProtectCommand] Loaded " + loaded + " protected block(s) from database.");
+            long elapsed = System.currentTimeMillis() - t0;
+            plugin.getLogger().info("[ProtectCommand] Loaded " + loaded
+                    + " protected block(s) from database in " + elapsed + "ms.");
+
+            if (needsResync) {
+                resyncToCompactFormat();
+            }
         } catch (Exception e) {
             plugin.getLogger().warning("[ProtectCommand] Failed to load protected blocks: " + e.getMessage());
         }
     }
 
+    private void resyncToCompactFormat() {
+        long t0 = System.currentTimeMillis();
+        try {
+            
+            Map<String, List<Integer>> byChunk = new HashMap<>();
+            int totalBlocks = 0;
+            for (var worldEntry : protectedBlocks.entrySet()) {
+                String worldName = worldEntry.getKey();
+                for (long packed : worldEntry.getValue()) {
+                    int x = unpackX(packed);
+                    int y = unpackY(packed);
+                    int z = unpackZ(packed);
+                    String key = chunkKey(worldName, x, z);
+                    byChunk.computeIfAbsent(key, k -> new ArrayList<>())
+                            .add(packLocal(x, y, z));
+                    totalBlocks++;
+                }
+            }
+
+            MongoCollection<Document> coll = db.getCollection("protected_blocks");
+            coll.drop();
+
+            List<Document> batch = new ArrayList<>(500);
+            for (var entry : byChunk.entrySet()) {
+                batch.add(new Document("_id", entry.getKey())
+                        .append("b", entry.getValue()));
+                if (batch.size() >= 500) {
+                    coll.insertMany(batch);
+                    batch.clear();
+                }
+            }
+            if (!batch.isEmpty()) coll.insertMany(batch);
+
+            long elapsed = System.currentTimeMillis() - t0;
+            plugin.getLogger().info("[ProtectCommand] Resync complete: " + totalBlocks
+                    + " block(s) in " + byChunk.size() + " chunk(s), compact format, "
+                    + elapsed + "ms.");
+        } catch (Exception e) {
+            plugin.getLogger().warning("[ProtectCommand] Resync failed: " + e.getMessage());
+        }
+    }
+
     private void saveProtectedBlocks(List<Location> locations) {
         if (!dbConnected || locations.isEmpty()) return;
-        // Group by chunk key
-        Map<String, List<List<Integer>>> byChunk = new HashMap<>();
+        
+        Map<String, List<Integer>> byChunk = new HashMap<>();
         for (Location loc : locations) {
             String key = chunkKey(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockZ());
             byChunk.computeIfAbsent(key, k -> new ArrayList<>())
-                    .add(List.of(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                    .add(packLocal(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             MongoCollection<Document> coll = db.getCollection("protected_blocks");
@@ -119,19 +227,17 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
     private void deleteProtectedBlock(Location loc) {
         if (!dbConnected) return;
         final String key = chunkKey(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockZ());
-        final List<Integer> coords = List.of(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        final int packed = packLocal(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 db.getCollection("protected_blocks").updateOne(
                         eq("_id", key),
-                        new Document("$pull", new Document("b", coords)));
+                        new Document("$pull", new Document("b", packed)));
             } catch (Exception e) {
                 plugin.getLogger().warning("[ProtectCommand] Failed to delete protected block: " + e.getMessage());
             }
         });
     }
-
-    // ── Command ───────────────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -227,15 +333,15 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage("§cWorld '" + region.getWorld() + "' is not loaded.");
                     return true;
                 }
+                String worldName = world.getName();
                 List<Location> newlyProtected = new ArrayList<>();
                 for (int x = region.getMinX(); x <= region.getMaxX(); x++) {
                     for (int y = region.getMinY(); y <= region.getMaxY(); y++) {
                         for (int z = region.getMinZ(); z <= region.getMaxZ(); z++) {
                             Block block = world.getBlockAt(x, y, z);
                             if (!block.getType().isAir()) {
-                                Location loc = block.getLocation();
-                                if (protectedBlocks.add(loc)) {
-                                    newlyProtected.add(loc);
+                                if (addPacked(worldName, x, y, z)) {
+                                    newlyProtected.add(block.getLocation());
                                 }
                             }
                         }
@@ -254,8 +360,6 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
-
     public boolean isBypassing(Player player) { return bypassing.contains(player.getUniqueId()); }
 
     public void toggleBypass(Player player) {
@@ -263,14 +367,21 @@ public class ProtectCommand implements CommandExecutor, TabCompleter {
         if (!bypassing.remove(uuid)) bypassing.add(uuid);
     }
 
-    public boolean isProtected(Location blockLoc) { return protectedBlocks.contains(blockLoc); }
-
-    public void removeProtected(Location blockLoc) {
-        protectedBlocks.remove(blockLoc);
-        deleteProtectedBlock(blockLoc);
+    public boolean isProtected(Location blockLoc) {
+        
+        if (!blocksLoaded) return false;
+        if (blockLoc.getWorld() == null) return false;
+        return containsPacked(blockLoc.getWorld().getName(),
+                blockLoc.getBlockX(), blockLoc.getBlockY(), blockLoc.getBlockZ());
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    public void removeProtected(Location blockLoc) {
+        if (blockLoc.getWorld() != null) {
+            removePacked(blockLoc.getWorld().getName(),
+                    blockLoc.getBlockX(), blockLoc.getBlockY(), blockLoc.getBlockZ());
+        }
+        deleteProtectedBlock(blockLoc);
+    }
 
     private String formatLoc(Location loc) {
         return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();

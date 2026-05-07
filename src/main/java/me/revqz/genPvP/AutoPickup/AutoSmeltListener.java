@@ -15,14 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-/**
- * Handles the /autosmelt command and ground-drop conversion.
- *
- * Ground-drop conversion runs at MONITOR + ignoreCancelled=true so it only
- * fires when a block was actually broken. For blocks in auto-pickup regions,
- * AutoPickupListener handles the items directly (smelt happens there too).
- * This listener catches all other ore breaks that produce a ground entity.
- */
 public class AutoSmeltListener implements Listener, CommandExecutor {
 
     private final JavaPlugin plugin;
@@ -32,8 +24,6 @@ public class AutoSmeltListener implements Listener, CommandExecutor {
         this.plugin           = plugin;
         this.autoSmeltManager = autoSmeltManager;
     }
-
-    // ── /autosmelt command ────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -52,15 +42,6 @@ public class AutoSmeltListener implements Listener, CommandExecutor {
         return true;
     }
 
-    // ── Ground drop conversion ────────────────────────────────────────────────
-
-    /**
-     * Converts ore ground-drops to their smelted form when the miner has auto-smelt on.
-     * Only smeltable ores are touched; everything else is left alone.
-     *
-     * BlockDropItemEvent fires after the block is removed and drop entities are spawned
-     * but before they exist in the world — we can edit the drop list directly.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockDrop(BlockDropItemEvent event) {
         Player player = event.getPlayer();
@@ -73,8 +54,6 @@ public class AutoSmeltListener implements Listener, CommandExecutor {
             entity.setItemStack(autoSmeltManager.smelt(stack));
         }
     }
-
-    // ── Config message helper ─────────────────────────────────────────────────
 
     private String msg(String key) {
         return ColorUtil.colorize(plugin.getConfig().getString("autosmelt.messages." + key, ""));

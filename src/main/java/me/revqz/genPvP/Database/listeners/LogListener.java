@@ -12,10 +12,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-/**
- * Hooks into Bukkit events and forwards them into the LogManager pipeline.
- * All calls to LogManager are O(1) queue.offer() — zero I/O on the main thread.
- */
 public class LogListener implements Listener {
 
     private final LogManager logManager;
@@ -34,14 +30,10 @@ public class LogListener implements Listener {
         logManager.logConnection(event.getPlayer().getUniqueId(), "QUIT");
     }
 
-    /**
-     * MONITOR priority — the death is fully resolved before we log it.
-     * Killer may be null (fall, lava, etc.) — logPvP handles that gracefully.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
-        Entity killerEntity = victim.getKiller(); // null if environment kill
+        Entity killerEntity = victim.getKiller(); 
         UUID killerUUID = (killerEntity instanceof Player killer) ? killer.getUniqueId() : null;
         logManager.logPvP(killerUUID, victim.getUniqueId());
     }

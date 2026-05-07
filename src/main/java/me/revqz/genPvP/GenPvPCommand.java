@@ -3,6 +3,7 @@ package me.revqz.genPvP;
 import me.revqz.genPvP.Items.AutoCompressor;
 import me.revqz.genPvP.Items.AutoCompressorListener;
 import me.revqz.genPvP.Items.CustomItemRegistry;
+import me.revqz.genPvP.PitNetherite.PitNetheriteManager;
 import me.revqz.genPvP.Scoreboard.ScoreboardManager;
 import me.revqz.genPvP.Shop.ItemShopManager;
 import me.revqz.genPvP.Shop.ShopManager;
@@ -37,19 +38,20 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
     private final ItemShopManager          itemShopManager;
     private final AutoCompressorListener   autoCompressorListener;
     private final CustomItemRegistry       registry;
+    private final PitNetheriteManager      pitNetheriteManager;
 
     public GenPvPCommand(GenPvP plugin, ShopManager shopManager,
                          ItemShopManager itemShopManager,
                          AutoCompressorListener autoCompressorListener,
-                         CustomItemRegistry registry) {
+                         CustomItemRegistry registry,
+                         PitNetheriteManager pitNetheriteManager) {
         this.plugin                 = plugin;
         this.shopManager            = shopManager;
         this.itemShopManager        = itemShopManager;
         this.autoCompressorListener = autoCompressorListener;
         this.registry               = registry;
+        this.pitNetheriteManager    = pitNetheriteManager;
     }
-
-    // ── Message helpers ───────────────────────────────────────────────────────
 
     private String msg(String key) {
         return ColorUtil.colorize(plugin.getConfig().getString("genpvp.messages." + key,
@@ -65,8 +67,6 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         return ColorUtil.colorize(raw);
     }
 
-    // ── Command dispatch ──────────────────────────────────────────────────────
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("genpvp.admin")) {
@@ -80,18 +80,18 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "reload"      -> handleReload(sender);
-            case "item_give"   -> handleGiveItem(sender, args);
-            case "onepiece"    -> handleRegisterItem(sender, args, "onepiece", ONEPIECE_NAMES);
-            case "head"        -> handleRegisterItem(sender, args, "head", HEAD_NAMES);
-            case "debug_armor" -> handleDebugArmor(sender);
-            default            -> sender.sendMessage(msg("usage"));
+            case "reload"           -> handleReload(sender);
+            case "item_give"        -> handleGiveItem(sender, args);
+            case "onepiece"         -> handleRegisterItem(sender, args, "onepiece", ONEPIECE_NAMES);
+            case "head"             -> handleRegisterItem(sender, args, "head", HEAD_NAMES);
+            case "debug_armor"      -> handleDebugArmor(sender);
+            case "force_reset_pit"  -> handleForceResetPit(sender);
+            case "create_world"     -> handleCreateWorld(sender, args);
+            default                 -> sender.sendMessage(msg("usage"));
         }
 
         return true;
     }
-
-    // ── Tab completion ────────────────────────────────────────────────────────
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
@@ -99,7 +99,7 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         String partial = args.length > 0 ? args[args.length - 1].toLowerCase() : "";
 
         return switch (args.length) {
-            case 1 -> filter(List.of("reload", "item_give", "onepiece", "head", "debug_armor"), partial);
+            case 1 -> filter(List.of("reload", "item_give", "onepiece", "head", "debug_armor", "force_reset_pit", "create_world"), partial);
             case 2 -> switch (args[0].toLowerCase()) {
                 case "item_give"        -> filter(availableItems(), partial);
                 case "onepiece", "head" -> filter(List.of("set"), partial);
@@ -122,7 +122,12 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         };
     }
 
-    // ── reload ────────────────────────────────────────────────────────────────
+    private void handleForceResetPit(CommandSender sender) {
+        pitNetheriteManager.forceReset();
+        sender.sendMessage(ColorUtil.colorize(
+                plugin.getConfig().getString("pit-netherite.force-reset-feedback",
+                        "&#FCD05C&lPIT &8» &7Ancient Debris reset forced.")));
+    }
 
     private void handleReload(CommandSender sender) {
         plugin.reloadConfig();
@@ -134,8 +139,6 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         plugin.getXpPickupListener().reload();
         sender.sendMessage(msg("reload-success"));
     }
-
-    // ── item_give ─────────────────────────────────────────────────────────────
 
     private void handleGiveItem(CommandSender sender, String[] args) {
         if (args.length < 2) {
@@ -165,8 +168,6 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(msg("item-gave-to", "%item%", itemName, "%player%", target.getName()));
         }
     }
-
-    // ── onepiece / head ───────────────────────────────────────────────────────
 
     private void handleRegisterItem(CommandSender sender, String[] args, String subCmd,
                                     List<String> suggestedNames) {
@@ -201,8 +202,6 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(msg("register-success", "%name%", name));
     }
 
-    // ── debug_armor ──────────────────────────────────────────────────────────
-
     private void handleDebugArmor(CommandSender sender) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("§cMust be a player.");
@@ -233,7 +232,7 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
                     + (match ? " §a✓" : " §c✗"));
             player.sendMessage("   §7template=§f" + loreCount + " lines§7 hasPAPI=§f" + hasPapi);
             if (tLore != null && !tLore.isEmpty()) {
-                // Show first 60 chars of first line
+                
                 String preview = tLore.get(0);
                 if (preview.length() > 60) preview = preview.substring(0, 60) + "...";
                 player.sendMessage("   §7line[0]=§f" + preview);
@@ -243,7 +242,29 @@ public class GenPvPCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§6Registered items: §f" + String.join(", ", registry.getRegisteredNames()));
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
+    private void handleCreateWorld(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("§cMust be a player to use this command.");
+            return;
+        }
+        if (args.length < 2) {
+            sender.sendMessage("§cUsage: /genpvp create_world <name>");
+            return;
+        }
+        String worldName = args[1];
+        if (Bukkit.getWorld(worldName) != null) {
+            sender.sendMessage("§cA world named §e" + worldName + " §calready exists.");
+            return;
+        }
+        sender.sendMessage("§7Creating world §e" + worldName + "§7, please wait...");
+        org.bukkit.World world = new org.bukkit.WorldCreator(worldName).createWorld();
+        if (world == null) {
+            sender.sendMessage("§cFailed to create world §e" + worldName + "§c.");
+            return;
+        }
+        player.teleport(world.getSpawnLocation());
+        sender.sendMessage("§aWorld §e" + worldName + " §acreated and you have been teleported to it.");
+    }
 
     private ItemStack buildItem(String name) {
         if (name.equals("autocompressor")) return AutoCompressor.create(plugin);

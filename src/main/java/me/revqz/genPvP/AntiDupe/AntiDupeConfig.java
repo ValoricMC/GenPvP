@@ -2,24 +2,17 @@ package me.revqz.genPvP.AntiDupe;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-/**
- * All configurable anti-dupe flags, loaded from the plugin's config.yml.
- * Call {@link #reload(FileConfiguration)} to refresh after a config reload.
- */
 public class AntiDupeConfig {
 
-    // ── Detection ─────────────────────────────────────────────────────────────
     public boolean enabled;
     public boolean checkUnstackables;
     public long    scanIntervalTicks;
 
-    // ── Actions ───────────────────────────────────────────────────────────────
     public boolean deleteItem;
     public boolean notifyOps;
     public boolean logConsole;
     public String  punishCommand;
 
-    // ── Anti-spam ─────────────────────────────────────────────────────────────
     public long alertCooldownSeconds;
 
     public AntiDupeConfig(FileConfiguration cfg) {

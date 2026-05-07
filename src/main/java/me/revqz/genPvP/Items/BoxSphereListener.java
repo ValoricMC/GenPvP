@@ -19,22 +19,11 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * box_sphere — OnePiece item ability.
- *
- * Right-click spawns a hollow radius-2 sphere of LIGHT_BLUE_STAINED_GLASS around
- * the player. Only non-solid blocks are replaced (e.g. air, water, tall grass).
- * After 5 s the remaining glass turns YELLOW; after another 5 s it turns GREEN
- * briefly, then is removed.
- *
- * Blocked in: SPAWN, GENS, OPMINESGENS, KOTH, KOTHCAPTURE, PIT, PVPROOM1, PVPROOM2.
- * Cooldown: configurable via onepiece.box-sphere.cooldown-seconds (default 120 s).
- */
 public class BoxSphereListener implements Listener {
 
     private static final int  SPHERE_RADIUS      = 3;
-    private static final long PHASE_TICKS        = 100L; // 5 seconds
-    private static final long GREEN_LINGER_TICKS = 10L;  // 0.5 s green flash before removal
+    private static final long PHASE_TICKS        = 100L; 
+    private static final long GREEN_LINGER_TICKS = 10L;  
 
     private final GenPvP             plugin;
     private final CustomItemRegistry registry;
@@ -49,21 +38,17 @@ public class BoxSphereListener implements Listener {
         this.regionManager = regionManager;
     }
 
-    // ── Region guard ──────────────────────────────────────────────────────────
-
     private boolean isRestrictedZone(Location loc) {
         for (ProtectRegion r : regionManager.getRegionsAt(loc)) {
             switch (r.getType()) {
                 case SPAWN, GENS, OPMINESGENS, KOTH, KOTHCAPTURE, PIT, PVPROOM1, PVPROOM2 -> {
                     return true;
                 }
-                default -> { /* allowed */ }
+                default -> {  }
             }
         }
         return false;
     }
-
-    // ── Right-click dispatch ──────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onRightClick(PlayerInteractEvent event) {
@@ -105,15 +90,13 @@ public class BoxSphereListener implements Listener {
         activateSphere(player);
     }
 
-    // ── Sphere activation ─────────────────────────────────────────────────────
-
     private void activateSphere(Player player) {
         UUID     uuid   = player.getUniqueId();
         Location center = player.getLocation();
 
         int    r       = SPHERE_RADIUS;
-        double innerSq = (double)(r - 1) * (r - 1); // 1.0  — inner boundary (exclusive)
-        double outerSq = (double)r * r;              // 4.0  — outer boundary (inclusive)
+        double innerSq = (double)(r - 1) * (r - 1); 
+        double outerSq = (double)r * r;              
 
         List<Location> placed = new ArrayList<>();
         for (int dx = -r; dx <= r; dx++) {
@@ -126,7 +109,7 @@ public class BoxSphereListener implements Listener {
                             center.getBlockX() + dx,
                             center.getBlockY() + dy,
                             center.getBlockZ() + dz);
-                    if (block.getType().isSolid()) continue; // preserve andesite, stone, etc.
+                    if (block.getType().isSolid()) continue; 
                     if (isRestrictedZone(block.getLocation())) continue;
 
                     block.setType(Material.LIGHT_BLUE_STAINED_GLASS);
@@ -141,7 +124,6 @@ public class BoxSphereListener implements Listener {
                 "&#73D7F7&lBOX SPHERE &8» &7Sphere deployed!");
         player.sendMessage(ColorUtil.colorize(raw));
 
-        // Phase 2 — turn yellow at t = 5 s
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             List<Location> current = activeBlocks.get(uuid);
             if (current == null) return;
@@ -155,7 +137,6 @@ public class BoxSphereListener implements Listener {
             }
             activeBlocks.put(uuid, remaining);
 
-            // Phase 3 — turn green at t = 10 s, then remove after brief flash
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 List<Location> current2 = activeBlocks.get(uuid);
                 if (current2 == null) return;

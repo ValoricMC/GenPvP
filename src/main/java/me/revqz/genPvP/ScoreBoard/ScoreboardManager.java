@@ -31,45 +31,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Manages per-player sidebar scoreboards using Bukkit's native Scoreboard API.
- *
- * <p>Two layouts are supported:
- * <ul>
- *   <li><b>Default</b>  — shown at all times except when KOTH is active.</li>
- *   <li><b>KOTH active</b> — shown while {@link KothManager#isKothActive()} returns {@code true}.
- *       Configured under {@code scoreboard.koth} in config.yml.  Falls back to the default
- *       layout if the koth section is absent or has no lines.</li>
- * </ul>
- *
- * <h3>Config layout</h3>
- * <pre>
- * scoreboard:
- *   enabled: true
- *   update-ticks: 10
- *   title: "&#FFD700&l⚔ &f&lGENPVP &r&#FFD700⚔"
- *   lines:
- *     - text: " &7Players: &f%server_online%"
- *     - text:
- *         - " &#FF5555&lFrame 1"
- *         - " &#55FF55&lFrame 2"
- *
- *   koth:
- *     title: "&#FCD05C&lK&#FFEDBE&lO&#FCD05C&lT&#FFEDBE&lH"
- *     lines:
- *       - text: " &#FCD05C⚔ KOTH ACTIVE ⚔"
- *       - text: " %genpvp_koth_claim_bar%"
- * </pre>
- */
 public class ScoreboardManager implements Listener {
 
     private static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.legacySection();
     private static final MiniMessage MM = MiniMessage.miniMessage();
-    /** Matches any MiniMessage tag (e.g. {@code <head:UUID>}, {@code <red>}, …). */
+    
     private static final Pattern MM_TAG = Pattern.compile("<[^>]+>");
 
-    /** One logical scoreboard line — one frame (static) or many frames (animated). */
     private record LineDef(List<String> frames) {
         String frame(int tick) { return frames.get(tick % frames.size()); }
     }
@@ -82,19 +51,17 @@ public class ScoreboardManager implements Listener {
     private String  titleRaw    = "&f&lSCOREBOARD";
     private int     updateTicks = 20;
 
-    // Default layout
     private final List<LineDef> lineDefs     = new ArrayList<>();
-    // KOTH-active layout (empty = fall back to lineDefs)
+    
     private final List<LineDef> kothLineDefs = new ArrayList<>();
     private String kothTitleRaw = null;
 
-    // Maximum slot count across both layouts — registered once in setupBoard()
     private int maxLines = 0;
 
     private final Map<UUID, int[]>     animTick      = new ConcurrentHashMap<>();
     private final Map<UUID, Scoreboard> boards        = new ConcurrentHashMap<>();
     private final Map<UUID, ScoreboardPanel> panels   = new ConcurrentHashMap<>();
-    // Tracks the koth state seen on the last update per player — used to detect transitions
+    
     private final Map<UUID, Boolean>   lastKothState  = new ConcurrentHashMap<>();
 
     private BukkitTask task;
@@ -105,8 +72,6 @@ public class ScoreboardManager implements Listener {
         this.papiEnabled  = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
         reload();
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public void reload() {
         if (task != null) { task.cancel(); task = null; }
@@ -135,7 +100,6 @@ public class ScoreboardManager implements Listener {
             if (text != null) lineDefs.add(new LineDef(toStringList(text)));
         }
 
-        // ── KOTH layout ───────────────────────────────────────────────────────
         if (cfg.contains("scoreboard.koth")) {
             kothTitleRaw = cfg.getString("scoreboard.koth.title", titleRaw);
             for (Map<?, ?> entry : cfg.getMapList("scoreboard.koth.lines")) {
@@ -159,21 +123,12 @@ public class ScoreboardManager implements Listener {
         if (task != null) task.cancel();
     }
 
-    /**
-     * Restores the custom scoreboard for a player who had it hidden.
-     * No-op if the global scoreboard feature is disabled.
-     */
     public void showBoard(Player player) {
         if (!enabled) return;
         animTick.put(player.getUniqueId(), new int[]{0});
         setupBoard(player);
     }
 
-    /**
-     * Removes the custom scoreboard from a player and assigns the empty main
-     * scoreboard. The update loop skips them automatically because their entry
-     * is no longer in the boards map.
-     */
     public void hideBoard(Player player) {
         UUID id = player.getUniqueId();
         boards.remove(id);
@@ -182,8 +137,6 @@ public class ScoreboardManager implements Listener {
         lastKothState.remove(id);
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
@@ -200,8 +153,6 @@ public class ScoreboardManager implements Listener {
         panels.remove(id);
         lastKothState.remove(id);
     }
-
-    // ── Board setup ───────────────────────────────────────────────────────────
 
     private void setupBoard(Player player) {
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -241,8 +192,6 @@ public class ScoreboardManager implements Listener {
         updateBoard(player);
     }
 
-    // ── Per-tick update ───────────────────────────────────────────────────────
-
     private void updateBoard(Player player) {
         UUID id = player.getUniqueId();
         Scoreboard board = boards.get(id);
@@ -252,7 +201,6 @@ public class ScoreboardManager implements Listener {
 
         boolean kothActive = kothManager != null && kothManager.isKothActive() && !kothLineDefs.isEmpty();
 
-        // Detect koth state transition — update the title only when it flips
         Boolean prev = lastKothState.put(id, kothActive);
         if (prev == null || prev != kothActive) {
             String activeTitle = (kothActive && kothTitleRaw != null) ? kothTitleRaw : titleRaw;
@@ -271,8 +219,7 @@ public class ScoreboardManager implements Listener {
             String frame;
             if (i < activeDefs.size()) {
                 frame = activeDefs.get(i).frame(tick[0]);
-                // Only invoke PlaceholderAPI when the line actually contains a placeholder —
-                // avoids string-processing overhead for static lines.
+                
                 if (papiEnabled && frame.indexOf('%') >= 0)
                     frame = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, frame);
             } else {
@@ -287,14 +234,6 @@ public class ScoreboardManager implements Listener {
         if (panel != null) panel.setLines(rawResolved);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /**
-     * Returns a short, visually invisible entry string for sidebar slot {@code i}.
-     * Using §-color codes (2 chars each) keeps entries unique and the sidebar
-     * shows nothing for them — the real text comes from {@link Score#customName}.
-     * Supports up to 256 lines before wrap-around.
-     */
     private static String slotEntry(int i) {
         ChatColor[] c = ChatColor.values();
         int n = 16;
@@ -313,25 +252,9 @@ public class ScoreboardManager implements Listener {
         return List.of(obj.toString());
     }
 
-    // ── Deserialization ───────────────────────────────────────────────────────
-
-    /**
-     * Deserializes a scoreboard line that may contain a mix of:
-     * <ul>
-     *   <li>Legacy {@code &} / {@code &#RRGGBB} color codes, and</li>
-     *   <li>MiniMessage tags such as {@code <head:UUID>}.</li>
-     * </ul>
-     *
-     * <p>When no MiniMessage tags are present the fast path delegates directly to
-     * {@link LegacyComponentSerializer} — zero extra allocation.
-     *
-     * <p>When tags are present the string is split on each tag boundary; text
-     * segments are deserialized as legacy and MiniMessage segments are deserialized
-     * via {@link MiniMessage}.  The pieces are appended into a single {@link Component}.
-     */
     private static Component deserializeFrame(String frame) {
         if (!frame.contains("<")) {
-            // Fast path — no MiniMessage tags at all
+            
             return LEGACY.deserialize(ColorUtil.colorize(frame));
         }
 
@@ -345,18 +268,17 @@ public class ScoreboardManager implements Listener {
         m.reset();
 
         while (m.find()) {
-            // Legacy text before this tag
+            
             if (m.start() > last) {
                 String before = frame.substring(last, m.start());
                 if (!before.isEmpty())
                     result = result.append(LEGACY.deserialize(ColorUtil.colorize(before)));
             }
-            // MiniMessage tag (e.g. <head:UUID>, <red>, <bold>…)
+            
             result = result.append(MM.deserialize(m.group()));
             last = m.end();
         }
 
-        // Remaining legacy text after the last tag
         if (last < frame.length()) {
             String after = frame.substring(last);
             if (!after.isEmpty())
@@ -366,12 +288,6 @@ public class ScoreboardManager implements Listener {
         return result;
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
-
-    /**
-     * Returns the off-screen {@link ScoreboardPanel} for the given player,
-     * or {@code null} if the scoreboard is disabled or the player is not online.
-     */
     public ScoreboardPanel getPanel(UUID playerId) {
         return panels.get(playerId);
     }

@@ -22,49 +22,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Single PlaceholderAPI expansion for the entire GenPvP plugin.
- *
- * Previously PvPRoomExpansion and KothExpansion both registered under the
- * identifier "genpvp", which caused PlaceholderAPI to silently reject the
- * second registration. This class merges all placeholders under one entry.
- *
- * koth
- * %genpvp_time_till_next_koth% Time until the next auto-KOTH (or "Active")
- * %genpvp_time_till_koth_capture% Time left for the current capturer (or "N/A")
- * %genpvp_capturer_koth% IGN of the player currently capping (or "None")
- * %genpvp_koth_claim_bar% 20 "|" bars; green fills left→right, 1 per 6 s
- * captured
- * %genpvp_koth_claim_time_formatted% Elapsed capture time as e.g. "1m34s"
- * %genpvp_koth_top_winner_name_<1-10>% Name of the Nth top KOTH winner
- * %genpvp_koth_top_winner_number_<1-10>% Win count of the Nth top KOTH winner
- *
- * teams
- * %genpvp_team_name% Name of the player's team (or "N/A")
- * %genpvp_team_inteam% "true"/"false" — whether the player is in a team
- * %genpvp_team_points% Points of the player's team
- * %genpvp_team_top_name_<1-10>% Name of the Nth team ranked by points
- * %genpvp_team_top_points_<1-10>% Points total of the Nth team ranked by points
- *
- * pvp rooms
- * %genpvp_pvproom1_max% Max players allowed in room 1 (always "2")
- * %genpvp_pvproom1_in% Players currently inside room 1
- * %genpvp_pvproom2_max% Max players allowed in room 2 (always "2")
- * %genpvp_pvproom2_in% Players currently inside room 2
- *
- * leveling / prestige
- * %genpvp_level% Current player level (e.g. "4")
- * %genpvp_level_next% Next level target (always current + 1, e.g. "5")
- * %genpvp_prestige% Current prestige tier (e.g. "2")
- * %genpvp_level_bar_lines% 20-character bar showing XP progress toward the NEXT
- * LEVEL
- * %genpvp_level_bar_percentage% Percentage toward next level (e.g. "65%")
- *
- * devil fruits (data only — no active abilities)
- * %genpvp_devil_fruit_equipped% Display name of the player's equipped fruit, or "None"
- *
- * Suggested display: LVL: %genpvp_level% '8→&a&l[%genpvp_level_next%]
- */
 public class GenPvPExpansion extends PlaceholderExpansion {
 
     private final GenPvP plugin;
@@ -82,7 +39,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
     public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
             KothManager kothManager, BankManager bankManager,
             PrestigeManager prestigeManager, StatsManager statsManager,
-            Object skinCache /* unused — kept for GenPvP.java compat */,
+            Object skinCache ,
             TeamManager teamManager) {
         this(plugin, pvpRoomManager, kothManager, bankManager, prestigeManager,
                 statsManager, skinCache, teamManager, null, null, null);
@@ -91,7 +48,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
     public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
             KothManager kothManager, BankManager bankManager,
             PrestigeManager prestigeManager, StatsManager statsManager,
-            Object skinCache /* unused — kept for GenPvP.java compat */,
+            Object skinCache ,
             TeamManager teamManager,
             DevilFruitManager devilFruitManager,
             LuffyArmorManager luffyArmorManager) {
@@ -102,7 +59,7 @@ public class GenPvPExpansion extends PlaceholderExpansion {
     public GenPvPExpansion(GenPvP plugin, PvPRoomManager pvpRoomManager,
             KothManager kothManager, BankManager bankManager,
             PrestigeManager prestigeManager, StatsManager statsManager,
-            Object skinCache /* unused — kept for GenPvP.java compat */,
+            Object skinCache ,
             TeamManager teamManager,
             DevilFruitManager devilFruitManager,
             LuffyArmorManager luffyArmorManager,
@@ -148,7 +105,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
     @Override
     public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
 
-        // ── Leveling / Prestige placeholders ─────────────────────────────────
         if (params.equalsIgnoreCase("level")) {
             if (player == null)
                 return "0";
@@ -180,7 +136,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             return prestigeManager.getLevelPercentage(player.getUniqueId()) + "%";
         }
 
-        // ── KOTH placeholders ────────────────────────────────────────────────
         if (params.equalsIgnoreCase("time_till_next_koth")) {
             return kothManager.isKothActive()
                     ? "Active"
@@ -226,9 +181,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // %genpvp_koth_claim_bar% — 20 "|" bars; one turns green per 6 s of uncontested
-        // capture.
-        // Stays fully red while KOTH is inactive or no one is capping.
         if (params.equalsIgnoreCase("koth_claim_bar")) {
             if (!kothManager.isKothActive() || kothManager.getCapturingPlayerName().equals("None")) {
                 return "§c||||||||||||||||||||";
@@ -238,8 +190,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             return "§a" + "|".repeat(green) + "§c" + "|".repeat(20 - green);
         }
 
-        // %genpvp_koth_claim_time_formatted% — elapsed capture time as e.g. "1m34s" or
-        // "45s".
         if (params.equalsIgnoreCase("koth_claim_time_formatted")) {
             if (!kothManager.isKothActive() || kothManager.getCapturingPlayerName().equals("None")) {
                 return "0s";
@@ -248,7 +198,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             return formatTime(elapsed);
         }
 
-        // ── Bank placeholders ────────────────────────────────────────────────
         if (params.equalsIgnoreCase("bank_money_total")) {
             if (player == null || !player.isOnline())
                 return "0";
@@ -288,7 +237,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // shards placeholders
         if (params.equalsIgnoreCase("bank_shards_total")) {
             if (player == null || !player.isOnline())
                 return "0";
@@ -313,7 +261,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // gold placeholders
         if (params.equalsIgnoreCase("bank_gold_total")) {
             if (player == null || !player.isOnline())
                 return "0";
@@ -338,7 +285,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // ── Kills / Deaths placeholders ──────────────────────────────────────
         if (params.equalsIgnoreCase("kills")) {
             if (player == null)
                 return "0";
@@ -407,7 +353,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // ── PvP room placeholders ────────────────────────────────────────────
         if (params.equalsIgnoreCase("pvproom1_max"))
             return "2";
         if (params.equalsIgnoreCase("pvproom2_max"))
@@ -420,7 +365,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             return String.valueOf(insideCount(pvpRoomManager.getRoom2(), "PVPROOM2"));
         }
 
-        // ── Team placeholders ────────────────────────────────────────────────
         if (params.equalsIgnoreCase("team_name")) {
             if (player == null)
                 return "N/A";
@@ -474,7 +418,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             }
         }
 
-        // ── Devil Fruit placeholders ─────────────────────────────────────────
         if (params.equalsIgnoreCase("devil_fruit_equipped")) {
             if (player == null || devilFruitManager == null) return "None";
             String key = devilFruitManager.getEquippedFruit(player.getUniqueId());
@@ -495,10 +438,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
             return String.format("%.1fs", seconds);
         }
 
-        // ── Luffy Armor placeholders ─────────────────────────────────────────
-        // %genpvp_luffy_armor_currently%     — pieces currently worn (0–4)
-        // %genpvp_luffy_armor_haki_currentbuff% — current Haki block chance, e.g. "30%"
-        // %genpvp_luffy_armor_haki_maxbuff%  — max possible Haki block chance, e.g. "40%"
         if (params.equalsIgnoreCase("luffy_armor_currently")) {
             if (player == null || !player.isOnline() || luffyArmorManager == null) return "0";
             Player online = player.getPlayer();
@@ -525,13 +464,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
         return null;
     }
 
-    /**
-     * Returns how many players are currently inside a room.
-     * During FIGHTING / LOOTING the participant set is authoritative.
-     * During WAITING the cached count maintained by the move-event path is
-     * returned directly (O(1)), so holograms and scoreboards get an up-to-date
-     * value without an expensive per-call player scan.
-     */
     private int insideCount(PvPRoomState room, String regionName) {
         if (room.getCurrentPhase() != PvPPhase.WAITING) {
             return room.getParticipants().size();
@@ -539,12 +471,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
         return room.getCachedInsideCount();
     }
 
-    /**
-     * Returns the Paper MiniMessage {@code <head:UUID>} tag for the given player
-     * name.
-     * This renders as an 8 px head sprite in Adventure-aware contexts (scoreboards,
-     * holograms).
-     */
     @SuppressWarnings("deprecation")
     private static String headForName(String name) {
         if (name == null || name.equals("None") || name.equals("Unknown"))
@@ -552,7 +478,6 @@ public class GenPvPExpansion extends PlaceholderExpansion {
         return "<head:" + Bukkit.getOfflinePlayer(name).getUniqueId() + ">";
     }
 
-    /** Formats a second count as "Xm Ys", "Xm", or "Xs". */
     private static String formatTime(int seconds) {
         if (seconds < 60)
             return seconds + "s";

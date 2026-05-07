@@ -13,32 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Cycles through configurable broadcast messages on a fixed interval.
- * Each entry supports multiple lines and an optional clickable URL.
- *
- * Config layout:
- * <pre>
- * autobroadcast:
- *   interval: 60
- *   messages:
- *     - text: "&aSingle line message"
- *       url: "https://example.com"
- *     - text:
- *         - ""
- *         - "&bLine one of a multi-line message"
- *         - "&7Line two"
- *         - ""
- *       url: "https://example.com"   # url attaches to every line
- * </pre>
- */
 public class AutoBroadcastManager {
 
     private static final LegacyComponentSerializer LEGACY =
             LegacyComponentSerializer.legacySection();
 
     private final GenPvP plugin;
-    /** Each entry is one broadcast event — a list of lines sent consecutively. */
+    
     private final List<List<Component>> messages = new ArrayList<>();
     private int index = 0;
     private BukkitTask task;
@@ -47,8 +28,6 @@ public class AutoBroadcastManager {
         this.plugin = plugin;
         reload();
     }
-
-    // ── Load / reload ─────────────────────────────────────────────────────────
 
     public void reload() {
         if (task != null) {
@@ -63,7 +42,6 @@ public class AutoBroadcastManager {
             Object textObj = entry.get("text");
             if (textObj == null) continue;
 
-            // Resolve URL click event (optional)
             ClickEvent click = null;
             Object urlObj = entry.get("url");
             if (urlObj != null) {
@@ -71,7 +49,6 @@ public class AutoBroadcastManager {
                 if (!url.isEmpty()) click = ClickEvent.openUrl(url);
             }
 
-            // text can be a single String or a List of Strings
             List<String> rawLines = toStringList(textObj);
             List<Component> lines = new ArrayList<>(rawLines.size());
             for (String raw : rawLines) {
@@ -107,8 +84,6 @@ public class AutoBroadcastManager {
     public void shutdown() {
         if (task != null) task.cancel();
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
     private static List<String> toStringList(Object obj) {

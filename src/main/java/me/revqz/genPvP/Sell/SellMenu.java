@@ -45,8 +45,6 @@ public class SellMenu implements Listener {
         this.plugin = plugin;
     }
 
-    // ── Open ──────────────────────────────────────────────────────────────────
-
     public void open(Player player) {
         openMenus.add(player.getUniqueId());
         player.openInventory(buildInventory());
@@ -57,31 +55,24 @@ public class SellMenu implements Listener {
         Component title = Component.text("Shop Menu: Sell");
         Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, title);
 
-        // Slot 0 — Cauldron (configurable)
         inv.setItem(SLOT_CAULDRON, buildItem(Material.CAULDRON,
                 cfg.getString("sell.cauldron.name", "&7Sell Shop"),
                 cfg.getStringList("sell.cauldron.lore")));
 
-        // Slot 1 — Left filler
         inv.setItem(SLOT_FILLER_L, fillerPane());
 
-        // Slot 2 — Bell: click runs /sell all
         inv.setItem(SLOT_BELL, buildItem(Material.BELL,
                 cfg.getString("sell.bell.name", "&eSell All"),
                 cfg.getStringList("sell.bell.lore")));
 
-        // Slot 3 — Right filler
         inv.setItem(SLOT_FILLER_R, fillerPane());
 
-        // Slot 4 — Clock: close menu and run /prestige
         inv.setItem(SLOT_CLOCK, buildItem(Material.CLOCK,
                 cfg.getString("sell.clock.name", "&6Prestige"),
                 cfg.getStringList("sell.clock.lore")));
 
         return inv;
     }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onDrag(InventoryDragEvent event) {
@@ -97,7 +88,6 @@ public class SellMenu implements Listener {
 
         event.setCancelled(true);
 
-        // Only react to clicks in the top inventory
         if (event.getClickedInventory() == null
                 || !event.getClickedInventory().equals(event.getView().getTopInventory())) return;
 
@@ -119,8 +109,6 @@ public class SellMenu implements Listener {
     public void onClose(InventoryCloseEvent event) {
         openMenus.remove(event.getPlayer().getUniqueId());
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private ItemStack buildItem(Material mat, String name, List<String> loreLines) {
         ItemStack stack = new ItemStack(mat);

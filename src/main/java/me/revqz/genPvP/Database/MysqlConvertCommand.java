@@ -26,15 +26,7 @@ import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * /mysql convert mongo  — migrates all legacy MySQL data into MongoDB.
- * /mysql convert status — shows the current progress.
- *
- * Runs fully async. All progress is logged to console AND sent to the sender.
- */
 public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
-
-    // ── Status tracking ──────────────────────────────────────────────────────
 
     private static class MigrationStatus {
         final AtomicBoolean  running      = new AtomicBoolean(false);
@@ -78,8 +70,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
 
     private final MigrationStatus status = new MigrationStatus();
 
-    // ────────────────────────────────────────────────────────────────────────
-
     private final GenPvP         plugin;
     private final DatabaseManager databaseManager;
     private final Logger          log;
@@ -89,8 +79,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         this.databaseManager  = databaseManager;
         this.log              = plugin.getLogger();
     }
-
-    // ── Command dispatch ─────────────────────────────────────────────────────
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -124,7 +112,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // Reset status for new run
         status.running.set(true);
         status.done.set(false);
         status.currentStep.set("connecting");
@@ -170,7 +157,7 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§7Status: §fIdle / not started");
         }
         String[] lines = status.getLogLines();
-        // Show last 15 lines so chat doesn't flood
+        
         int start = Math.max(0, lines.length - 15);
         for (int i = start; i < lines.length; i++) {
             if (!lines[i].isBlank()) sender.sendMessage("§7" + lines[i]);
@@ -180,8 +167,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("§8§m------------------------------");
     }
-
-    // ── JDBC connection ──────────────────────────────────────────────────────
 
     private Connection openMysql() throws SQLException {
         String host     = plugin.getConfig().getString("mysql.host", "localhost");
@@ -195,19 +180,15 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         return DriverManager.getConnection(url, username, password);
     }
 
-    // ── Migration orchestrator ───────────────────────────────────────────────
-
     private void migrate(CommandSender sender) throws Exception {
         try (Connection conn = openMysql()) {
             consoleAndSender(sender, "§aConnected to MySQL.");
 
             MongoDatabase db = databaseManager.getDatabase();
 
-            // ─── Kits FIRST (highest priority) ───────────────────────────────
             runStep(sender, conn, db, "kit_cooldowns", () -> migrateKitCooldowns(conn, db, sender));
             runStep(sender, conn, db, "genpvp_kits",   () -> migrateKitItems(conn, db, sender));
 
-            // ─── Everything else ──────────────────────────────────────────────
             runStep(sender, conn, db, "bank+stats",        () -> migrateBankAndStats(conn, db, sender));
             runStep(sender, conn, db, "logs",              () -> migrateLogs(conn, db, sender));
             runStep(sender, conn, db, "regions",           () -> migrateRegions(conn, db, sender));
@@ -221,7 +202,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    /** Wraps each step so one table failure doesn't abort the entire migration. */
     private void runStep(CommandSender sender, Connection conn, MongoDatabase db,
                          String stepName, StepTask task) {
         status.currentStep.set(stepName);
@@ -239,8 +219,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
     @FunctionalInterface
     private interface StepTask { void run() throws Exception; }
 
-    // ── Logging helpers ───────────────────────────────────────────────────────
-
     private void consoleAndSender(CommandSender sender, String msg) {
         log.info("[MysqlConvert] " + stripColor(msg));
         sender.sendMessage("§7[MySQL→Mongo] " + msg);
@@ -250,8 +228,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
     private static String stripColor(String s) {
         return s.replaceAll("§[0-9a-fklmnorA-FKLMNOR]", "");
     }
-
-    // ── genpvp_kit_cooldowns → kit_cooldowns  (FIRST) ────────────────────────
 
     private void migrateKitCooldowns(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("kit_cooldowns");
@@ -290,10 +266,8 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ kit_cooldowns: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_kits → kits  (kit item definitions if stored in DB) ───────────
-
     private void migrateKitItems(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
-        // Try common table names for kit item storage
+        
         String table = null;
         for (String candidate : new String[]{"genpvp_kits", "genpvp_kit_items", "genpvp_kit_data"}) {
             if (tableExists(conn, candidate)) { table = candidate; break; }
@@ -342,8 +316,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         status.finish("kit_items", count);
         consoleAndSender(sender, "§a  ✓ kit_items: §f" + count + " §arow(s) migrated.");
     }
-
-    // ── genpvp_bank + genpvp_stats → players ─────────────────────────────────
 
     private void migrateBankAndStats(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         boolean hasBank  = tableExists(conn, "genpvp_bank");
@@ -425,8 +397,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ players: §f" + count + " §atotal row(s) migrated.");
     }
 
-    // ── genpvp_logs → logs ───────────────────────────────────────────────────
-
     private void migrateLogs(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("logs");
         if (!tableExists(conn, "genpvp_logs")) {
@@ -473,8 +443,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ logs: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_regions → regions ─────────────────────────────────────────────
-
     private void migrateRegions(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("regions");
         if (!tableExists(conn, "genpvp_regions")) {
@@ -510,8 +478,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         status.finish("regions", count);
         consoleAndSender(sender, "§a  ✓ regions: §f" + count + " §arow(s) migrated.");
     }
-
-    // ── genpvp_protected_blocks → protected_blocks ───────────────────────────
 
     private void migrateProtectedBlocks(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("protected_blocks");
@@ -552,8 +518,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ protected_blocks: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_enderchest → enderchest ───────────────────────────────────────
-
     private void migrateEnderChest(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("enderchest");
         if (!tableExists(conn, "genpvp_enderchest")) {
@@ -592,8 +556,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ enderchest: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_teams → teams ─────────────────────────────────────────────────
-
     private void migrateTeams(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("teams");
         if (!tableExists(conn, "genpvp_teams")) {
@@ -627,8 +589,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ teams: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_team_members → team_members ───────────────────────────────────
-
     private void migrateTeamMembers(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("team_members");
         if (!tableExists(conn, "genpvp_team_members")) {
@@ -659,8 +619,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         status.finish("team_members", count);
         consoleAndSender(sender, "§a  ✓ team_members: §f" + count + " §arow(s) migrated.");
     }
-
-    // ── genpvp_devil_fruits → devil_fruits ───────────────────────────────────
 
     private void migrateDevilFruits(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("devil_fruits");
@@ -701,8 +659,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         consoleAndSender(sender, "§a  ✓ devil_fruits: §f" + count + " §arow(s) migrated.");
     }
 
-    // ── genpvp_fruit_blacklist → fruit_blacklist ─────────────────────────────
-
     private void migrateFruitBlacklist(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("fruit_blacklist");
         if (!tableExists(conn, "genpvp_fruit_blacklist")) {
@@ -728,8 +684,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         status.finish("fruit_blacklist", count);
         consoleAndSender(sender, "§a  ✓ fruit_blacklist: §f" + count + " §arow(s) migrated.");
     }
-
-    // ── genpvp_custom_items → custom_items ───────────────────────────────────
 
     private void migrateCustomItems(Connection conn, MongoDatabase db, CommandSender sender) throws SQLException {
         status.step("custom_items");
@@ -763,8 +717,6 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         status.finish("custom_items", count);
         consoleAndSender(sender, "§a  ✓ custom_items: §f" + count + " §arow(s) migrated.");
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private boolean tableExists(Connection conn, String table) {
         try (ResultSet rs = conn.getMetaData().getTables(null, null, table, null)) {
@@ -800,7 +752,7 @@ public class MysqlConvertCommand implements CommandExecutor, TabCompleter {
         try {
             coll.insertMany(docs, new InsertManyOptions().ordered(false));
         } catch (MongoBulkWriteException ignored) {
-            // Duplicate keys on re-run — safe to skip
+            
         }
     }
 

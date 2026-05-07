@@ -56,7 +56,6 @@ mongodb:
   uri: "mongodb+srv://revqzdev_db_user:Soza1978@main.brmlp7j.mongodb.net/?appName=Main"
   database: "genpvp"
 
-# ── Player Options Menu (/options) ───────────────────────────────────────────
 options:
   title: "Settings"
   filler-material: GRAY_STAINED_GLASS_PANE
@@ -192,7 +191,6 @@ koth:
     force_stopped:  "&#FCD05C&lK&#FFEDBE&lI&#FCD05C&lN&#FFEDBE&lG &#FFEDBE&lO&#FCD05C&lF &#FFEDBE&lT&#FCD05C&lH&#FFEDBE&lE &#FFEDBE&lH&#FCD05C&lI&#FFEDBE&lL&#FCD05C&lL &8» &fEvent forcefully stopped."
     timeout: "&cKOTH has ended! Nobody captured the hill in time."
 
-# ── Sell Menu ─────────────────────────────────────────────────────────────────
 sell:
 
   # Items that can be sold with /sell all
@@ -299,12 +297,6 @@ spawn:
     countdown: "&#4CC2FA&lS&#80D0FD&lP&#B4DEFF&lA&#80D0FD&lW&#4CC2FA&lN &8» &7 %time%s"
     cancelled:  "&cOops you moved, Warp cancelled!"
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Welcome Message  (sent privately to each player on join)
-# Left side: 8×8 player head rendered as coloured █ characters
-# Right side: the 8 lines below — supports & and &#RRGGBB colour codes
-# delay-ticks: how long to wait after join before sending (lets skin load async)
-# ──────────────────────────────────────────────────────────────────────────────
 welcome-message:
   enabled: true
   delay-ticks: 40
@@ -318,9 +310,7 @@ welcome-message:
     - "<head> &7&nᴠᴀʟᴏʀɪᴄ.ᴍɪɴᴇʜᴜᴛ.ɢɢ&r"
     - "<head>"
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Chat Messages
-# ──────────────────────────────────────────────────────────────────────────────
+
 # Placeholders: %player%  %killer%  %victim%
 # Set any message to "" to suppress it entirely (e.g. leave: "" hides the quit line).
 chat:
@@ -352,7 +342,7 @@ combat:
 # Placeholders: %player% %amount% %balance% %input%
 pay:
   messages:
-    usage:             "&cType /pay (player) (amount) to send money."
+    usage:             "&cTry using: /pay (player) (amount) to send money."
     offline:           "&cThe user &7%player% &cis not online."
     self:              "&cYou cannot pay yourself."
     invalid-amount:    "&cPlease enter a valid amount."
@@ -360,7 +350,7 @@ pay:
     account-disabled:  "&cYour bank account is disabled."
     target-disabled:   "&cThat user's bank account is disabled."
     payments-disabled: "&cUser &7%player% &cis not accepting payments."
-    insufficient:      "&cYou do not have enough funds. &#A7A7A7Balance: &7$%balance%"
+    insufficient:      "&cYou do not have enough money."
     sent:              "&#A7A7A7You paid &7$%amount% &#A7A7A7to &7%player%"
     received:          "&7%player% &#A7A7A7paid you &7$%amount%"
 
@@ -466,7 +456,7 @@ scoreboard:
   background: "NONE" # RGB Also
 
   lines:
-    - text: "         &7⌚ %server_time_MMM d, yyyy%      "
+    - text: "       &7⌚ %server_time_MMM d, yyyy%      "
     - text: ""
     - text: " &#B4DEFF@%player_name%"
     - text: " &#F54E69🗡&f Kills: &#F54E69%statistic_player_kills%"
@@ -499,6 +489,12 @@ scoreboard:
       - text: " &#B4DEFF● &fᴘɪɴɢ&7: (%player_ping%ms)"
       - text: " &#B4DEFFᴠᴀʟᴏʀɪᴄ.ᴍɪɴᴇʜᴜᴛ.ɢɢ"
 
+# Message broadcast to all players when the ancient debris regenerates (every 15 min or forced).
+# Set to "" to suppress the broadcast entirely.
+pit-netherite:
+  reset-message:        "&#FCD05C&lPIT &8» &7The Ancient Debris has regenerated!"
+  force-reset-feedback: "&#FCD05C&lPIT &8» &7Ancient Debris reset forced."
+
 # gens regen
 gens-regen-ticks: 1
 
@@ -511,7 +507,7 @@ shop:
     no-menus:           "&cThere are no menus available."
     unknown-shop:       "&cThis shop does not exist."
     slow-down:          "&cPlease slow down."
-    prestige-required:  "&cYou need Prestige level &7%level% &cto buy this item."
+    prestige-required:  "&cYou need Prestige %level% &cto buy this item."
 
 
 prestige:
@@ -522,32 +518,50 @@ prestige:
   # blocks-per-xp — Number of blocks a player must break to earn 1 XP
   xp-sources:
     kill-xp: 5
-    blocks-per-xp: 10
+    blocks-per-xp: 20
 
   messages:
-    ready: "&#7AFB00You are ready to prestige! &7&l[CLICK TO PRESTIGE] &#A7A7A7to reach &7Prestige %prestige%"
+    ready: "&#FFB685&lPRESTIGE &8» &fReach &7Prestige %prestige% &7[&7ᴄʟɪᴄᴋ&8]"
     # Admin feedback (actionbar)
     # Placeholders: %player%, %amount%, %total%
-    prestige-added:          "&#A7A7A7Added &7%amount% &#A7A7A7prestige level(s) to &7%player%&#A7A7A7. Now: &7%total%"
-    prestige-removed:        "&#A7A7A7Removed &7%amount% &#A7A7A7prestige level(s) from &7%player%&#A7A7A7. Now: &7%total%"
-    prestige-reset:          "&#A7A7A7Reset &7%player%&#A7A7A7's prestige to &70"
-    prestige-blacklisted:    "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from prestiging."
-    prestige-unblacklisted:  "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from prestiging."
-    level-added:             "&#A7A7A7Added &7%amount% &#A7A7A7level(s) to &7%player%&#A7A7A7. Now: &7%total%"
-    level-removed:           "&#A7A7A7Removed &7%amount% &#A7A7A7level(s) from &7%player%&#A7A7A7. Now: &7%total%"
-    level-reset:             "&#A7A7A7Reset &7%player%&#A7A7A7's level to &70"
-    level-blacklisted:       "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from leveling."
-    level-unblacklisted:     "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from leveling."
-    xp-added:                "&#A7A7A7Added &7%amount% &#A7A7A7XP to &7%player%&#A7A7A7. Now: &7%total%"
-    xp-removed:              "&#A7A7A7Removed &7%amount% &#A7A7A7XP from &7%player%&#A7A7A7. Now: &7%total%"
-    xp-reset:                "&#A7A7A7Reset &7%player%&#A7A7A7's XP to &70"
-    xp-blacklisted:          "&7%player% &#A7A7A7has been &#FC0000blacklisted &#A7A7A7from gaining XP."
-    xp-unblacklisted:        "&7%player% &#A7A7A7has been &#7AFB00unblacklisted &#A7A7A7from gaining XP."
+    prestige-added:            "&#FFB685&lPRESTIGE &8» &fAdded &7%amount% prestige level(s) to %player%. Now: %total%"
+    prestige-removed:          "&#FFB685&lPRESTIGE &8» &fRemoved &7%amount% prestige level(s) from %player%. Now: %total%"
+    prestige-reset:            "&#FFB685&lPRESTIGE &8» &fReset &7%player%'s prestige to 0"
+    prestige-blacklisted:      "&#FFB685&lPRESTIGE &8» &f%player% &7has been &#FC0000blacklisted &7from prestiging."
+    prestige-unblacklisted:    "&#FFB685&lPRESTIGE &8» &f%player% &7has been &#7AFB00unblacklisted &7from prestiging."
+    
+    level-added:               "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &fAdded &7%amount% level(s) to %player%. Now: %total%"
+    level-removed:             "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &fRemoved &7%amount% level(s) from %player%. Now: %total%"
+    level-reset:               "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &fReset &7%player%'s level to 0"
+    level-blacklisted:         "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &f%player% &7has been &#FC0000blacklisted &7from leveling."
+    level-unblacklisted:       "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &f%player% &7has been &#7AFB00unblacklisted &7from leveling."
+    
+    xp-added:                  "&#8CECD9&lX&#ABFFEE&lP &8» &fAdded &7%amount% XP to %player%. Now: %total%"
+    xp-removed:                "&#8CECD9&lX&#ABFFEE&lP &8» &fRemoved &7%amount% XP from %player%. Now: %total%"
+    xp-reset:                  "&#8CECD9&lX&#ABFFEE&lP &8» &fReset &7%player%'s XP to 0"
+    xp-blacklisted:            "&#8CECD9&lX&#ABFFEE&lP &8» &f%player% &7has been &#FC0000blacklisted &7from gaining XP."
+    xp-unblacklisted:          "&#8CECD9&lX&#ABFFEE&lP &8» &f%player% &7has been &#7AFB00unblacklisted &7from gaining XP."
+    
     # Shown to the player themselves when blacklisted
-    blacklisted-from-prestige: "&cYou are blacklisted from prestiging."
-    blacklisted-from-leveling: "&cYou are blacklisted from leveling."
-    blacklisted-from-xp:       "&cYou are blacklisted from gaining XP."
+    blacklisted-from-prestige: "&#FFB685&lPRESTIGE &8» &fYou are &#FC0000blacklisted &7from prestiging."
+    blacklisted-from-leveling: "&#8CECA6&lL&#99F2B1&lE&#A7F9BD&lV&#B4FFC8&lE&#A0F6B7&lL&#8CECA6&lS &8» &fYou are &#FC0000blacklisted &7from leveling."
+    blacklisted-from-xp:       "&#8CECD9&lX&#ABFFEE&lP &8» &fYou are &#FC0000blacklisted &7from gaining XP."
 
+    # Placeholders: %required% = level needed, %current% = player's current level
+    not-enough-level:          "&#FFB685&lPRESTIGE &8» &cYou need level &7%required% &cbefore you can prestige. (Current: &7%current%&c)"
+    # Placeholders: %prestige% = new prestige level
+    prestige-up:               "&a&l✦ PRESTIGE UP! &aYou are now prestige &e&l%prestige%&a! &7(Level and XP have been reset)"
+
+# Balance command (/balance [player])
+# Placeholders: %player% = player name, %balance% = formatted balance
+balance:
+  messages:
+    self: "&#ABE25F&lB&#B8EC70&lA&#C4F580&lL&#D1FF91&lA&#C4F580&lN&#B8EC70&lC&#ABE25F&lE &8» &fYour balance: &#C6DEF1$%balance%"
+    other: "&#ABE25F&lB&#B8EC70&lA&#C4F580&lL&#D1FF91&lA&#C4F580&lN&#B8EC70&lC&#ABE25F&lE &8» &7%player%&7's balance is &#C6DEF1$%balance%"
+    players-only: "&cTry using: /balance (player)"
+    no-permission: "&cYou don't have permission to view other players' balances."
+    offline: "&cPlayer %player% &cis not online."
+    loading: "&7Bank data is still loading, please wait..."
 
 # Teams
 teams:
@@ -653,18 +667,37 @@ onepiece:
 
 # head abilities
 heads:
+  # Lore applied to each custom head item (supports & colour codes and %genpvp_...% PAPI placeholders)
+  lore:
+    luffy_head:
+      - ""
+      - "&7● &fGear 3 Bomb Punch."
+      - "&8» &7Right-click to launch a shockwave punch!"
+    zoro_head:
+      - ""
+      - "&7● &fPurgatory Onigiri Dash."
+      - "&8» &7Sneak + jump to dash forward!"
+    nami_head:
+      - ""
+      - "&7● &fMirage Tempo Smoke."
+      - "&8» &7Right-click to deploy a smoke sphere!"
+    sanji_head:
+      - ""
+      - "&7● &fIfrit Jambe — Fire Legs."
+      - "&8» &7Sneak + jump to ignite your kicks!"
+
   messages:
-    # Sent when an ability is used inside SPAWN / GENS
+    # Sent when an ability is used inside a restricted region type
     restricted-zone:   "&cAbilities cannot be used here."
-    # %seconds% = remaining cooldown with 1 decimal place
+    # %seconds%
     cooldown:          "&cOn cooldown! %seconds%s remaining."
-    # Luffy Head — Gear 3 bomb punch. %count% = entities hit, %unit% = "entity"/"entities"
+    # Luffy Head
     luffy-gear3:       "&#FAEDCB&lGEAR 3 &8» &7Bombed &f%count% %unit% &7back!"
-    # Zoro Head — Purgatory Onigiri dash
+    # Zoro Head
     zoro-onigiri:      "&#FAEDCB&lPURGATORY ONIGIRI &8» &fDashing."
-    # Nami Head — Mirage Tempo smoke deployment
+    # Nami Head
     nami-mirage-tempo: "&#FAEDCB&lMIRAGE TEMPO &8» &7Smoke deployed."
-    # Sanji Head — Ifrit Jambe activation. %seconds% = duration
+    # Sanji Head
     sanji-ifrit-start: "&#FAEDCB&lIFRIT JAMBE &8» &7Fire legs active for &f%seconds% &7seconds"
     # Sanji Head — Ifrit Jambe expiry
     sanji-ifrit-end:   "&#FAEDCB&lIFRIT JAMBE &8» &7Fire faded."
@@ -673,34 +706,23 @@ heads:
 genpvp:
   messages:
     no-permission:        "&cYou do not have permission to execute this command."
-    usage:                "&cTry using: /genpvp <reload | item_give | onepiece | head>"
+    usage:                "&cTry using: /genpvp <reload | item_give | onepiece | head | force_reset_pit>"
     reload-success:       "&#DBCDF0&lGENPVP &8» &7Configuration and shops reloaded successfully."
     item-give-usage:      "&cTry using: /genpvp item_give <item> [player]"
-    # %items% = comma-separated list of known items
     item-give-available:  "&#DBCDF0&lGENPVP &8» &f%items%"
-    # %item% = the name the sender typed
     item-give-unknown:    "&#DBCDF0&lGENPVP &8» &7Unknown Item &f%item%"
-    # %item% = item name — sent to the recipient
     item-give-received:   "&#DBCDF0&lGENPVP &8» &7You recived &f%item%!"
-    # %item% = item name, %player% = recipient name — sent to the admin
     item-gave-to:         "&#DBCDF0&lGENPVP &8» &f%item% &7to &f%player%."
-    # %player% = name that was not found online
     player-not-found:     "&#DBCDF0&lGENPVP &8» &7Player not found &f%player%"
     player-required:      "&cTry using: /genpvp item_give <item> <player>"
-    # %subcmd% = "onepiece" or "head"
     register-usage:       "&cTry using: /genpvp %subcmd% set from_hand <name>"
-    # %names% = comma-separated suggested names
     register-names:       "&#DBCDF0&lGENPVP &8» &7Names &f%names%"
     register-hand-only:   "&cTry using: 'from_hand' only."
     register-player-only: "&#DBCDF0&lGENPVP &8» &7Error: player not found"
     register-hold-item:   "&cTry using: Holding_item."
-    # %name% = the key it was registered under
     register-success:     "&#DBCDF0&lGENPVP &8» &7Registered held item as &f%name%&f."
 
-# ── Luffy Armor lore templates ──────────────────────────────────────────────
-# These lines are written onto each armor piece every second via PlaceholderAPI.
-# Use %genpvp_...% placeholders — they'll be resolved automatically.
-# Use & color codes as usual.
+# luffy armor lore
 onepiece:
   armor-lore:
     luffy_helmet:

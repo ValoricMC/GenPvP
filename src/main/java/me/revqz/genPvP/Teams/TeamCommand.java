@@ -30,7 +30,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Command Execution
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @Override
@@ -64,8 +64,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ── /team (no args) ──────────────────────────────────────────────────────
-
     private void handleNoArgs(Player player) {
         if (!teamManager.isInTeam(player.getUniqueId())) {
             msg(player, cfgMsg("no-team", "&cYou don't have a team. Type /team create (name) to create a team."));
@@ -79,9 +77,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ── /team create <name> ──────────────────────────────────────────────────
-
-    /** Only letters, digits, and underscores — blocks all formatting codes and special chars. */
     private static final java.util.regex.Pattern VALID_TEAM_NAME = java.util.regex.Pattern.compile("^[a-zA-Z0-9_]+$");
 
     private void handleCreate(Player player, String[] args) {
@@ -91,7 +86,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
         String name = args[1];
 
-        // ── Name validation ──────────────────────────────────────────────────
         if (name.length() < 3) {
             msg(player, "&cTeam name must be at least 3 characters long.");
             actionBar(player, "&cTeam name must be at least 3 characters long.");
@@ -105,8 +99,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
             playNo(player);
             return;
         }
-
-        // ─────────────────────────────────────────────────────────────────────
 
         if (teamManager.isInTeam(player.getUniqueId())) {
             msg(player, cfgMsg("already-in-team", "&cYou are already in a team."));
@@ -126,8 +118,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         actionBar(player, cfgMsg("team-created", "&#7AFB00Team created."));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
     }
-
-    // ── /team join <team> ────────────────────────────────────────────────────
 
     private void handleJoin(Player player, String[] args) {
         if (args.length < 2) return;
@@ -173,8 +163,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         actionBar(player, cfgMsg("you-joined", "&#7AFB00You joined the team."));
     }
 
-    // ── /team leave ──────────────────────────────────────────────────────────
-
     private void handleLeave(Player player) {
         UUID uuid = player.getUniqueId();
         if (!teamManager.isInTeam(uuid)) {
@@ -206,8 +194,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         msg(player, cfgMsg("left-team", "&#A7A7A7You left the team"));
         actionBar(player, cfgMsg("left-team", "&#A7A7A7You left the team"));
     }
-
-    // ── /team invite <player> ────────────────────────────────────────────────
 
     private void handleInvite(Player player, String[] args) {
         if (args.length < 2) { msg(player, "&cUsage: /team invite <player>"); return; }
@@ -264,8 +250,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         teamManager.invitePlayer(target.getUniqueId(), team.getName(), player.getName());
     }
 
-    // ── /team disband [confirm] ──────────────────────────────────────────────
-
     private void handleDisband(Player player, String[] args) {
         UUID uuid = player.getUniqueId();
 
@@ -297,8 +281,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         teamManager.setPendingDisband(uuid, team.getName());
     }
 
-    // ── /team chat [message] ─────────────────────────────────────────────────
-
     private void handleChat(Player player, String[] args) {
         UUID uuid = player.getUniqueId();
         Team team = teamManager.getTeam(uuid);
@@ -324,8 +306,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ── /team info [team] ────────────────────────────────────────────────────
-
     private void handleInfo(Player player, String[] args) {
         Team team;
         if (args.length >= 2) {
@@ -337,8 +317,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
         player.openInventory(TeamGUI.buildTeamInfo(team));
     }
-
-    // ── /team kick <player> ──────────────────────────────────────────────────
 
     private void handleKick(Player player, String[] args) {
         if (args.length < 2) { msg(player, "&cUsage: /team kick <player>"); return; }
@@ -389,8 +367,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ── /team top ────────────────────────────────────────────────────────────
-
     private void handleTop(Player player) {
         String header = cfgMsg("top-header",
                 "&8&m                    &r &#FCD05C&lTOP TEAMS &8&m                    ");
@@ -420,7 +396,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Tab Completion
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     @Override
@@ -465,7 +441,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    //  Helpers
+    
     // ═══════════════════════════════════════════════════════════════════════════
 
     public void broadcastTeamChat(Team team, String senderName, String message) {

@@ -22,15 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * Registers custom items under a named key and persists their definitions
- * to MongoDB. Works with any ItemStack, including:
- *  - ItemsAdder items (their own PDC keys are preserved untouched)
- *  - Items with custom-enchant lore / PDC entries (fully preserved)
- *
- * Stamping only adds one PDC entry ({@code genpvp:custom_item_id = name}).
- * All existing metadata is left intact.
- */
 public class CustomItemRegistry {
 
     static final String PDC_KEY_NAME = "custom_item_id";
@@ -42,10 +33,8 @@ public class CustomItemRegistry {
 
     private static final GsonComponentSerializer GSON = GsonComponentSerializer.gson();
 
-    /** name (lower-case) → raw serialized bytes of the registered template. */
     private final Map<String, byte[]> templates = new ConcurrentHashMap<>();
 
-    /** name (lower-case) → legacy-string lore lines from the registered template. */
     private final Map<String, List<String>> templateLoreCache = new ConcurrentHashMap<>();
 
     public CustomItemRegistry(GenPvP plugin, MongoDatabase db, boolean dbConnected) {
@@ -58,21 +47,17 @@ public class CustomItemRegistry {
 
     public NamespacedKey getPdcKey() { return pdcKey; }
 
-    // ── Registration ──────────────────────────────────────────────────────────
-
     public ItemStack register(String name, ItemStack item) {
         String key = name.toLowerCase();
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(pdcKey, PersistentDataType.STRING, key);
         item.setItemMeta(meta);
 
-        // Verify the tag was actually set
         String verify = item.getItemMeta().getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING);
         plugin.getLogger().info("[CustomItemRegistry] Registered '" + key + "' | PDC stamp check: " + verify);
 
         byte[] serialized = item.serializeAsBytes();
 
-        // Round-trip verification: ensure PDC survives serialize→deserialize
         ItemStack roundTrip = ItemStack.deserializeBytes(serialized);
         String rtCheck = roundTrip.hasItemMeta()
                 ? roundTrip.getItemMeta().getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING)
@@ -104,8 +89,6 @@ public class CustomItemRegistry {
         return item;
     }
 
-    // ── Lookup ────────────────────────────────────────────────────────────────
-
     public String getItemId(ItemStack item) {
         if (item == null || item.getType().isAir() || !item.hasItemMeta()) return null;
         return item.getItemMeta().getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING);
@@ -121,7 +104,7 @@ public class CustomItemRegistry {
         byte[] data = templates.get(name.toLowerCase());
         if (data == null) return null;
         ItemStack item = ItemStack.deserializeBytes(data);
-        // Defensive re-stamp: ensure PDC tag survives deserialization across versions
+        
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             String existing = meta.getPersistentDataContainer().get(pdcKey, PersistentDataType.STRING);
@@ -140,8 +123,6 @@ public class CustomItemRegistry {
     public Set<String> getRegisteredNames() {
         return Collections.unmodifiableSet(templates.keySet());
     }
-
-    // ── Startup load ──────────────────────────────────────────────────────────
 
     private void loadAll() {
         if (!dbConnected) return;
@@ -164,11 +145,6 @@ public class CustomItemRegistry {
         }
     }
 
-    /**
-     * Returns the lore of the registered template as JSON-serialized strings.
-     * Uses GsonComponentSerializer so that modern Paper 1.21+ Components
-     * (which fail legacy §-serialization) round-trip correctly.
-     */
     public List<String> getTemplateLore(String name) {
         return templateLoreCache.get(name.toLowerCase());
     }

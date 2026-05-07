@@ -12,14 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/**
- * /antidupe — view and manage anti-dupe flags in real time.
- *
- *   /antidupe                        — show current flag status
- *   /antidupe reload                 — reload config from disk
- *   /antidupe toggle <flag>          — flip a boolean flag and save to config
- *   /antidupe set punish-command <…> — update the punish command and save
- */
 public class AntiDupeCommand implements CommandExecutor, TabCompleter {
 
     private static final String PREFIX = ChatColor.DARK_AQUA + "[AntiDupe] " + ChatColor.RESET;

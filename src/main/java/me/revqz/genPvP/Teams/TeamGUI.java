@@ -13,34 +13,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
 
-/**
- * Builds team GUIs.
- *
- * <h3>Team Info GUI (4 rows, 36 slots)</h3>
- * <pre>
- *   Row 0-2 (slots 0-26): member skulls / gray glass pane invite placeholders
- *   Row 3 (slots 27-35): control bar
- *     27 = sign (search)     28 = hopper (sort)
- *     30 = arrow (back)      31 = helmet (team)     32 = arrow (next)
- *     35 = sword (pvp)
- * </pre>
- *
- * <h3>Disband Confirmation GUI (3 rows, 27 slots)</h3>
- * Slot 11 = red glass (cancel), Slot 15 = lime glass (confirm)
- */
 public final class TeamGUI {
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
 
-    /** Substring present in every team info GUI title — used to identify clicks. */
     public static final String TEAM_GUI_TITLE_CHECK = "ᴛᴇᴀᴍ";
 
-    /** Raw config string for the disband confirmation title. */
     public static final String DISBAND_GUI_TITLE_RAW = "&#3F3F3Fᴄᴏɴꜰɪʀᴍ ᴅɪꜱʙᴀɴᴅɪɴɢ ᴛᴇᴀᴍ";
 
     private TeamGUI() {}
-
-    // ── Small Caps ────────────────────────────────────────────────────────────
 
     private static final String NORMAL = "abcdefghijklmnopqrstuvwxyz";
     private static final String SMALL  = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ";
@@ -54,22 +35,17 @@ public final class TeamGUI {
         return sb.toString();
     }
 
-    // ── Team Info GUI (4 rows) ────────────────────────────────────────────────
-
     @SuppressWarnings("deprecation")
     public static Inventory buildTeamInfo(Team team, boolean sortByJoinDate) {
         Component title = LEGACY.deserialize(ColorUtil.colorize("&#3F3F3Fᴛᴇᴀᴍ (Page 1/1)"));
         Inventory gui = Bukkit.createInventory(null, 36, title);
 
-        // Fill slots 0-26 with invite placeholder
         ItemStack invitePane = makeItem(Material.GRAY_STAINED_GLASS_PANE,
                 ColorUtil.colorize("&#00F986ɪɴᴠɪᴛᴇ"),
                 List.of("§fClick to invite a new player"));
         for (int i = 0; i <= 26; i++) {
             gui.setItem(i, invitePane);
         }
-
-        // ── Control bar (row 3, slots 27-35) ──────────────────────────────────
 
         gui.setItem(27, makeItem(Material.OAK_SIGN,
                 ColorUtil.colorize("&#00F986ꜱᴇᴀʀᴄʜ"),
@@ -83,7 +59,6 @@ public final class TeamGUI {
                 ColorUtil.colorize("&#00F986ʙᴀᴄᴋ"),
                 List.of("§fClick to go to the previous page")));
 
-        // Helmet — team name + points
         String teamSmall = toSmallCaps(team.getName());
         ItemStack helmet = makeItem(Material.IRON_HELMET,
                 ColorUtil.colorize("&#00F986ᴛᴇᴀᴍ " + teamSmall),
@@ -101,7 +76,6 @@ public final class TeamGUI {
                 ColorUtil.colorize("&#00F986ɴᴇxᴛ"),
                 List.of("§fClick to go to the next page")));
 
-        // PvP sword — reflects toggle state
         String pvpState = team.isPvpEnabled()
                 ? ColorUtil.colorize("§7Currently: &#7AFB00§lON")
                 : ColorUtil.colorize("§7Currently: &#FC0000§lOFF");
@@ -115,7 +89,6 @@ public final class TeamGUI {
         }
         gui.setItem(35, pvpSword);
 
-        // ── Player skulls ─────────────────────────────────────────────────────
         List<TeamMember> members = sortByJoinDate
                 ? team.getMembersSortedByJoinDate()
                 : team.getMemberList();
@@ -145,12 +118,9 @@ public final class TeamGUI {
         return gui;
     }
 
-    /** Default: no join-date sorting. */
     public static Inventory buildTeamInfo(Team team) {
         return buildTeamInfo(team, false);
     }
-
-    // ── Disband Confirmation GUI ──────────────────────────────────────────────
 
     public static Inventory buildDisbandConfirmation() {
         Component title = LEGACY.deserialize(ColorUtil.colorize(DISBAND_GUI_TITLE_RAW));
@@ -166,8 +136,6 @@ public final class TeamGUI {
 
         return gui;
     }
-
-    // ── Helpers ────────────────────────────────────────────────────────────────
 
     @SuppressWarnings("deprecation")
     private static ItemStack makeItem(Material material, String name, List<String> lore) {

@@ -82,11 +82,11 @@ shops:
       - slot: 14
         material: ENCHANTED_BOOK
         name: "&#81C7FFEnchanted Book"
-        subtitle: "#4B58FFSweaping Edge 3"
+        subtitle: "#4B58FFSweeping Edge 3"
         rarity: RARE
         price: 8
         enchants:
-          - "sweaping_edge:1"
+          - "sweeping_edge:3"
         lore:
           - "&d%subtitle%"
           - ""
@@ -98,11 +98,11 @@ shops:
       - slot: 15
         material: ENCHANTED_BOOK
         name: "&#81C7FFEnchanted Book"
-        subtitle: "#4B58FFEfficency 5"
+        subtitle: "#4B58FFEfficiency 5"
         rarity: RARE
         price: 16
         enchants:
-          - "efficency:5"
+          - "efficiency:5"
         lore:
           - "&d%subtitle%"
           - ""
@@ -182,7 +182,7 @@ shops:
         rarity: RARE
         price: 10
         enchants:
-          - "depth_strider:4"
+          - "depth_strider:3"
         lore:
           - "&d%subtitle%"
           - ""

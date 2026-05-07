@@ -38,9 +38,8 @@ public class KothManager {
     private int     captureTimeRemaining;
     private int     kothElapsedSeconds   = 0;
     private UUID    capturingPlayer      = null;
-    private String  capturingPlayerName  = null;  // mirrors capturingPlayer for webhook use
+    private String  capturingPlayerName  = null;  
 
-    /** Cached reference to the KOTHCAPTURE region — looked up once per event, not every tick. */
     private ProtectRegion cachedKothRegion = null;
 
     private final Map<Integer, KothWinnerEntry> topWinnersCache = new HashMap<>();
@@ -109,8 +108,6 @@ public class KothManager {
         return text;
     }
 
-    // ── KOTH loop ─────────────────────────────────────────────────────────────
-
     private void startKothLoop() {
         new BukkitRunnable() {
             @Override
@@ -130,7 +127,7 @@ public class KothManager {
         capturingPlayer      = null;
         captureTimeRemaining = captureTimeSetting;
         kothElapsedSeconds   = 0;
-        cachedKothRegion     = regionManager.getRegion("KOTHCAPTURE"); // cache once
+        cachedKothRegion     = regionManager.getRegion("KOTHCAPTURE"); 
 
         logManager.logKoth("START", "MainKoth", null);
         broadcast("start");
@@ -156,7 +153,7 @@ public class KothManager {
             return;
         }
 
-        ProtectRegion kothRegion = cachedKothRegion; // use cached reference, no map lookup
+        ProtectRegion kothRegion = cachedKothRegion; 
         if (kothRegion == null) return;
 
         List<Player> inside = new ArrayList<>();
@@ -235,8 +232,6 @@ public class KothManager {
         forceUpdateLeaderboardSync();
     }
 
-    // ── Leaderboard ───────────────────────────────────────────────────────────
-
     private void startLeaderboardTask() {
         new BukkitRunnable() {
             @Override
@@ -256,11 +251,7 @@ public class KothManager {
         Map<Integer, KothWinnerEntry> fresh = new HashMap<>();
 
         try {
-            // MongoDB aggregation pipeline:
-            // {$match: {type: "KOTH", event_type: "WIN", winner: {$ne: null}}}
-            // {$group: {_id: {winner: "$winner", winner_name: "$winner_name"}, wins: {$sum: 1}}}
-            // {$sort: {wins: -1}}
-            // {$limit: 10}
+            
             List<Document> pipeline = List.of(
                     new Document("$match", new Document("type", "KOTH")
                             .append("event_type", "WIN")
@@ -289,8 +280,6 @@ public class KothManager {
 
         topWinnersCache.putAll(fresh);
     }
-
-    // ── Getters ──────────────────────────────────────────────────────────────
 
     public boolean isKothActive()        { return isKothActive; }
     public int getTimeUntilNextKoth()    { return timeUntilNextKoth; }

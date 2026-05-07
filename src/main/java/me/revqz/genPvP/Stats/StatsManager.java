@@ -48,8 +48,6 @@ public class StatsManager implements Listener {
         if (dbConnected) startLeaderboardTask();
     }
 
-    // ── Events ────────────────────────────────────────────────────────────────
-
     public void inject(UUID uuid, int kills, int deaths) {
         cache.put(uuid, new int[]{kills, deaths});
     }
@@ -60,8 +58,6 @@ public class StatsManager implements Listener {
         if (cache.containsKey(uuid)) return;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> loadPlayer(uuid));
     }
-
-    // ── Mutation ──────────────────────────────────────────────────────────────
 
     public void addKill(UUID uuid) {
         int[] stats = cache.computeIfAbsent(uuid, k -> new int[2]);
@@ -75,8 +71,6 @@ public class StatsManager implements Listener {
         if (dbConnected) persistAsync(uuid, stats[0], stats[1]);
     }
 
-    // ── Reads ─────────────────────────────────────────────────────────────────
-
     public int getKills(UUID uuid) {
         int[] s = cache.get(uuid);
         return s != null ? s[0] : 0;
@@ -89,8 +83,6 @@ public class StatsManager implements Listener {
 
     public StatsEntry getTopKills(int rank)  { return killsBoard.getOrDefault(rank, EMPTY); }
     public StatsEntry getTopDeaths(int rank) { return deathsBoard.getOrDefault(rank, EMPTY); }
-
-    // ── DB ────────────────────────────────────────────────────────────────────
 
     private void loadPlayer(UUID uuid) {
         try {
@@ -156,8 +148,6 @@ public class StatsManager implements Listener {
             target.putAll(fresh);
         });
     }
-
-    // ── Wipe ──────────────────────────────────────────────────────────────────
 
     public void wipeAllMemory() {
         cache.clear();

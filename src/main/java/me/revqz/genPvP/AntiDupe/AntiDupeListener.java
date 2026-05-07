@@ -19,13 +19,11 @@ public class AntiDupeListener implements Listener {
         this.manager = manager;
     }
 
-    /** Stamp all existing items in the player's inventory when they log in. */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         manager.stampInventory(event.getPlayer());
     }
 
-    /** Stamp all items when any inventory is opened (catches items from chests, trades, etc.). */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (event.getPlayer() instanceof Player player) {
@@ -33,7 +31,6 @@ public class AntiDupeListener implements Listener {
         }
     }
 
-    /** Check items as they're picked up off the ground — cancel if confirmed dupe. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
@@ -45,7 +42,6 @@ public class AntiDupeListener implements Listener {
         }
     }
 
-    /** Clean up all tracking data when a player disconnects. */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         manager.clearPlayer(event.getPlayer().getUniqueId());

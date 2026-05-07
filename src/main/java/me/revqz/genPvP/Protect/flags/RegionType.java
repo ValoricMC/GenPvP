@@ -23,10 +23,16 @@ public enum RegionType {
     PVPROOMGATE2(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_MOB_SPAWN, RegionRule.ALLOW_KNOCKBACK,
             RegionRule.ALLOW_PEARL)),
     PIT(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_KNOCKBACK, RegionRule.ALLOW_WIND_CHARGE)),
-    // PIT intentionally omits ALLOW_PEARL — players cannot pearl out
+    
     SHULKERROOMS(EnumSet.of(RegionRule.ALLOW_INTERACT)),
-    // SHULKERROOMS — no break/place/damage/pearl/windcharge.
-    // Shulker box break/place exceptions are handled in ProtectListener.
+    
+    ANVIL(EnumSet.of(RegionRule.ALLOW_INTERACT, RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_KNOCKBACK,
+            RegionRule.ALLOW_PEARL, RegionRule.ALLOW_WIND_CHARGE)),
+    
+    PITNETHERITE(EnumSet.of(RegionRule.ALLOW_DAMAGE, RegionRule.ALLOW_MOB_SPAWN,
+            RegionRule.ALLOW_KNOCKBACK, RegionRule.ALLOW_BREAK,
+            RegionRule.ALLOW_WIND_CHARGE, RegionRule.ALLOW_PEARL)),
+    
     GLOBAL(EnumSet.allOf(RegionRule.class));
 
     private final Set<RegionRule> allowedRules;

@@ -12,6 +12,5 @@ public enum FruitType {
         this.displayName = displayName;
     }
 
-    /** Player-facing type name, also matches the YAML filename (e.g. "Logia.yml"). */
     public String getDisplayName() { return displayName; }
 }

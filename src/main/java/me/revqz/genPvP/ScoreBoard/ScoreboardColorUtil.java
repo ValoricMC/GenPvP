@@ -5,20 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Parses Minecraft-style color codes into AWT {@link Color} objects for use
- * with {@link ScoreboardPanel}'s Graphics2D rendering.
- *
- * Supported syntax:
- *   &#RRGGBB  — RGB hex color (resets bold/italic)
- *   &0-&f     — legacy Minecraft color codes (resets bold/italic)
- *   &l        — bold
- *   &o        — italic
- *   &m        — strikethrough
- *   &n        — underline
- *   &r        — reset all to white/plain
- *   &k        — obfuscated (skipped)
- */
 public final class ScoreboardColorUtil {
 
     public record Segment(String text, Color color, boolean bold, boolean italic,
@@ -26,7 +12,6 @@ public final class ScoreboardColorUtil {
 
     private static final Color DEFAULT_COLOR = Color.WHITE;
 
-    /** Minecraft legacy color codes → AWT Color (standard Minecraft palette). */
     private static final Map<Character, Color> LEGACY = Map.ofEntries(
             Map.entry('0', new Color(0, 0, 0)),
             Map.entry('1', new Color(0, 0, 170)),
@@ -48,14 +33,6 @@ public final class ScoreboardColorUtil {
 
     private ScoreboardColorUtil() {}
 
-    /**
-     * Parses {@code raw} into a list of {@link Segment}s, each carrying its own
-     * AWT Color and formatting flags. Use these segments in
-     * {@link ScoreboardPanel#paintComponent} to draw outlined colored text.
-     *
-     * @param raw string with {@code &} color/format codes and optional {@code &#RRGGBB} hex
-     * @return ordered list of segments (may be empty if {@code raw} is null/blank)
-     */
     public static List<Segment> parseSegments(String raw) {
         List<Segment> result = new ArrayList<>();
         if (raw == null || raw.isEmpty()) return result;
@@ -68,7 +45,6 @@ public final class ScoreboardColorUtil {
         while (i < raw.length()) {
             char c = raw.charAt(i);
 
-            // ── &#RRGGBB hex ──────────────────────────────────────────────────
             if (c == '&' && i + 7 < raw.length() && raw.charAt(i + 1) == '#') {
                 String hex = raw.substring(i + 2, i + 8);
                 if (hex.matches("[0-9A-Fa-f]{6}")) {
@@ -80,7 +56,6 @@ public final class ScoreboardColorUtil {
                 }
             }
 
-            // ── &<code> ───────────────────────────────────────────────────────
             if (c == '&' && i + 1 < raw.length()) {
                 char code = Character.toLowerCase(raw.charAt(i + 1));
 
@@ -115,7 +90,7 @@ public final class ScoreboardColorUtil {
                         bold = false; italic = false; strikethrough = false; underline = false;
                         i += 2; continue;
                     }
-                    case 'k' -> { i += 2; continue; } // obfuscated — skip
+                    case 'k' -> { i += 2; continue; } 
                 }
             }
 

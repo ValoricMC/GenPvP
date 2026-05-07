@@ -28,8 +28,6 @@ public class CommandSpyManager implements Listener, CommandExecutor {
         this.plugin = plugin;
     }
 
-    // ── Command ───────────────────────────────────────────────────────────────
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
             @NotNull String label, @NotNull String[] args) {
@@ -61,16 +59,13 @@ public class CommandSpyManager implements Listener, CommandExecutor {
         return true;
     }
 
-    // ── Listener ──────────────────────────────────────────────────────────────
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         if (activeSpies.isEmpty()) return;
 
         Player sender  = event.getPlayer();
-        String message = event.getMessage(); // includes leading /
+        String message = event.getMessage(); 
 
-        // Don't spy on commandspy toggles
         String lower = message.toLowerCase();
         if (lower.equals("/commandspy") || lower.startsWith("/commandspy ")) return;
 
@@ -85,7 +80,7 @@ public class CommandSpyManager implements Listener, CommandExecutor {
         for (UUID uuid : activeSpies) {
             Player spy = Bukkit.getPlayer(uuid);
             if (spy == null || !spy.isOnline()) continue;
-            if (spy.equals(sender)) continue; // don't show your own commands back to you
+            if (spy.equals(sender)) continue; 
             spy.sendMessage(formatted);
         }
     }

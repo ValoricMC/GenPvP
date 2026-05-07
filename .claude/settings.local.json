@@ -13,7 +13,9 @@
       "Bash(./gradlew.bat compileJava)",
       "Bash(./gradlew.bat build *)",
       "Bash(./gradlew.bat compileJava --info)",
-      "Bash(mvn package *)"
+      "Bash(mvn package *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\danie\\\\Projects\\\\GenPvP\\\\src\\\\main\\\\java\\\\me\\\\revqz\\\\genPvP\\\\Gens\" -Recurse -Filter \"*.java\")",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

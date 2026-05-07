@@ -12,15 +12,6 @@ import org.bukkit.World;
 
 import java.util.Set;
 
-/**
- * Hooks into the WorldEdit / FastAsyncWorldEdit extent pipeline.
- *
- * Every block set operation that passes through a WorldEdit EditSession
- * (paste, schematic load, //set, etc.) is intercepted here. The location
- * is stamped into {@code creativePlacedBlocks} so {@link ProtectListener}
- * treats those blocks the same as blocks placed manually in creative mode:
- * they can only be broken in regions that explicitly allow ALLOW_BREAK.
- */
 public class WorldEditHook {
 
     private final GenPvP plugin;
@@ -30,29 +21,15 @@ public class WorldEditHook {
         this.plugin              = plugin;
         this.creativePlacedBlocks = creativePlacedBlocks;
 
-        // Register with WorldEdit's event bus — this receives ALL edit sessions,
-        // including those triggered by FAWE (which wraps the same bus).
         WorldEdit.getInstance().getEventBus().register(this);
     }
 
-    /**
-     * Called by WorldEdit before every edit session.
-     * We inject a tracking extent into the chain that records every block-set location.
-     */
     @Subscribe
     public void onEditSession(EditSessionEvent event) {
-        // WorldEdit fires this event once per stage (BEFORE_HISTORY, BEFORE_REORDER, BEFORE_CHANGE).
-        // We inject at every stage; the Set backing creativePlacedBlocks deduplicates automatically,
-        // so adding the same Location multiple times is harmless.
+        
         event.setExtent(new SchematicTrackerExtent(event.getExtent(), event));
     }
 
-    // ── Inner extent ──────────────────────────────────────────────────────────
-
-    /**
-     * Delegates all operations to the underlying extent but records the world
-     * position of every block that is set.
-     */
     private class SchematicTrackerExtent extends AbstractDelegateExtent {
 
         private final EditSessionEvent sessionEvent;
@@ -72,7 +49,7 @@ public class WorldEditHook {
                 String worldName = sessionEvent.getWorld().getName();
                 World bukkitWorld = plugin.getServer().getWorld(worldName);
                 if (bukkitWorld != null) {
-                    // Location.hashCode() / equals() use block coordinates — safe as map key
+                    
                     creativePlacedBlocks.add(new Location(bukkitWorld,
                             location.x(), location.y(), location.z()));
                 }

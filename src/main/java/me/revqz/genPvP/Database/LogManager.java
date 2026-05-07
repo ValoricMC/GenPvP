@@ -11,18 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Async log pipeline:
- *
- *   Main thread (enqueue — instant, non-blocking)
- *        │
- *        ▼
- *   writeQueue (ConcurrentLinkedQueue<Document>)
- *        │
- *   Async writer every 1 s (batch insertMany to MongoDB)
- *        │
- *   On failure → requeue (bounded to MAX_MEM_QUEUE)
- */
 public class LogManager {
 
     private final GenPvP plugin;
@@ -45,8 +33,6 @@ public class LogManager {
         startWriterTask();
     }
 
-    // ── Background writer ─────────────────────────────────────────────────────
-
     private void startWriterTask() {
         plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             List<Document> batch = drain(BATCH_SIZE);
@@ -60,10 +46,8 @@ public class LogManager {
             if (!insertBatch(batch)) {
                 requeue(batch);
             }
-        }, 20L, 20L); // every 1 second
+        }, 20L, 20L); 
     }
-
-    // ── I/O ───────────────────────────────────────────────────────────────────
 
     private boolean insertBatch(List<Document> batch) {
         try {
@@ -75,8 +59,6 @@ public class LogManager {
             return false;
         }
     }
-
-    // ── Queue helpers ─────────────────────────────────────────────────────────
 
     private List<Document> drain(int limit) {
         List<Document> batch = new ArrayList<>(limit);
@@ -97,22 +79,17 @@ public class LogManager {
         }
     }
 
-    /** Enqueues a log document on the main thread — instant, never blocks. */
     private void enqueue(Document doc) {
         if (writeQueue.size() < MAX_MEM_QUEUE) {
             writeQueue.offer(doc);
         }
     }
 
-    // ── Name helper ───────────────────────────────────────────────────────────
-
     private static String playerName(UUID uuid) {
         if (uuid == null) return null;
         Player p = Bukkit.getPlayer(uuid);
         return p != null ? p.getName() : null;
     }
-
-    // ── Public log API ────────────────────────────────────────────────────────
 
     public void logEconomy(UUID player, String currencyType, String action, double amount, String reason) {
         Document doc = new Document("type", "ECONOMY")
@@ -147,7 +124,7 @@ public class LogManager {
                 .append("event_type", eventType)
                 .append("koth_name", kothName)
                 .append("timestamp", System.currentTimeMillis());
-        // Only store winner fields on WIN events — keeps START/STOP docs tiny
+        
         if (winner != null) {
             doc.append("winner", winner.toString());
             if (winnerName != null) doc.append("winner_name", winnerName);
