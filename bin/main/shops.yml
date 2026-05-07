@@ -1,6 +1,4 @@
-# ──────────────────────────────────────────────────────────────────────────────
 # GenPvP Shop Configuration
-# ──────────────────────────────────────────────────────────────────────────────
 #
 # GUI Layout (6-row chest = 54 slots):
 #
@@ -23,11 +21,9 @@
 #   If the player doesn't meet the requirement, the last lore line changes to
 #   "&cRequires Prestige level N." and a configurable actionbar message is sent.
 #
-# ──────────────────────────────────────────────────────────────────────────────
 
 default-menu: building
 
-# ── Shared navigation bar (row 0: slots 0-8) ─────────────────────────────────
 shared-nav:
   - slot: 0
     material: GRAY_STAINED_GLASS_PANE
@@ -1168,30 +1164,6 @@ shops:
         name: "&r"
         lore: []
 
-
-  # Set 1: 19, 20, 21, 28, 29, 30
-  # Set 2: 23, 24, 25, 32, 33, 34
-  # 22, 26
-
-  #    - slot: 15
-  #      material: SPLASH_POTION
-  #      name: "&cCombat Potion"
-  #      price: 300
-  #      amount: 1
-  #      allow-multiple: true
-  #      potions:
-  #        - "strength:2:120"   # Strength II for 120 seconds
-  #        - "speed:2:120"      # Speed II for 120 seconds
-  #      lore:
-  #        - "&7Strength II + Speed II"
-  #        - "&7Duration: &f2 minutes"
-  ##        - "&ePrice: &f$%price%"
-
-  # SLOT 49
-
-  # command: ""
-  # amount: "1-64" (display using %amount%)
-  # fire_resistance:1
   potions:
     name: "Potions"
     items:
@@ -1394,10 +1366,6 @@ shops:
         name: "&r"
         lore: []
 
-  # ── Devil Fruit Shop ──────────────────────────────────────────────────────
-  # Uses currency-type: devil-shards (physical PDC-stamped Amethyst Shards
-  # obtained from PvP kills).  Items here typically use the "command" field
-  # to give rewards via console commands instead of material items.
   devilfruit:
     name: "Devil Fruit"
     items:
@@ -1474,48 +1442,3 @@ shops:
         name: "&r"
         lore: []
 
-
-# slot:                GUI slot (9-44 = item area in a 6-row chest)
-# material:            Bukkit Material name (e.g. DIAMOND_SWORD)
-# name:                Display name (supports & and &#RRGGBB colour codes)
-# price:               Base cost per purchase (multiplied by quantity)
-# amount:              How many items the player receives per purchase
-# currency-type:       "money" (default) | "shards" | "gold" | "devil-shards"
-#                      - money/shards/gold use the virtual BankManager balance
-#                      - devil-shards uses physical PDC-stamped Amethyst Shards
-#                        in the player's inventory
-# allow-multiple:      true = player can increase quantity with +/- buttons
-# requires-prestige:   Minimum prestige level (0 = none)
-# command:             Console command to run instead of giving items.
-#                      Placeholders: %player_name%, %amount%
-#                      Example: "fruit roll_give %player_name% paramecia 1"
-# lore:                List of lore lines. Placeholder: %amount%
-# enchants:            List of "enchantment_key:level" strings
-# potions:             List of "effect_key:amplifier:duration_seconds" strings
-# item-id:             PDC tag value for item tier progression
-# after-store-bought-title: Custom name applied to the given item
-# after-store-bought-lore:  Custom lore applied to the given item
-# unbreakable:         true = item cannot lose durability
-# requires-item:       Gate purchase behind having another item in inventory
-#
-# ── CURRENCY TYPES ─────────────────────────────────────────────────────────────
-# money          Virtual balance (BankManager) — earned from mining/selling
-# shards         Virtual balance (BankManager) — deposited Money Shards
-# gold           Virtual balance (BankManager) — earned from events
-# devil-shards   Physical AMETHYST_SHARD items with PDC tag genpvp:devil_fruit_shard
-#                obtained from PvP kills (10% chance, 3h per-victim cooldown)
-#
-
-#      - slot: 22
-#        material: AMETHYST_SHARD
-#        name: "&d&lParamecia Roll"
-#        price: 50
-#        amount: 1
-#        currency-type: devil-shards
-#        allow-multiple: false
-#        requires-prestige: 0
-#        command: "fruit roll_give %player_name% paramecia 1"
-#        lore:
-#          - "&7Cost: 50 Devil Fruit Shards"
-#        enchants: []
-#

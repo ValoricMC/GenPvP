@@ -31,10 +31,6 @@ public class TeamListener implements Listener {
         this.teamCommand = teamCommand;
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
@@ -96,10 +92,6 @@ public class TeamListener implements Listener {
         teamCommand.broadcastTeamChat(team, player.getName(), message);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player victim)) return;
@@ -120,10 +112,6 @@ public class TeamListener implements Listener {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
@@ -136,10 +124,6 @@ public class TeamListener implements Listener {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGH)
     public void onTeamGUIDrag(InventoryDragEvent event) {
@@ -148,10 +132,6 @@ public class TeamListener implements Listener {
             event.setCancelled(true);
         }
     }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
 
     @SuppressWarnings("deprecation")
     @EventHandler
@@ -249,10 +229,6 @@ public class TeamListener implements Listener {
         }
         return results;
     }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
 
     @SuppressWarnings("deprecation")
     @EventHandler

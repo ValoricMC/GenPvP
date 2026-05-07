@@ -12,11 +12,9 @@ no-fruit-lore:
   - "&fꐘ &#FFDE87Choose a fruit"
 cannot-sell-fruit: "&cYou cannot sell the Devil Fruit slot item."
 
-# ── Fruit item lore labels ─────────────────────────────────────────────────────
 click-to-equip: "&#CEF1C6✔ Right-click to activate"
 not-owned: "&8» &fAvailable at &#ADD8E6@ store.valoricmc.net"
 
-# ── Command feedback ───────────────────────────────────────────────────────────
 no-permission:        "&cYou do not have permission to do that."
 players-only:         "&cOnly players can use /fruit."
 player-never-joined:  "&cPlayer &e%player% &chas never played on this server."

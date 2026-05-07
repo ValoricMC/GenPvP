@@ -29,10 +29,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         this.teamManager = teamManager;
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                              @NotNull String label, @NotNull String[] args) {
@@ -395,10 +391,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         msg(player, footer);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
-
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
                                       @NotNull String label, @NotNull String[] args) {
@@ -439,10 +431,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
         return Collections.emptyList();
     }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // ═══════════════════════════════════════════════════════════════════════════
 
     public void broadcastTeamChat(Team team, String senderName, String message) {
         String formatted = ColorUtil.colorize("&#00A4FB[TEAM] " + senderName + ": &f" + message);

@@ -363,10 +363,6 @@ public class HeadAbilityListener implements Listener {
         bypassArmor(event);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
-
     private void doGear3(Player player) {
         if (sendCooldownMsg(player, "gear3")) return;
         setCooldown(player.getUniqueId(), "gear3");
@@ -397,10 +393,6 @@ public class HeadAbilityListener implements Listener {
                 "%count%", String.valueOf(pushed),
                 "%unit%",  pushed == 1 ? "entity" : "entities"));
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void doPurgatoryOnigiri(Player player) {
         if (sendCooldownMsg(player, "onigiri")) return;
@@ -455,10 +447,6 @@ public class HeadAbilityListener implements Listener {
         player.sendMessage(msg("zoro-onigiri"));
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
-
     private void doMirageTempo(Player player) {
         if (sendCooldownMsg(player, "mirage_tempo")) return;
         setCooldown(player.getUniqueId(), "mirage_tempo");
@@ -507,10 +495,6 @@ public class HeadAbilityListener implements Listener {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
-
     private void doWeatherTraps(Player player) {
         if (sendCooldownMsg(player, "weather_traps")) return;
         setCooldown(player.getUniqueId(), "weather_traps");
@@ -521,10 +505,6 @@ public class HeadAbilityListener implements Listener {
 
         player.playSound(player.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1f, 1.2f);
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onJump(PlayerJumpEvent event) {
@@ -577,10 +557,6 @@ public class HeadAbilityListener implements Listener {
         player.setVelocity(new Vector(horiz.getX(), 0.8, horiz.getZ()));
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_FALL, 1f, 1.3f);
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void doIfritJambe(Player player) {
         if (sendCooldownMsg(player, "ifrit_jambe")) return;

@@ -130,10 +130,6 @@ public class OnePieceAbilityListener implements Listener {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
-
     private void swipe(Player player) {
         if (checkCooldown(player, swordCd, SWORD_COOLDOWN_MS)) return;
         setCooldown(player, swordCd, SWORD_COOLDOWN_MS);
@@ -192,10 +188,6 @@ public class OnePieceAbilityListener implements Listener {
         var attr = player.getAttribute(Attribute.ATTACK_DAMAGE);
         return attr != null ? attr.getValue() : 7.0;
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void throwAxe(Player player) {
         if (checkCooldown(player, axeCd, AXE_COOLDOWN_MS)) return;
@@ -283,10 +275,6 @@ public class OnePieceAbilityListener implements Listener {
         player.playSound(player.getLocation(), Sound.ITEM_TRIDENT_RETURN, 1f, 1.2f);
         player.sendMessage(msg("axe-returned"));
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    
-    // ══════════════════════════════════════════════════════════════════════════
 
     private void ghostCrew(Player player) {
         if (checkCooldown(player, pirateSwordCd, PIRATE_SWORD_COOLDOWN_MS)) return;
